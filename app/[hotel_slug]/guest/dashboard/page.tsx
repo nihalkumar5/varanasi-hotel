@@ -190,7 +190,7 @@ export default function GuestDashboard() {
                     <div className="mb-8 flex items-end justify-between">
                         <div>
                             <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Check-out</p>
-                            <p className="text-2xl font-serif font-bold italic text-slate-900 tracking-tight">24 Jun, 2026</p>
+                            <p className="text-2xl font-sans font-black italic text-slate-900 tracking-tighter">24 Jun, 2026</p>
                         </div>
                         <div className="text-right">
                             <div className="px-5 py-2.5 bg-amber-50 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center">
