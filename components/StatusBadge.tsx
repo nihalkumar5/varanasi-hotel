@@ -5,16 +5,16 @@ export type RequestStatus = "Pending" | "Assigned" | "In Progress" | "Completed"
 
 export function StatusBadge({ status }: { status: RequestStatus }) {
     const statusConfig = {
-        Pending: { color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4 mr-1" /> },
-        Assigned: { color: "bg-orange-100 text-orange-800", icon: <Loader2 className="w-4 h-4 mr-1 animate-spin" /> },
-        "In Progress": { color: "bg-blue-100 text-blue-800", icon: <PlayCircle className="w-4 h-4 mr-1" /> },
-        Completed: { color: "bg-green-100 text-green-800", icon: <CheckCircle2 className="w-4 h-4 mr-1" /> },
+        Pending: { color: "bg-amber-50 text-amber-700 border-amber-100", icon: <Clock className="w-3.5 h-3.5 mr-1.5" /> },
+        Assigned: { color: "bg-slate-50 text-slate-700 border-slate-100", icon: <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> },
+        "In Progress": { color: "bg-blue-50 text-blue-700 border-blue-100", icon: <PlayCircle className="w-3.5 h-3.5 mr-1.5" /> },
+        Completed: { color: "bg-emerald-50 text-emerald-700 border-emerald-100", icon: <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> },
     };
 
     const config = statusConfig[status];
 
     return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+        <span className={`inline-flex items-center px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-[0.15em] border ${config.color} shadow-sm transition-all duration-300`}>
             {config.icon}
             {status}
         </span>
