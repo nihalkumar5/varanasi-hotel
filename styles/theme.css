@@ -1,0 +1,17 @@
+:root {
+  --primary: #2563eb;
+  --primary-accent: #4f46e5;
+  --primary-color: var(--primary);
+  --secondary-color: #334155;
+  --accent-color: var(--primary-accent);
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --bg-pattern: none;
+}
+
+body {
+  background-color: var(--background);
+  background-image: var(--bg-pattern);
+}
+
+/* For multi-tenant, these will be overridden via inline styles from DB */
