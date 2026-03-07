@@ -165,9 +165,9 @@ export default function GuestDashboard() {
                 whileHover={{ y: -5 }}
                 className="relative cursor-pointer z-10"
             >
-                <div className="relative bg-white rounded-[3rem] p-8 pb-10 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col overflow-hidden">
+                <div className="relative bg-white rounded-[2.5rem] p-6 pb-7 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col overflow-hidden">
                     {/* Top Detail Row */}
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-4">
                         <div>
                             <p className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400">Authenticated Room</p>
                         </div>
@@ -180,17 +180,17 @@ export default function GuestDashboard() {
                     </div>
 
                     {/* Room Number Hero */}
-                    <div className="mb-12">
-                        <h2 className="text-[44px] font-serif text-slate-900 tracking-tighter leading-none">
+                    <div className="mb-6">
+                        <h2 className="text-[36px] font-serif text-slate-900 tracking-tighter leading-none">
                             Room <span className="text-amber-600 font-bold">{roomNumber || "---"}</span>
                         </h2>
                     </div>
 
                     {/* Check-out Details */}
-                    <div className="mb-8 flex items-end justify-between">
+                    <div className="mb-6 flex items-end justify-between">
                         <div>
                             <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Check-out</p>
-                            <p className="text-2xl font-sans font-black italic text-slate-900 tracking-tighter">24 Jun, 2026</p>
+                            <p className="text-xl font-sans font-black italic text-slate-900 tracking-tighter">24 Jun, 2026</p>
                         </div>
                         <div className="text-right">
                             <div className="px-5 py-2.5 bg-amber-50 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center">
