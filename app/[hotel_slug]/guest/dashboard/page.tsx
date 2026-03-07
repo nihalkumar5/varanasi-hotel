@@ -285,17 +285,17 @@ export default function GuestDashboard() {
                 animate="show"
                 className="space-y-8 mt-10"
             >
-                {/* 2. Quick Actions Grid (4 Icons) */}
+                {/* 2. Quick Actions Grid (Unified Luxury Palette) */}
                 <motion.section variants={item}>
                     <div className="grid grid-cols-4 gap-6">
                         {[
-                            { label: "Laundry", icon: <Shirt />, bg: "bg-indigo-500/10 text-indigo-600", action: () => { } },
-                            { label: "Wi-Fi", icon: <Wifi />, bg: "bg-emerald-500/10 text-emerald-600", action: () => { router.push(`/${hotelSlug}/guest/wifi`) } },
-                            { label: "Dining", icon: <ChefHat />, bg: "bg-amber-500/10 text-amber-600", action: () => { router.push(`/${hotelSlug}/guest/restaurant`) } },
+                            { label: "Laundry", icon: <Shirt />, bg: "bg-slate-900/5 text-slate-900", action: () => { } },
+                            { label: "Wi-Fi", icon: <Wifi />, bg: "bg-amber-600/10 text-amber-700", action: () => { router.push(`/${hotelSlug}/guest/wifi`) } },
+                            { label: "Dining", icon: <ChefHat />, bg: "bg-slate-900/5 text-slate-900", action: () => { router.push(`/${hotelSlug}/guest/restaurant`) } },
                             {
                                 label: "Contact",
                                 icon: <Phone />,
-                                bg: "bg-rose-500/10 text-rose-600",
+                                bg: "bg-amber-600/10 text-amber-700",
                                 action: () => {
                                     if (branding?.receptionPhone) {
                                         setToast({
@@ -313,62 +313,65 @@ export default function GuestDashboard() {
                                 onClick={() => action.action()}
                                 className="flex flex-col items-center group"
                             >
-                                <div className={`w-14 h-14 rounded-2xl ${action.bg} flex items-center justify-center mb-2 shadow-sm group-hover:shadow-md transition-all group-active:scale-95 border border-white/5`}>
+                                <div className={`w-14 h-14 rounded-[1.25rem] ${action.bg} flex items-center justify-center mb-2 shadow-sm group-hover:shadow-md transition-all group-active:scale-95 border border-slate-100`}>
                                     {renderIcon(action.icon, "w-6 h-6")}
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-wider text-foreground/40">{action.label}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-600 transition-colors">{action.label}</span>
                             </button>
                         ))}
                     </div>
                 </motion.section>
 
-                {/* 3. Smart Requests (Express Items) */}
+                {/* 3. Smart Requests (Express Items - Premium Light Theme) */}
                 <motion.section variants={item}>
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center">
-                            <Zap className="w-4 h-4 text-amber-500 mr-2" />
-                            <h2 className="text-xl font-serif text-foreground">Quick Requests</h2>
+                            <Zap className="w-4 h-4 text-amber-600 mr-2" />
+                            <h2 className="text-xl font-black italic uppercase tracking-tighter text-slate-900">Quick Requests</h2>
                         </div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground/30">Fast Response</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">Fast Response</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         {[
-                            { label: "Mineral Water", icon: <Droplets />, notes: "1L Bottle", type: "Water" },
-                            { label: "Clean Towels", icon: <Wind />, notes: "Fresh Set", type: "Towel" },
-                            { label: "Room Cleaning", icon: <Sparkles />, notes: "Full Service", type: "Cleaning" },
-                            { label: "Tea/Coffee", icon: <Coffee />, notes: "Hot Beverage", type: "TeaCoffee" },
+                            { label: "Mineral Water", icon: <Droplets />, notes: "1L Bottle", type: "Water", theme: "from-blue-50/50" },
+                            { label: "Clean Towels", icon: <Wind />, notes: "Fresh Set", type: "Towel", theme: "from-slate-50/50" },
+                            { label: "Room Cleaning", icon: <Sparkles />, notes: "Full Service", type: "Cleaning", theme: "from-emerald-50/50" },
+                            { label: "Tea/Coffee", icon: <Coffee />, notes: "Hot Beverage", type: "TeaCoffee", theme: "from-amber-50/50" },
                         ].map((req, i) => (
                             <button
                                 key={i}
                                 onClick={() => handleQuickRequest(req.type, req.notes)}
-                                className="glass-dark p-6 rounded-[2rem] flex flex-col justify-end min-h-[110px] border border-white/10 shadow-2xl shadow-black/20 hover:shadow-emerald-500/10 hover:border-emerald-500/20 transition-all duration-500 active:scale-95 group relative overflow-hidden text-left"
+                                className={`bg-white p-6 rounded-[2.5rem] flex flex-col justify-end min-h-[120px] border border-slate-100 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-slate-200/50 hover:border-amber-200 transition-all duration-500 active:scale-95 group relative overflow-hidden text-left`}
                             >
-                                {/* Premium Shine Effect */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]"></div>
+                                {/* Subtle Gradient Overlay */}
+                                <div className={`absolute inset-0 bg-gradient-to-br ${req.theme} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
 
-                                {/* Background Icon (Subtle Watermark) */}
-                                <div className="absolute top-2 right-2 text-white opacity-10 group-hover:opacity-20 group-hover:-translate-y-1 group-hover:translate-x-1 transition-all duration-700">
-                                    {renderIcon(req.icon, "w-12 h-12")}
+                                {/* Premium Shine Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]"></div>
+
+                                {/* Background Icon (Refined Watermark) */}
+                                <div className="absolute top-4 right-4 text-slate-900 opacity-[0.03] group-hover:opacity-[0.08] group-hover:-translate-y-1 group-hover:translate-x-1 transition-all duration-700">
+                                    {renderIcon(req.icon, "w-16 h-16")}
                                 </div>
 
-                                {/* Accent Indicator (Rectangular Hover-Only) */}
-                                <div className={`absolute top-6 left-6 w-1 h-3 rounded-sm transition-all duration-500 ${submittingType === req.type ? "bg-white animate-pulse opacity-100" : "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] opacity-0 group-hover:opacity-100 group-hover:-translate-y-1"}`}></div>
+                                {/* Gold Accent Indicator */}
+                                <div className={`absolute top-6 left-6 w-1 h-3 rounded-full transition-all duration-500 ${submittingType === req.type ? "bg-amber-600 animate-pulse opacity-100" : "bg-amber-600/40 opacity-0 group-hover:opacity-100 group-hover:-translate-y-1"}`}></div>
 
                                 <div className="relative z-10 w-full">
                                     <div className="flex items-center justify-between w-full">
                                         <div>
-                                            <p className="text-base font-bold text-white leading-tight group-hover:translate-x-1 transition-transform duration-300">{req.label}</p>
-                                            <p className="text-[9px] font-black text-white/30 mt-1 uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform duration-500">{req.notes}</p>
+                                            <p className="text-sm font-black text-slate-900 uppercase tracking-tighter italic leading-tight group-hover:translate-x-1 transition-transform duration-300">{req.label}</p>
+                                            <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest group-hover:translate-x-1 transition-transform duration-500">{req.notes}</p>
                                         </div>
                                         {submittingType === req.type && (
-                                            <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                            <div className="w-5 h-5 border-2 border-amber-100 border-t-amber-600 rounded-full animate-spin"></div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Bottom Accent Line */}
-                                <div className="absolute bottom-0 left-0 w-0 h-1 bg-amber-500 group-hover:w-full transition-all duration-700"></div>
+                                {/* Bottom Accent Line (Branded Gold) */}
+                                <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-amber-500 to-amber-600 group-hover:w-full transition-all duration-700"></div>
                             </button>
                         ))}
                     </div>
