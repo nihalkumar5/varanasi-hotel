@@ -32,10 +32,13 @@ function AuthLogic({ children }: { children: React.ReactNode }) {
     const [isVerifying, setIsVerifying] = useState(false);
 
     useEffect(() => {
+        const timestamp = new Date().toLocaleTimeString();
+        console.log(`[${timestamp}] AuthLogic: Lifecycle Update. Loading: ${brandingLoading}, BrandingID: ${branding?.id}`);
+
         if (brandingLoading) return;
 
         if (!branding?.id) {
-            console.warn("AuthLogic: No branding ID found. Hotel might not exist.");
+            console.warn(`[${timestamp}] AuthLogic: No branding ID found.`);
             setIsVerified(false);
             return;
         }
@@ -47,13 +50,19 @@ function AuthLogic({ children }: { children: React.ReactNode }) {
         const storedCheckoutDate = localStorage.getItem(`hotel_checkout_date_${hotelSlug}`);
         const storedCheckoutTime = localStorage.getItem(`hotel_checkout_time_${hotelSlug}`);
 
+        console.table({
+            Context: "AuthLogic Storage Check",
+            URL_Room: urlRoom,
+            Stored_Room: storedRoom,
+            Stored_Pin: !!storedPin,
+            Stored_Date: storedCheckoutDate
+        });
+
         const effectiveRoom = urlRoom || storedRoom;
         let effectivePin = storedPin;
 
-        console.log("AuthLogic: Auto-verify check", { urlRoom, storedRoom, effectiveRoom, hasUrlPin: !!urlPin, hasStoredPin: !!storedPin });
-
         if (urlRoom && urlRoom !== storedRoom) {
-            console.log("AuthLogic: Room changed from stored session, resetting PIN check.");
+            console.log(`[${timestamp}] AuthLogic: Room switched. URL wins.`);
             effectivePin = urlPin || "";
         }
 
@@ -63,12 +72,12 @@ function AuthLogic({ children }: { children: React.ReactNode }) {
             if (storedCheckoutTime) setCheckoutTime(storedCheckoutTime);
 
             if (effectivePin) {
-                console.log(`AuthLogic: Attempting auto-verify for Room ${effectiveRoom}`);
+                console.log(`[${timestamp}] AuthLogic: Auto-verify for ${effectiveRoom}`);
                 setPin(effectivePin);
                 setIsVerifying(true);
                 verifyBookingPin(branding.id, effectiveRoom, effectivePin).then(res => {
                     if (res.success) {
-                        console.log("AuthLogic: Auto-verify successful");
+                        console.log(`[${timestamp}] AuthLogic: SUCCESS`);
                         setIsVerified(true);
                         setCheckoutDate(res.data.checkout_date || "");
                         setCheckoutTime(res.data.checkout_time || "");
@@ -77,7 +86,7 @@ function AuthLogic({ children }: { children: React.ReactNode }) {
                         if (res.data.checkout_date) localStorage.setItem(`hotel_checkout_date_${hotelSlug}`, res.data.checkout_date);
                         if (res.data.checkout_time) localStorage.setItem(`hotel_checkout_time_${hotelSlug}`, res.data.checkout_time);
                     } else {
-                        console.warn("AuthLogic: Auto-verify failed (Invalid PIN or Session)");
+                        console.warn(`[${timestamp}] AuthLogic: FAIL. Clearing session.`);
                         if (effectiveRoom === storedRoom) {
                             localStorage.removeItem(`hotel_room_${hotelSlug}`);
                             localStorage.removeItem(`hotel_pin_${hotelSlug}`);
@@ -88,16 +97,16 @@ function AuthLogic({ children }: { children: React.ReactNode }) {
                     }
                     setIsVerifying(false);
                 }).catch(err => {
-                    console.error("AuthLogic: Auto-verify crash", err);
+                    console.error(`[${timestamp}] AuthLogic: CRASH`, err);
                     setIsVerified(false);
                     setIsVerifying(false);
                 });
             } else {
-                console.log("AuthLogic: No PIN available for auto-verify");
+                console.log(`[${timestamp}] AuthLogic: No PIN available.`);
                 setIsVerified(false);
             }
         } else {
-            console.log("AuthLogic: No room number determined yet");
+            console.log(`[${timestamp}] AuthLogic: No Room determined.`);
             setIsVerified(false);
         }
     }, [branding?.id, hotelSlug, searchParams, brandingLoading]);
