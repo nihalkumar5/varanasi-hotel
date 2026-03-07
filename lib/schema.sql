@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS requests (
     total DECIMAL(10, 2) DEFAULT 0,
     is_paid BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    timestamp BIGINT NOT NULL
+    timestamp BIGINT NOT NULL,
+    time TEXT
 );
 
 -- Indexing for performance
