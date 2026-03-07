@@ -171,15 +171,10 @@ export default function GuestDashboard() {
                         <div>
                             <p className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400">Authenticated Room</p>
                         </div>
-                        <div className="flex items-center space-x-3 text-slate-400">
+                        <div className="flex items-center text-slate-400">
                             <div className="flex items-center">
                                 <User className="w-3 h-3 mr-1" />
                                 <span className="text-[10px] font-bold">2 Guests</span>
-                            </div>
-                            <div className="w-[1px] h-3 bg-slate-200"></div>
-                            <div className="flex items-center">
-                                <Wifi className="w-3 h-3 mr-1 text-emerald-500" />
-                                <span className="text-[10px] font-bold">Connected</span>
                             </div>
                         </div>
                     </div>
