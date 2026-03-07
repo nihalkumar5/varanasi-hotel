@@ -187,7 +187,7 @@ export default function GuestDashboard() {
                     {/* Room Number Hero */}
                     <div className="mb-12">
                         <h2 className="text-[44px] font-serif text-slate-900 tracking-tighter leading-none">
-                            Room <span className="text-amber-600 font-bold">#{roomNumber || "---"}</span>
+                            Room <span className="text-amber-600 font-bold">{roomNumber || "---"}</span>
                         </h2>
                     </div>
 
