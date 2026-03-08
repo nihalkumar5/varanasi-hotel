@@ -284,6 +284,16 @@ export const signIn = async (email: string, password: string) => {
     return await supabase.auth.signInWithPassword({ email, password });
 }
 
+export const resetPasswordForEmail = async (email: string, redirectTo: string) => {
+    return await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+    });
+}
+
+export const updatePassword = async (password: string) => {
+    return await supabase.auth.updateUser({ password });
+}
+
 /**
  * Sign out
  */

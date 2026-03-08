@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
-import { signIn, useHotelBranding, getUserProfile } from "@/utils/store";
+import { signIn, useHotelBranding, getUserProfile, resetPasswordForEmail } from "@/utils/store";
 import { Lock, Mail, Loader2, Hotel, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 function LoginContent() {
     const router = useRouter();
@@ -17,6 +17,9 @@ function LoginContent() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showReset, setShowReset] = useState(false);
+    const [resetSent, setResetSent] = useState(false);
+    const [resetEmail, setResetEmail] = useState("");
 
     // Use effect to handle error from search params
     useEffect(() => {
@@ -86,6 +89,36 @@ function LoginContent() {
         } catch (err: any) {
             console.error("Catch block error during login:", err);
             setError(err.message || "Invalid credentials. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!resetEmail) {
+            setError("Please enter your email.");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            // In demo mode, mock the success
+            if (process.env.NEXT_PUBLIC_FORCE_DEMO === 'true') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } else {
+                const { error: resetError } = await resetPasswordForEmail(
+                    resetEmail,
+                    `${window.location.origin}/auth/update-password`
+                );
+                if (resetError) throw resetError;
+            }
+            setResetSent(true);
+        } catch (err: any) {
+            setError(err.message || "Failed to send reset link.");
+        } finally {
             setLoading(false);
         }
     };
@@ -158,6 +191,15 @@ function LoginContent() {
                                     required
                                 />
                             </div>
+                            <div className="flex justify-end mt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowReset(true)}
+                                    className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 transition-colors"
+                                >
+                                    Forgot Password?
+                                </button>
+                            </div>
                         </div>
 
                         <button
@@ -170,6 +212,61 @@ function LoginContent() {
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "AUTHENTICATE"}
                         </button>
                     </div>
+
+                    <AnimatePresence>
+                        {showReset && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="mt-8 pt-8 border-t border-slate-100"
+                            >
+                                {resetSent ? (
+                                    <div className="text-center space-y-4">
+                                        <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mx-auto">
+                                            <ShieldCheck className="w-6 h-6" />
+                                        </div>
+                                        <p className="text-xs font-bold text-slate-600">Reset link sent! Please check your inbox.</p>
+                                        <button
+                                            onClick={() => { setShowReset(false); setResetSent(false); }}
+                                            className="text-[10px] font-black text-blue-600 uppercase tracking-widest"
+                                        >
+                                            Back to Login
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <p className="text-xs font-bold text-slate-500 text-center">Enter your email to receive a password reset link.</p>
+                                        <div className="relative">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                                            <input
+                                                type="email"
+                                                value={resetEmail}
+                                                onChange={(e) => setResetEmail(e.target.value)}
+                                                placeholder="recovery@hotel.com"
+                                                className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 pl-12 pr-4 font-bold text-slate-900 text-sm outline-none"
+                                            />
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setShowReset(false)}
+                                                className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleResetPassword}
+                                                disabled={loading}
+                                                className="flex-[2] py-3 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center"
+                                            >
+                                                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Reset Link"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="flex flex-col items-center mt-8 space-y-4">
