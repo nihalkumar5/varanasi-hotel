@@ -77,13 +77,21 @@ export default function StatusPage() {
             light: "bg-indigo-500/10",
             muted: "text-indigo-400"
         };
-        if (t.includes("cleaning") || t.includes("housekeeping")) return {
+        if (t.includes("cleaning") || t.includes("housekeeping") || t.includes("towel")) return {
             bg: "bg-emerald-50/80",
             border: "border-emerald-100",
             text: "text-emerald-900",
             accent: "bg-emerald-600",
             light: "bg-emerald-500/10",
             muted: "text-emerald-400"
+        };
+        if (t.includes("tea") || t.includes("coffee") || t.includes("beverage")) return {
+            bg: "bg-amber-50/80",
+            border: "border-amber-100",
+            text: "text-amber-900",
+            accent: "bg-amber-600",
+            light: "bg-amber-500/10",
+            muted: "text-amber-400"
         };
         // Default theme
         return {
@@ -186,22 +194,25 @@ export default function StatusPage() {
             <div>
                 <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-8 px-1">Completed Journeys</h2>
                 <div className="space-y-4">
-                    {pastRequests.map((req) => (
-                        <div key={req.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 flex items-center justify-between opacity-60 hover:opacity-100 transition-all duration-500 shadow-sm group">
-                            <div className="flex items-center">
-                                <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mr-5 shadow-sm border border-emerald-100 transition-transform group-hover:scale-110">
-                                    <CheckCircle2 className="w-7 h-7" />
+                    {pastRequests.map((req) => {
+                        const theme = getRequestTheme(req.type);
+                        return (
+                            <div key={req.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 flex items-center justify-between opacity-60 hover:opacity-100 transition-all duration-500 shadow-sm group">
+                                <div className="flex items-center">
+                                    <div className={`w-14 h-14 rounded-2xl ${theme.light} ${theme.text} flex items-center justify-center mr-5 shadow-sm border ${theme.border} transition-transform group-hover:scale-110`}>
+                                        <CheckCircle2 className="w-7 h-7" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-serif text-lg text-slate-900">{req.type}</h3>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-1">{req.time}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-serif text-lg text-slate-900">{req.type}</h3>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-1">{req.time}</p>
+                                <div className="flex flex-col items-end">
+                                    <span className={`text-[10px] font-black ${theme.text} ${theme.light} px-3 py-1 rounded-full uppercase tracking-tighter italic border ${theme.border}`}>Delivered</span>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-tighter italic border border-emerald-100">Delivered</span>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </div>
