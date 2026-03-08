@@ -78,7 +78,10 @@ export default function BillPage() {
                     <ArrowLeft className="w-5 h-5 text-slate-800" />
                 </button>
                 <h1 className="text-xl font-black text-slate-900">Room Invoice</h1>
-                <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                <button
+                    onClick={() => window.print()}
+                    className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors no-print"
+                >
                     <Download className="w-5 h-5" />
                 </button>
             </div>
@@ -121,7 +124,8 @@ export default function BillPage() {
                                 </div>
                                 <div>
                                     <h4 className="font-bold text-slate-800 text-sm">{req.type}</h4>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{req.time}</p>
+                                    {req.notes && <p className="text-[10px] text-blue-600 font-bold mt-0.5 uppercase tracking-tighter line-clamp-1">{req.notes}</p>}
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{req.time}</p>
                                 </div>
                             </div>
                             <span className="font-black text-slate-900">${(req.total || 0).toFixed(2)}</span>

@@ -18,19 +18,23 @@ export default function AdminCheckoutPage() {
     const [isSettling, setIsSettling] = useState(false);
 
     // Group billing by room
-    const billedRequests = requests.filter(r => (r.price || 0) > 0 && !r.is_paid);
-    const roomsWithBills = Array.from(new Set(billedRequests.map(r => r.room)));
+    // Side bar shows rooms that have unpaid items
+    const pendingBillRooms = Array.from(new Set(requests.filter(r => (r.price || 0) > 0 && !r.is_paid).map(r => r.room)));
 
-    const filteredRooms = roomsWithBills.filter(room => room.includes(searchQuery));
+    // For the detail view of a SELECTED room, we want to see EVERYTHING (paid and unpaid)
+    // but only if it matches our room. We'll filter this inside the render.
+    const allBilledRequests = requests.filter(r => (r.price || 0) > 0);
+
+    const filteredRooms = pendingBillRooms.filter(room => room.includes(searchQuery));
 
     const getRoomTotal = (room: string) => {
-        return billedRequests
-            .filter(r => r.room === room)
+        return allBilledRequests
+            .filter(r => r.room === room && !r.is_paid)
             .reduce((sum, r) => sum + (r.total || 0), 0);
     };
 
     const getRoomRequests = (room: string) => {
-        return billedRequests.filter(r => r.room === room);
+        return allBilledRequests.filter(r => r.room === room);
     };
 
     const finalizeCheckout = async (roomNumber: string) => {
@@ -43,10 +47,8 @@ export default function AdminCheckoutPage() {
         // 2. Clear the room PIN and mark as unoccupied using room number directly
         await checkOutRoomByNumber(branding.id, roomNumber);
 
-        setTimeout(() => {
-            setIsSettling(false);
-            setSelectedRoom(null);
-        }, 1500);
+        setIsSettling(false);
+        // Removed setSelectedRoom(null) so it doesn't disappear immediately
     };
 
     return (
@@ -171,7 +173,8 @@ export default function AdminCheckoutPage() {
                                                 <tr key={req.id}>
                                                     <td className="py-6 pr-6">
                                                         <p className="font-bold text-slate-800">{req.type}</p>
-                                                        <p className="text-xs text-slate-400 mt-1 uppercase tracking-tighter">{req.time} • Resolved</p>
+                                                        {req.notes && <p className="text-xs text-blue-600 font-bold mt-1 uppercase tracking-tighter">{req.notes}</p>}
+                                                        <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">{req.time} • {req.is_paid ? 'PAID' : 'PENDING'}</p>
                                                     </td>
                                                     <td className="py-6 text-right font-black text-slate-900">
                                                         ₹{(req.total || 0).toFixed(2)}
