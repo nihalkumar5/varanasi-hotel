@@ -39,6 +39,24 @@ function LoginContent() {
         setError("");
 
         try {
+            // Mock Login Bypass for Demo Mode
+            if (process.env.NEXT_PUBLIC_FORCE_DEMO === 'true') {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                console.log("FORCE_DEMO is active. Mocking login result for:", email);
+
+                let mockRole: 'admin' | 'kitchen' | 'housekeeping' = 'admin';
+                if (email.includes('kitchen')) mockRole = 'kitchen';
+                else if (email.includes('housekeeping')) mockRole = 'housekeeping';
+
+                let redirectPath = `/${hotelSlug}/admin/dashboard`;
+                if (mockRole === 'kitchen') redirectPath = `/${hotelSlug}/admin/kitchen`;
+                else if (mockRole === 'housekeeping') redirectPath = `/${hotelSlug}/admin/housekeeping`;
+
+                console.log("Mock Redirecting to:", redirectPath);
+                window.location.href = redirectPath;
+                return;
+            }
+
             console.log("Calling signIn utility...");
             const { data, error: authError } = await signIn(email, password);
 
