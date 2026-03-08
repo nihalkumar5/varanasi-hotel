@@ -254,6 +254,32 @@ export const getUserProfile = async (userId: string): Promise<{ data: UserProfil
     }
 };
 
+export const getAllHotelStaff = async (hotelId: string): Promise<{ data: UserProfile[] | null; error: any }> => {
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('hotel_id', hotelId);
+
+        return { data, error };
+    } catch (err) {
+        return { data: null, error: err };
+    }
+};
+
+export const updateStaffRole = async (profileId: string, role: string): Promise<{ error: any }> => {
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ role })
+            .eq('id', profileId);
+
+        return { error };
+    } catch (err) {
+        return { error: err };
+    }
+};
+
 export const signIn = async (email: string, password: string) => {
     return await supabase.auth.signInWithPassword({ email, password });
 }

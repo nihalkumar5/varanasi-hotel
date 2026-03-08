@@ -99,7 +99,13 @@ export default function AdminDashboard() {
         return "hover:bg-gray-50/50 border-l-4 border-l-transparent";
     };
 
-    const sortedRequests = [...requests].sort((a, b) => b.timestamp - a.timestamp);
+    // Filter out Food and Water for Reception (Kitchen handles these now)
+    const receptionRequests = requests.filter(r => {
+        const type = r.type.toLowerCase();
+        return !["water", "dining", "restaurant", "room service", "food"].some(t => type.includes(t));
+    });
+
+    const sortedRequests = [...receptionRequests].sort((a, b) => b.timestamp - a.timestamp);
 
     const filteredBySearch = sortedRequests.filter(r =>
         r.room.includes(searchQuery) ||
