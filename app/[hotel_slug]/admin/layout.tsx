@@ -26,6 +26,7 @@ export default function AdminLayout({
         { name: "Billing & Checkout", href: `/${hotelSlug}/admin/checkout`, icon: <Receipt className="w-5 h-5" /> },
         { name: "Rooms & QR", href: `/${hotelSlug}/admin/rooms`, icon: <Hotel className="w-5 h-5" /> },
         { name: "Menu Items", href: `/${hotelSlug}/admin/menu`, icon: <Utensils className="w-5 h-5" /> },
+        { name: "Data Analytics", href: `/${hotelSlug}/admin/analytics`, icon: <BarChart className="w-5 h-5" /> },
         { name: "Hotel Branding", href: `/${hotelSlug}/admin/branding`, icon: <Settings className="w-5 h-5" /> },
     ];
 
