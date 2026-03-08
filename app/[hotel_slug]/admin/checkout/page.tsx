@@ -94,7 +94,7 @@ export default function AdminCheckoutPage() {
                                 </div>
                                 <div className="text-right">
                                     <p className={`text-lg font-black ${selectedRoom === room ? 'text-white' : 'text-blue-600'}`} style={selectedRoom !== room ? { color: branding?.primaryColor } : {}}>
-                                        ${getRoomTotal(room).toFixed(2)}
+                                        ₹{getRoomTotal(room).toFixed(2)}
                                     </p>
                                     <ChevronRight className={`w-4 h-4 ml-auto mt-1 ${selectedRoom === room ? 'text-white/20' : 'text-slate-200 group-hover:text-slate-400'}`} />
                                 </div>
@@ -174,7 +174,7 @@ export default function AdminCheckoutPage() {
                                                         <p className="text-xs text-slate-400 mt-1 uppercase tracking-tighter">{req.time} • Resolved</p>
                                                     </td>
                                                     <td className="py-6 text-right font-black text-slate-900">
-                                                        ${(req.total || 0).toFixed(2)}
+                                                        ₹{(req.total || 0).toFixed(2)}
                                                     </td>
                                                 </tr>
                                             ))}
@@ -185,17 +185,17 @@ export default function AdminCheckoutPage() {
                                         <div className="space-y-4 opacity-70 font-bold">
                                             <div className="flex justify-between">
                                                 <span>Accomodation Charges</span>
-                                                <span>${getRoomTotal(selectedRoom).toFixed(2)}</span>
+                                                <span>₹{getRoomTotal(selectedRoom).toFixed(2)}</span>
                                             </div>
                                             <div className="flex justify-between">
                                                 <span>Estimated GST (12.0%)</span>
-                                                <span>${(getRoomTotal(selectedRoom) * 0.12).toFixed(2)}</span>
+                                                <span>₹{(getRoomTotal(selectedRoom) * 0.12).toFixed(2)}</span>
                                             </div>
                                         </div>
                                         <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center">
                                             <div>
                                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Total Settlement</p>
-                                                <p className="text-4xl font-black mt-1 tracking-tighter italic">${(getRoomTotal(selectedRoom) * 1.12).toFixed(2)}</p>
+                                                <p className="text-4xl font-black mt-1 tracking-tighter italic">₹{(getRoomTotal(selectedRoom) * 1.12).toFixed(2)}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Status</p>

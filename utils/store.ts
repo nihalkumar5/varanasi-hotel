@@ -64,6 +64,18 @@ export interface Room {
     created_at?: string;
 }
 
+export interface MenuItem {
+    id: string;
+    hotel_id: string;
+    category: string;
+    title: string;
+    description?: string;
+    price: number;
+    image_url?: string;
+    is_available: boolean;
+    created_at?: string;
+}
+
 // --- Utilities ---
 export const isDemoMode = () => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -78,6 +90,7 @@ export const isDemoMode = () => {
 
 const DEMO_ROOMS_KEY = 'antigravity_demo_rooms';
 const DEMO_REQUESTS_KEY = 'antigravity_demo_requests';
+const DEMO_MENU_KEY = 'antigravity_demo_menu';
 
 const getDemoRooms = (hotelId: string): Room[] => {
     if (typeof window === 'undefined') return [];
@@ -107,6 +120,23 @@ const saveDemoRequests = (hotelId: string, requests: HotelRequest[]) => {
     localStorage.setItem(`${DEMO_REQUESTS_KEY}_${hotelId}`, JSON.stringify(requests));
     // Dispatch custom event for real-time update in same browser
     window.dispatchEvent(new CustomEvent('demo_requests_updated', { detail: { hotelId } }));
+};
+
+const getDemoMenu = (hotelId: string): MenuItem[] => {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem(`${DEMO_MENU_KEY}_${hotelId}`);
+    return stored ? JSON.parse(stored) : [
+        { id: 'm1', hotel_id: hotelId, category: 'Breakfast', title: 'Continental Breakfast', description: 'Fresh pastries, fruits, and juice.', price: 16.0, is_available: true },
+        { id: 'm2', hotel_id: hotelId, category: 'Lunch', title: 'Caesar Salad', description: 'Crisp romaine with parmesan.', price: 14.5, is_available: true },
+        { id: 'm3', hotel_id: hotelId, category: 'Dinner', title: 'Margherita Pizza', description: 'Fresh mozzarella and basil.', price: 22.0, is_available: true },
+        { id: 'm4', hotel_id: hotelId, category: 'All Day Snacks', title: 'Truffle Fries', description: 'Golden fries with truffle oil.', price: 12.0, is_available: true }
+    ];
+};
+
+const saveDemoMenu = (hotelId: string, items: MenuItem[]) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(`${DEMO_MENU_KEY}_${hotelId}`, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent('demo_menu_updated', { detail: { hotelId } }));
 };
 
 // --- Supabase Hooks & Functions ---
@@ -845,5 +875,120 @@ export async function saveSpecialOffer(hotelId: string, offer: Partial<SpecialOf
 export async function deleteSpecialOffer(id: string) {
     if (isDemoMode()) return { data: null, error: null };
     return await supabase.from('special_offers').delete().eq('id', id);
+}
+
+/**
+ * Hook to fetch and subscribe to menu items for a specific hotel
+ */
+export function useSupabaseMenuItems(hotelId?: string) {
+    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!hotelId) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchMenuItems = async () => {
+            if (isDemoMode()) {
+                setMenuItems(getDemoMenu(hotelId));
+                setLoading(false);
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('menu_items')
+                .select('*')
+                .eq('hotel_id', hotelId)
+                .order('category', { ascending: true });
+
+            if (data) setMenuItems(data);
+            setLoading(false);
+        };
+
+        fetchMenuItems();
+
+        if (isDemoMode()) {
+            const handleUpdate = (e: any) => {
+                if (e.detail?.hotelId === hotelId || e.type === 'storage') {
+                    setMenuItems(getDemoMenu(hotelId));
+                }
+            };
+            window.addEventListener('demo_menu_updated', handleUpdate);
+            window.addEventListener('storage', handleUpdate);
+            return () => {
+                window.removeEventListener('demo_menu_updated', handleUpdate);
+                window.removeEventListener('storage', handleUpdate);
+            };
+        }
+
+        const subscription = supabase
+            .channel(`menu_items_${hotelId}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'menu_items',
+                filter: `hotel_id=eq.${hotelId}`
+            }, () => {
+                fetchMenuItems();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(subscription);
+        };
+    }, [hotelId]);
+
+    return { menuItems, loading };
+}
+
+/**
+ * Save or add a menu item
+ */
+export async function saveSupabaseMenuItem(hotelId: string, item: Partial<MenuItem>) {
+    if (isDemoMode()) {
+        const items = getDemoMenu(hotelId);
+        if (item.id) {
+            const updatedItems = items.map(i => i.id === item.id ? { ...i, ...item } as MenuItem : i);
+            saveDemoMenu(hotelId, updatedItems);
+            return { data: null, error: null };
+        } else {
+            const newItem = { ...item, id: Math.random().toString(36).substr(2, 9), hotel_id: hotelId } as MenuItem;
+            saveDemoMenu(hotelId, [...items, newItem]);
+            return { data: newItem, error: null };
+        }
+    }
+
+    if (item.id) {
+        return await supabase
+            .from('menu_items')
+            .update({
+                category: item.category,
+                title: item.title,
+                description: item.description,
+                price: item.price,
+                image_url: item.image_url,
+                is_available: item.is_available
+            })
+            .eq('id', item.id);
+    } else {
+        return await supabase
+            .from('menu_items')
+            .insert([{ ...item, hotel_id: hotelId }]);
+    }
+}
+
+/**
+ * Delete a menu item
+ */
+export async function deleteSupabaseMenuItem(id: string, hotelId: string) {
+    if (isDemoMode()) {
+        const items = getDemoMenu(hotelId);
+        const updatedItems = items.filter(i => i.id !== id);
+        saveDemoMenu(hotelId, updatedItems);
+        return { error: null };
+    }
+    return await supabase.from('menu_items').delete().eq('id', id);
 }
 

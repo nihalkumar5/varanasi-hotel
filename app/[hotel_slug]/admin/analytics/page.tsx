@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useSupabaseRequests, useHotelBranding } from "@/utils/store";
-import { Download, TrendingUp, BarChart3, Clock, DollarSign, Activity } from "lucide-react";
+import { Download, TrendingUp, BarChart3, Clock, IndianRupee, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function AnalyticsPage() {
@@ -105,10 +105,10 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col">
                     <div className="w-12 h-12 bg-blue-50 text-blue-600 justify-center rounded-2xl flex items-center mb-4" style={{ backgroundColor: `${branding?.primaryColor}10`, color: branding?.primaryColor }}>
-                        <DollarSign className="w-6 h-6" />
+                        <IndianRupee className="w-6 h-6" />
                     </div>
                     <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Total Settled Revenue</p>
-                    <h3 className="text-3xl font-black text-slate-900 mt-1">${stats.totalRevenue.toFixed(2)}</h3>
+                    <h3 className="text-3xl font-black text-slate-900 mt-1">₹{stats.totalRevenue.toFixed(2)}</h3>
                 </motion.div>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col">
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
                             <div key={service} className="relative">
                                 <div className="flex justify-between text-sm font-bold mb-2 relative z-10">
                                     <span className="text-slate-800">{service}</span>
-                                    <span className="text-green-600">${revenue.toFixed(2)}</span>
+                                    <span className="text-green-600">₹{revenue.toFixed(2)}</span>
                                 </div>
                                 <div className="w-full bg-slate-50 h-3 rounded-full overflow-hidden">
                                     <motion.div

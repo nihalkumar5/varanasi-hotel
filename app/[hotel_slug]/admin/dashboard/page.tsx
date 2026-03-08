@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { StatusBadge, RequestStatus } from "@/components/StatusBadge";
-import { CheckCircle, Volume2, VolumeX, Eye, Utensils, Bell, Search, LogOut } from "lucide-react";
+import { CheckCircle, Volume2, VolumeX, Eye, Utensils, Bell, Search, LogOut, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHotelBranding, useSupabaseRequests, updateSupabaseRequestStatus, HotelRequest, signOut } from "@/utils/store";
 import { startAdminAlert, stopAdminAlert, startWaterAlert, stopWaterAlert, initAudioContext } from "@/utils/audio";
@@ -23,15 +23,28 @@ export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<"queue" | "active" | "history">("queue");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Load initial preference from localStorage
+    // Load initial preference from localStorage and setup global click listener
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('admin_audio_enabled');
             if (saved !== null) {
                 setAudioEnabled(saved === 'true');
             }
+
+            const handleGlobalClick = () => {
+                if (!audioInitialized) {
+                    initAudioContext();
+                    setAudioInitialized(true);
+                }
+            };
+            window.addEventListener('mousedown', handleGlobalClick);
+            window.addEventListener('touchstart', handleGlobalClick);
+            return () => {
+                window.removeEventListener('mousedown', handleGlobalClick);
+                window.removeEventListener('touchstart', handleGlobalClick);
+            }
         }
-    }, []);
+    }, [audioInitialized]);
 
     useEffect(() => {
         if (!audioEnabled) {
@@ -111,9 +124,9 @@ export default function AdminDashboard() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            {/* Audio Activation Banner for Browser Autoplay Policies */}
+            {/* Audio Signal Awareness Banner */}
             <AnimatePresence>
-                {audioEnabled && !audioInitialized && (
+                {!audioEnabled && (
                     <motion.div
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -121,25 +134,38 @@ export default function AdminDashboard() {
                         className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4"
                     >
                         <button
-                            onClick={() => {
-                                initAudioContext();
-                                setAudioInitialized(true);
-                            }}
-                            className="w-full bg-blue-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between group hover:bg-blue-700 transition-all border-b-4 border-blue-800 active:border-b-0 active:translate-y-1"
+                            onClick={toggleAudio}
+                            className="w-full bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between group hover:bg-slate-800 transition-all border-b-4 border-slate-700 active:border-b-0 active:translate-y-1"
                         >
                             <div className="flex items-center">
-                                <div className="bg-white/20 p-2 rounded-xl mr-4 animate-pulse">
-                                    <Bell className="w-5 h-5" />
+                                <div className="bg-red-500/20 p-2 rounded-xl mr-4 animate-pulse">
+                                    <VolumeX className="w-5 h-5 text-red-400" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="font-black text-sm uppercase tracking-wider">Activate Audio Alerts</p>
-                                    <p className="text-[10px] font-bold text-blue-100 opacity-80">Click to ensure you hear new guest signals</p>
+                                    <p className="font-black text-sm uppercase tracking-wider">Signals Are Muted</p>
+                                    <p className="text-[10px] font-bold text-slate-400 opacity-80">You will not hear new guest alerts. Click to activate.</p>
                                 </div>
                             </div>
-                            <div className="bg-white text-blue-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:scale-105 transition-transform">
-                                Initialize
+                            <div className="bg-white text-slate-900 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:scale-105 transition-transform">
+                                Turn On
                             </div>
                         </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Subtle initialization prompt if enabled but browser blocked */}
+            <AnimatePresence>
+                {audioEnabled && !audioInitialized && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="fixed bottom-6 right-6 z-50 pointer-events-none"
+                    >
+                        <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center">
+                            <RefreshCw className="w-3 h-3 mr-2 animate-spin-slow" />
+                            Audio Standby - Click anywhere to activate
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -194,7 +220,7 @@ export default function AdminDashboard() {
                 </button>
                 <div className="bg-white p-6 rounded-3xl border border-slate-100">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue</p>
-                    <p className="text-3xl font-black text-blue-600 mt-1">${totalRevenue.toFixed(0)}</p>
+                    <p className="text-3xl font-black text-blue-600 mt-1">₹{totalRevenue.toFixed(0)}</p>
                 </div>
                 <button onClick={() => router.push(`/${hotelSlug}/admin/checkout`)} className="bg-white p-6 rounded-3xl border border-slate-100 hover:border-blue-200 transition-colors text-left group">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-blue-600 transition-colors">Checkouts</p>

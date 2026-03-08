@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { MenuCard } from "@/components/MenuCard";
-import { ShoppingCart, CheckCircle, ArrowLeft, Trash2, Plus, RefreshCw } from "lucide-react";
-import { addSupabaseRequest, useHotelBranding } from "@/utils/store";
+import { ShoppingCart, CheckCircle, ArrowLeft, Trash2, Plus, RefreshCw, Utensils } from "lucide-react";
+import { addSupabaseRequest, useHotelBranding, useSupabaseMenuItems } from "@/utils/store";
 import { useGuestRoom } from "../GuestAuthWrapper";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
@@ -14,6 +14,7 @@ export default function RestaurantPage() {
     const hotelSlug = params?.hotel_slug as string;
     const { branding } = useHotelBranding(hotelSlug);
     const { roomNumber } = useGuestRoom();
+    const { menuItems, loading } = useSupabaseMenuItems(branding?.id);
 
     const [cart, setCart] = useState<{ id: string; title: string; price: number }[]>([]);
     const [isOrdering, setIsOrdering] = useState(false);
@@ -22,36 +23,14 @@ export default function RestaurantPage() {
 
     const [activeCategory, setActiveCategory] = useState<string>("All Day Snacks");
 
-    const menuCategories = [
-        {
-            name: "Breakfast",
-            items: [
-                { id: "b1", title: "Continental Breakfast", description: "Fresh pastries, tropical fruits, yogurt, and choice of juice.", price: 16.0, image: "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?q=80&w=300&h=300&auto=format&fit=crop" },
-                { id: "b2", title: "Eggs Benedict", description: "Poached eggs, Canadian bacon, hollandaise on toasted muffin.", price: 19.5, image: "https://images.unsplash.com/photo-1608039755401-742074f0548d?q=80&w=300&h=300&auto=format&fit=crop" },
-            ]
-        },
-        {
-            name: "Lunch",
-            items: [
-                { id: "l1", title: "Caesar Salad", description: "Crisp romaine, croutons, parmesan, creamy dressing.", price: 14.5, image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=300&h=300&auto=format&fit=crop" },
-                { id: "l2", title: "Club Sandwich", description: "Triple decker with chicken, bacon, lettuce, and tomato.", price: 18.0, image: "https://images.unsplash.com/photo-1528733918455-5a59687cedf0?q=80&w=300&h=300&auto=format&fit=crop" },
-            ]
-        },
-        {
-            name: "Dinner",
-            items: [
-                { id: "d1", title: "Margherita Pizza", description: "Fresh mozzarella, tomatoes, and basil on thin crust.", price: 22.0, image: "https://images.unsplash.com/photo-1574071318508-1cdbad80ad50?q=80&w=300&h=300&auto=format&fit=crop" },
-                { id: "d2", title: "Beef Burger", description: "Wagyu beef patty, cheddar, caramelized onions, fries.", price: 24.0, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop" },
-            ]
-        },
-        {
-            name: "All Day Snacks",
-            items: [
-                { id: "s1", title: "Truffle Fries", description: "Golden fries with truffle oil and parmesan cheese.", price: 12.0, image: "https://images.unsplash.com/photo-1573081123103-3dd749665b9a?q=80&w=300&h=300&auto=format&fit=crop" },
-                { id: "s2", title: "Mixed Nuts", description: "A selection of premium roasted and salted nuts.", price: 8.5, image: "https://images.unsplash.com/photo-1536620139045-e2f92a0522f4?q=80&w=300&h=300&auto=format&fit=crop" },
-            ]
-        }
-    ];
+    const categories = ["Breakfast", "Lunch", "Dinner", "All Day Snacks"];
+
+    const menuCategories = useMemo(() => {
+        return categories.map(cat => ({
+            name: cat,
+            items: menuItems.filter(item => item.category === cat && item.is_available)
+        }));
+    }, [menuItems]);
 
     const isCategoryActive = (category: string) => {
         if (category === "All Day Snacks") return { active: true };
@@ -78,8 +57,8 @@ export default function RestaurantPage() {
 
     // Set default category based on current time
     React.useEffect(() => {
-        const categories = ["Breakfast", "Lunch", "Dinner"];
-        for (const cat of categories) {
+        const checkCategories = ["Breakfast", "Lunch", "Dinner"];
+        for (const cat of checkCategories) {
             if (isCategoryActive(cat).active) {
                 setActiveCategory(cat);
                 return;
@@ -232,15 +211,33 @@ export default function RestaurantPage() {
                             </div>
                         )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
-                        {currentCategoryData?.items.map((item) => (
-                            <MenuCard
-                                key={item.id}
-                                {...item}
-                                onAdd={() => addToCart(item)}
-                            />
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div className="py-20 text-center">
+                            <RefreshCw className="w-10 h-10 animate-spin text-[#FFBC0D] mx-auto mb-4" />
+                            <p className="text-slate-400 font-black uppercase tracking-widest text-[10px]">Loading Gastronomy...</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                            {currentCategoryData?.items.length === 0 ? (
+                                <div className="col-span-full py-20 text-center">
+                                    <Utensils className="w-10 h-10 text-slate-200 mx-auto mb-4" />
+                                    <p className="text-slate-400 font-bold">No creations available in this category yet.</p>
+                                </div>
+                            ) : (
+                                currentCategoryData?.items.map((item) => (
+                                    <MenuCard
+                                        key={item.id}
+                                        id={item.id}
+                                        title={item.title}
+                                        description={item.description}
+                                        price={item.price}
+                                        image={item.image_url}
+                                        onAdd={() => addToCart(item)}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    )}
                 </section>
             </div>
 
@@ -341,7 +338,7 @@ export default function RestaurantPage() {
                                     <RefreshCw className="w-8 h-8 animate-spin" />
                                 ) : (
                                     "Confirm & Order"
-                                )}
+                                ) || "Confirm & Order"}
                             </button>
                         </motion.div>
                     </>
