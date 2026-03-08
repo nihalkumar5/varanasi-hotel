@@ -26,6 +26,8 @@ export interface HotelBranding {
     lateCheckoutCharge1?: string;
     lateCheckoutCharge2?: string;
     lateCheckoutCharge3?: string;
+    checkoutMessage?: string;
+    googleReviewLink?: string;
 }
 
 export interface SpecialOffer {
@@ -294,6 +296,15 @@ export const getAllHotelStaff = async (hotelId: string): Promise<{ data: UserPro
 };
 
 export const updateStaffRole = async (profileId: string, role: string): Promise<{ error: any }> => {
+    if (isDemoMode()) {
+        console.log("Demo Mode: updateStaffRole called (not persisted)");
+        return {
+            error: {
+                message: "Application is in Demo Mode. To actually update staff roles, please connect your Supabase database in .env.local",
+                code: "DEMO_MODE"
+            }
+        };
+    }
     try {
         const { error } = await supabase
             .from('profiles')
@@ -536,6 +547,8 @@ export function useHotelBranding(slug: string | undefined) {
                     lateCheckoutCharge1: data.late_checkout_charge_1,
                     lateCheckoutCharge2: data.late_checkout_charge_2,
                     lateCheckoutCharge3: data.late_checkout_charge_3,
+                    checkoutMessage: data.checkout_message,
+                    googleReviewLink: data.google_review_link,
                 });
             } else {
                 // Mock branding fallback
@@ -605,6 +618,8 @@ export function useHotelBranding(slug: string | undefined) {
                     lateCheckoutCharge1: data.late_checkout_charge_1,
                     lateCheckoutCharge2: data.late_checkout_charge_2,
                     lateCheckoutCharge3: data.late_checkout_charge_3,
+                    checkoutMessage: data.checkout_message,
+                    googleReviewLink: data.google_review_link,
                 });
             })
             .subscribe();
@@ -820,6 +835,8 @@ export async function saveHotelBranding(id: string, updates: Partial<HotelBrandi
             late_checkout_charge_1: updates.lateCheckoutCharge1,
             late_checkout_charge_2: updates.lateCheckoutCharge2,
             late_checkout_charge_3: updates.lateCheckoutCharge3,
+            checkout_message: updates.checkoutMessage,
+            google_review_link: updates.googleReviewLink,
         })
         .eq('id', id);
 
@@ -1085,6 +1102,30 @@ export async function checkOutRoomByNumber(hotelId: string, roomNumber: string) 
         .eq('room_number', roomNumber);
 
     if (error) console.error("Error checking out room by number:", error);
+    return { data, error };
+}
+
+/**
+ * Get the currently active guest for a given room
+ */
+export async function getActiveGuestByRoom(hotelId: string, roomNumber: string) {
+    if (isDemoMode()) {
+        const guests = getDemoGuests(hotelId);
+        const guest = guests.find(g => g.room_number === roomNumber && g.status === 'active');
+        return { data: guest || null, error: null };
+    }
+
+    const { data, error } = await supabase
+        .from('guests')
+        .select('*')
+        .eq('hotel_id', hotelId)
+        .eq('room_number', roomNumber)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) console.error("Error fetching active guest:", error);
     return { data, error };
 }
 

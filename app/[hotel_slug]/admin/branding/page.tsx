@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useHotelBranding, saveHotelBranding, HotelBranding, useSpecialOffers, saveSpecialOffer, deleteSpecialOffer, SpecialOffer } from "@/utils/store";
-import { Palette, Layout, Type, Save, Check, RefreshCw, Phone, Plus, Trash2, Image as ImageIcon, Tag, Utensils, Clock } from "lucide-react";
+import { Palette, Layout, Type, Save, Check, RefreshCw, Phone, Plus, Trash2, Image as ImageIcon, Tag, Utensils, Clock, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function BrandingPage() {
@@ -341,6 +341,38 @@ export default function BrandingPage() {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                        <div className="flex items-center mb-6">
+                            <MessageSquare className="w-5 h-5 text-blue-600 mr-3" style={{ color: config.primaryColor }} />
+                            <h2 className="text-xl font-black text-slate-900">Checkout Feedback</h2>
+                        </div>
+                        <p className="text-xs text-slate-400 font-medium mb-6">Automate review requests. This message with your Google link will open on WhatsApp when a guest is checked out.</p>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">WhatsApp Feedback Message</label>
+                                <textarea
+                                    placeholder="e.g. Thank you for staying with us! We hope you had a great time. We'd love to hear your feedback."
+                                    value={config.checkoutMessage || ""}
+                                    onChange={(e) => setConfig({ ...config, checkoutMessage: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 outline-none focus:ring-2 transition-all min-h-[100px] resize-none text-sm"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-2 font-medium italic">Note: The Google Review Link will be appended to the end of this message automatically.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Google Review / Profile Link</label>
+                                <input
+                                    type="text"
+                                    placeholder="https://g.page/r/your-profile-id/review"
+                                    value={config.googleReviewLink || ""}
+                                    onChange={(e) => setConfig({ ...config, googleReviewLink: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 outline-none focus:ring-2 transition-all text-sm"
+                                />
                             </div>
                         </div>
                     </section>

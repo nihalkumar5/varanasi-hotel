@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS hotels (
     late_checkout_charge_1 TEXT DEFAULT 'Complimentary',
     late_checkout_charge_2 TEXT DEFAULT '₹1,500',
     late_checkout_charge_3 TEXT DEFAULT 'Full Day Rate',
+    checkout_message TEXT,
+    google_review_link TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

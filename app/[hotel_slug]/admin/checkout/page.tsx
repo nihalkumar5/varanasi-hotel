@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
-import { useSupabaseRequests, HotelRequest, useHotelBranding, settleRoomRequests, checkOutRoomByNumber } from "@/utils/store";
+import { useSupabaseRequests, HotelRequest, useHotelBranding, settleRoomRequests, checkOutRoomByNumber, getActiveGuestByRoom } from "@/utils/store";
 import { Receipt, CreditCard, CheckCircle, ChevronRight, Search, Printer, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HotelLogo } from "@/components/HotelLogo";
@@ -46,6 +46,9 @@ export default function AdminCheckoutPage() {
         if (!branding?.id) return;
         setIsSettling(true);
 
+        // 0. Get guest info BEFORE they are cleared from the room
+        const { data: guestData } = await getActiveGuestByRoom(branding.id, roomNumber);
+
         // 1. Mark financial requests as paid
         await settleRoomRequests(branding.id, roomNumber);
 
@@ -53,6 +56,15 @@ export default function AdminCheckoutPage() {
         await checkOutRoomByNumber(branding.id, roomNumber);
 
         setIsSettling(false);
+
+        // 3. Trigger WhatsApp feedback if configured and guest has a phone
+        if (guestData?.phone && (branding.checkoutMessage || branding.googleReviewLink)) {
+            const message = `${branding.checkoutMessage || "Thank you for staying with us! Please share your feedback: "}\n\n${branding.googleReviewLink || ""}`.trim();
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${guestData.phone.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
         // Removed setSelectedRoom(null) so it doesn't disappear immediately
     };
 
