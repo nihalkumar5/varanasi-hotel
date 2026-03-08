@@ -27,7 +27,6 @@ export default function AdminLayout({
         { name: "Rooms & QR", href: `/${hotelSlug}/admin/rooms`, icon: <Hotel className="w-5 h-5" /> },
         { name: "Menu Items", href: `/${hotelSlug}/admin/menu`, icon: <Utensils className="w-5 h-5" /> },
         { name: "Hotel Branding", href: `/${hotelSlug}/admin/branding`, icon: <Settings className="w-5 h-5" /> },
-        { name: "Staff Management", href: `/${hotelSlug}/admin/staff`, icon: <Users className="w-5 h-5" /> },
     ];
 
     if (isLoginPage) {
@@ -52,8 +51,8 @@ export default function AdminLayout({
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 group ${isActive
-                                        ? 'bg-red-50 text-red-600 shadow-sm shadow-red-100'
-                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-red-50 text-red-600 shadow-sm shadow-red-100'
+                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                     }`}
                             >
                                 <div className={`mr-3.5 transition-colors duration-200 ${isActive ? 'text-red-600' : 'text-slate-400 group-hover:text-slate-900'}`}>

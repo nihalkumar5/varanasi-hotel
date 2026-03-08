@@ -88,6 +88,20 @@ export async function middleware(request: NextRequest) {
             .single();
 
         if (error || !profile) {
+            // PROACTIVE FIX: Check if the slug was 'geeta-hotel' but should be 'geeta'
+            if (hotelSlug.endsWith('-hotel')) {
+                const altSlug = hotelSlug.replace(/-hotel$/, '');
+                const { data: altProfile } = await supabase
+                    .from('profiles')
+                    .select('*, hotels!inner(slug)')
+                    .eq('user_id', session.user.id)
+                    .eq('hotels.slug', altSlug)
+                    .single();
+
+                if (altProfile) {
+                    return NextResponse.redirect(new URL(`/${altSlug}/admin/dashboard`, request.url));
+                }
+            }
             return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=unauthorized`, request.url));
         }
     }
