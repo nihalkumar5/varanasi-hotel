@@ -34,6 +34,8 @@ export default function GuestDashboard() {
     const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
     const [scrolled, setScrolled] = useState(false);
     const [showTeaOptions, setShowTeaOptions] = useState(false);
+    const [showCleaningOptions, setShowCleaningOptions] = useState(false);
+    const [showCleaningTimePicker, setShowCleaningTimePicker] = useState(false);
 
     const [submittingType, setSubmittingType] = React.useState<string | null>(null);
     const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; isVisible: boolean }>({
@@ -280,7 +282,72 @@ export default function GuestDashboard() {
                         ].map((req, i) => (
                             <div key={i} className="relative group">
                                 <AnimatePresence mode="wait">
-                                    {req.type === "TeaCoffee" && showTeaOptions ? (
+                                    {req.type === "Cleaning" && showCleaningOptions ? (
+                                        <motion.div
+                                            key="cleaning-options"
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            className="bg-slate-900 p-4 rounded-[2.5rem] flex flex-col justify-between min-h-[125px] border border-emerald-500/50 shadow-2xl relative overflow-hidden"
+                                        >
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest pl-2">Cleaning Time</p>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowCleaningOptions(false);
+                                                        setShowCleaningTimePicker(false);
+                                                    }}
+                                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-slate-400"
+                                                >
+                                                    <AlertCircle className="w-4 h-4 rotate-45" />
+                                                </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {!showCleaningTimePicker ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                handleQuickRequest("Cleaning", "Immediate / ASAP");
+                                                                setShowCleaningOptions(false);
+                                                            }}
+                                                            className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-emerald-500/20"
+                                                        >
+                                                            <Sparkles className="w-3 h-3 mr-2 text-emerald-500" /> Immediately
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setShowCleaningTimePicker(true)}
+                                                            className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
+                                                        >
+                                                            <Clock className="w-3 h-3 mr-2 text-emerald-500" /> Time Schedule
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {["10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM"].map((t) => (
+                                                            <button
+                                                                key={t}
+                                                                onClick={() => {
+                                                                    handleQuickRequest("Cleaning", `Scheduled for ${t}`);
+                                                                    setShowCleaningOptions(false);
+                                                                    setShowCleaningTimePicker(false);
+                                                                }}
+                                                                className="py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-bold transition-all border border-white/5"
+                                                            >
+                                                                {t}
+                                                            </button>
+                                                        ))}
+                                                        <button
+                                                            onClick={() => setShowCleaningTimePicker(false)}
+                                                            className="col-span-2 text-[8px] font-black uppercase text-slate-500 hover:text-white transition-colors"
+                                                        >
+                                                            Back
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    ) : req.type === "TeaCoffee" && showTeaOptions ? (
                                         <motion.div
                                             key="options"
                                             initial={{ opacity: 0, scale: 0.95 }}
@@ -327,6 +394,8 @@ export default function GuestDashboard() {
                                             onClick={() => {
                                                 if (req.type === "TeaCoffee") {
                                                     setShowTeaOptions(true);
+                                                } else if (req.type === "Cleaning") {
+                                                    setShowCleaningOptions(true);
                                                 } else {
                                                     handleQuickRequest(req.type, req.notes);
                                                 }
