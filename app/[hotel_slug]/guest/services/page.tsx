@@ -26,6 +26,8 @@ function ServiceContent() {
         laundry: "Laundry Service",
         housekeeping: "Housekeeping",
         reception: "Front Desk",
+        maintenance: "Maintenance Support",
+        late_checkout: "Late Checkout Request",
         general: "General Request"
     };
 
