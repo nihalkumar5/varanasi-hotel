@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, CheckCircle2, Loader2, Sparkles, RefreshCcw } from "l
 import { useRouter, useParams } from "next/navigation";
 import { StatusBadge, RequestStatus } from "@/components/StatusBadge";
 import { useSupabaseRequests, useHotelBranding } from "@/utils/store";
+import { useGuestRoom } from "../GuestAuthWrapper";
 import { playGuestNotification, playSuccessNotification, initAudioContext } from "@/utils/audio";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,8 +13,9 @@ export default function StatusPage() {
     const router = useRouter();
     const params = useParams();
     const hotelSlug = params?.hotel_slug as string;
+    const { roomNumber } = useGuestRoom();
     const { branding } = useHotelBranding(hotelSlug);
-    const requests = useSupabaseRequests(branding?.id);
+    const requests = useSupabaseRequests(branding?.id, roomNumber);
     const prevRequestsRef = useRef(requests);
 
     useEffect(() => {

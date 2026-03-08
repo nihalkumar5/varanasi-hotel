@@ -25,10 +25,10 @@ export default function GuestDashboard() {
     const params = useParams();
     const hotelSlug = params?.hotel_slug as string;
 
+    const { roomNumber, checkoutDate, checkoutTime, numGuests } = useGuestRoom();
     const { branding, loading } = useHotelBranding(hotelSlug);
     const { offers, loading: loadingOffers } = useSpecialOffers(branding?.id);
-    const requests = useSupabaseRequests(branding?.id);
-    const { roomNumber, checkoutDate, checkoutTime, numGuests } = useGuestRoom();
+    const requests = useSupabaseRequests(branding?.id, roomNumber);
 
     const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
     const [scrolled, setScrolled] = useState(false);

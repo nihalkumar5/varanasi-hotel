@@ -328,7 +328,7 @@ export function useHotelBranding(slug: string | undefined) {
 /**
  * Hook to fetch and subscribe to requests for a specific hotel in real-time
  */
-export function useSupabaseRequests(hotelId?: string) {
+export function useSupabaseRequests(hotelId?: string, roomNumber?: string) {
     const [requests, setRequests] = useState<HotelRequest[]>([]);
 
     useEffect(() => {
@@ -336,15 +336,25 @@ export function useSupabaseRequests(hotelId?: string) {
 
         const fetchRequests = async () => {
             if (isDemoMode()) {
-                setRequests(getDemoRequests(hotelId));
+                const allRequests = getDemoRequests(hotelId);
+                if (roomNumber) {
+                    setRequests(allRequests.filter(r => r.room === roomNumber));
+                } else {
+                    setRequests(allRequests);
+                }
                 return;
             }
 
-            const { data, error } = await supabase
+            let query = supabase
                 .from('requests')
                 .select('*')
-                .eq('hotel_id', hotelId)
-                .order('timestamp', { ascending: false });
+                .eq('hotel_id', hotelId);
+
+            if (roomNumber) {
+                query = query.eq('room', roomNumber);
+            }
+
+            const { data, error } = await query.order('timestamp', { ascending: false });
 
             if (data) setRequests(data);
         };
@@ -354,7 +364,12 @@ export function useSupabaseRequests(hotelId?: string) {
         if (isDemoMode()) {
             const handleUpdate = (e: any) => {
                 if (e.detail?.hotelId === hotelId || e.type === 'storage') {
-                    setRequests(getDemoRequests(hotelId));
+                    const allReqs = getDemoRequests(hotelId);
+                    if (roomNumber) {
+                        setRequests(allReqs.filter(r => r.room === roomNumber));
+                    } else {
+                        setRequests(allReqs);
+                    }
                 }
             };
             window.addEventListener('demo_requests_updated', handleUpdate);
