@@ -272,7 +272,7 @@ export default function GuestDashboard() {
             >
                 {/* 2. Quick Actions Grid (Unified Luxury Palette) */}
                 <motion.section variants={item}>
-                    <div className="bg-white/45 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/40 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] relative overflow-hidden group">
+                    <div className="bg-slate-900/23 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] relative overflow-hidden group">
                         {/* Subtle Gradient Glow */}
                         <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full group-hover:bg-amber-500/10 transition-colors duration-700" />
 
