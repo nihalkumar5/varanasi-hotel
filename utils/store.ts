@@ -735,7 +735,8 @@ export async function checkOutRoom(roomId: string, hotelId: string) {
             booking_pin: null,
             checkout_date: null,
             checkout_time: null,
-            num_guests: null
+            num_guests: null,
+            checked_in_at: null
         })
         .eq('id', roomId)
         .eq('hotel_id', hotelId);
@@ -770,7 +771,8 @@ export async function checkOutRoomByNumber(hotelId: string, roomNumber: string) 
             booking_pin: null,
             checkout_date: null,
             checkout_time: null,
-            num_guests: null
+            num_guests: null,
+            checked_in_at: null
         })
         .eq('hotel_id', hotelId)
         .eq('room_number', roomNumber);
