@@ -16,6 +16,7 @@ export function BottomNav() {
     const items = [
         { href: `/${hotelSlug}/guest/dashboard`, icon: Home, label: "Home", key: "dashboard" },
         { href: `/${hotelSlug}/guest/services`, icon: Grip, label: "Services", key: "services" },
+        { href: `/${hotelSlug}/guest/status`, icon: Bell, label: "Requests", key: "status" },
         { href: `/${hotelSlug}/guest/info`, icon: Info, label: "Profile", key: "info" },
     ];
 
