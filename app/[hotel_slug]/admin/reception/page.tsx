@@ -1,14 +1,20 @@
 "use client";
 
-import { DepartmentDashboard } from "@/components/DepartmentDashboard";
+import { useParams } from "next/navigation";
+import { StaffDashboard } from "@/components/StaffDashboard";
 import { ConciergeBell } from "lucide-react";
 
 export default function ReceptionPage() {
+    const params = useParams();
+    const hotelSlug = params?.hotel_slug as string;
+
     return (
-        <DepartmentDashboard
+        <StaffDashboard
+            hotelSlug={hotelSlug}
             department="reception"
-            title="Reception"
-            icon={<ConciergeBell className="w-6 h-6" />}
+            title="Reception Board"
+            allowedTypes={["Checkout", "Information", "Taxi", "Wakeup", "General"]}
+            icon={<ConciergeBell className="w-8 h-8 text-blue-500" />}
         />
     );
 }
