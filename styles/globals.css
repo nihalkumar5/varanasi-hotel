@@ -58,3 +58,82 @@ h3,
 .font-serif {
   font-family: var(--font-playfair), serif;
 }
+
+/* Print Utilities */
+@media print {
+
+  .no-print,
+  aside,
+  nav,
+  button,
+  .bottom-nav,
+  header {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  .print-area {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: block !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+
+  /* Force white background for printed elements */
+  .bg-white,
+  .bg-slate-50,
+  .bg-slate-900 {
+    background-color: white !important;
+    background-image: none !important;
+    color: black !important;
+  }
+
+  /* Specific background-color force if needed for some elements */
+  [style*="background-color"] {
+    background-color: transparent !important;
+    color: black !important;
+  }
+
+  .text-white,
+  .text-slate-300,
+  .text-slate-400 {
+    color: black !important;
+  }
+
+  /* Ensure the print area is visible and not clipped */
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+
+  /* Hide everything by default, then show our print-area */
+  body>*:not(main) {
+    display: none !important;
+  }
+
+  header,
+  footer,
+  .sidebar,
+  .bottom-nav {
+    display: none !important;
+  }
+}

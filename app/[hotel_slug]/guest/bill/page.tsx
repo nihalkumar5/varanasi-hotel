@@ -18,6 +18,11 @@ export default function BillPage() {
     const [isCheckingOut, setIsCheckingOut] = useState(false);
     const [checkoutComplete, setCheckoutComplete] = useState(false);
 
+    const handlePrint = () => {
+        console.log("Printing invoice...");
+        window.print();
+    };
+
     // Filter requests for the current room and session
     const roomRequests = requests.filter(r =>
         r.room === roomNumber &&
@@ -73,94 +78,96 @@ export default function BillPage() {
 
     return (
         <div className="pb-32">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-8 no-print">
                 <button onClick={() => router.back()} className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-sm active:scale-90 transition-transform">
                     <ArrowLeft className="w-5 h-5 text-slate-800" />
                 </button>
                 <h1 className="text-xl font-black text-slate-900">Room Invoice</h1>
                 <button
-                    onClick={() => window.print()}
+                    onClick={handlePrint}
                     className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors no-print"
                 >
                     <Download className="w-5 h-5" />
                 </button>
             </div>
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-900 rounded-[2.5rem] p-8 text-white mb-10 relative overflow-hidden"
-                style={{ backgroundColor: branding?.primaryColor || "#0f172a" }}
-            >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-                <div className="relative z-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Total Outstanding</p>
-                    <h2 className="text-5xl font-black tracking-tighter mb-6">${grandTotal.toFixed(2)}</h2>
-                    <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                        <div className="flex items-center">
-                            <Receipt className="w-4 h-4 mr-2 text-blue-400" />
-                            <span className="text-sm font-bold text-slate-300">Room {roomNumber}</span>
-                        </div>
-                        <span className="text-[10px] font-black bg-blue-600 px-3 py-1 rounded-full" style={{ backgroundColor: branding?.accentColor }}>ACTIVE</span>
-                    </div>
-                </div>
-            </motion.div>
-
-            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 px-2">Order History</h3>
-
-            <div className="space-y-4 mb-10">
-                {roomRequests.length > 0 ? (
-                    roomRequests.map((req, index) => (
-                        <motion.div
-                            key={req.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="bg-white p-5 rounded-3xl border border-slate-50 flex items-center justify-between group"
-                        >
+            <div className="print-area">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-slate-900 rounded-[2.5rem] p-8 text-white mb-10 relative overflow-hidden"
+                    style={{ backgroundColor: branding?.primaryColor || "#0f172a" }}
+                >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Total Outstanding</p>
+                        <h2 className="text-5xl font-black tracking-tighter mb-6">${grandTotal.toFixed(2)}</h2>
+                        <div className="flex items-center justify-between pt-6 border-t border-white/10">
                             <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center mr-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                    <Receipt className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-800 text-sm">{req.type}</h4>
-                                    {req.notes && (
-                                        <p className="text-[10px] text-blue-600 font-bold mt-1 uppercase tracking-tighter bg-blue-50 px-2 py-0.5 rounded-md inline-block">
-                                            {req.notes}
-                                        </p>
-                                    )}
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">{req.time}</p>
-                                </div>
+                                <Receipt className="w-4 h-4 mr-2 text-blue-400" />
+                                <span className="text-sm font-bold text-slate-300">Room {roomNumber}</span>
                             </div>
-                            <span className="font-black text-slate-900">${(req.total || 0).toFixed(2)}</span>
-                        </motion.div>
-                    ))
-                ) : (
-                    <div className="py-10 text-center border-2 border-dashed border-slate-100 rounded-[2rem]">
-                        <p className="text-slate-400 font-bold italic">No billable services yet.</p>
+                            <span className="text-[10px] font-black bg-blue-600 px-3 py-1 rounded-full" style={{ backgroundColor: branding?.accentColor }}>ACTIVE</span>
+                        </div>
                     </div>
-                )}
-            </div>
+                </motion.div>
 
-            <div className="bg-white rounded-[2rem] p-6 border border-slate-50 space-y-3 mb-10">
-                <div className="flex justify-between text-sm font-bold">
-                    <span className="text-slate-400">Subtotal</span>
-                    <span className="text-slate-900">${totalAmount.toFixed(2)}</span>
+                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 px-2">Order History</h3>
+
+                <div className="space-y-4 mb-10">
+                    {roomRequests.length > 0 ? (
+                        roomRequests.map((req, index) => (
+                            <motion.div
+                                key={req.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className="bg-white p-5 rounded-3xl border border-slate-50 flex items-center justify-between group"
+                            >
+                                <div className="flex items-center">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center mr-4 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                        <Receipt className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 text-sm">{req.type}</h4>
+                                        {req.notes && (
+                                            <p className="text-[10px] text-blue-600 font-bold mt-1 uppercase tracking-tighter bg-blue-50 px-2 py-0.5 rounded-md inline-block">
+                                                {req.notes}
+                                            </p>
+                                        )}
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">{req.time}</p>
+                                    </div>
+                                </div>
+                                <span className="font-black text-slate-900">${(req.total || 0).toFixed(2)}</span>
+                            </motion.div>
+                        ))
+                    ) : (
+                        <div className="py-10 text-center border-2 border-dashed border-slate-100 rounded-[2rem]">
+                            <p className="text-slate-400 font-bold italic">No billable services yet.</p>
+                        </div>
+                    )}
                 </div>
-                <div className="flex justify-between text-sm font-bold">
-                    <span className="text-slate-400">Taxes (12%)</span>
-                    <span className="text-slate-900">${taxAmount.toFixed(2)}</span>
-                </div>
-                <div className="pt-3 border-t border-slate-50 flex justify-between items-center">
-                    <span className="text-lg font-black text-slate-900">Grand Total</span>
-                    <span className="text-2xl font-black text-blue-600" style={{ color: branding?.primaryColor }}>${grandTotal.toFixed(2)}</span>
+
+                <div className="bg-white rounded-[2rem] p-6 border border-slate-50 space-y-3 mb-10">
+                    <div className="flex justify-between text-sm font-bold">
+                        <span className="text-slate-400">Subtotal</span>
+                        <span className="text-slate-900">${totalAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold">
+                        <span className="text-slate-400">Taxes (12%)</span>
+                        <span className="text-slate-900">${taxAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="pt-3 border-t border-slate-50 flex justify-between items-center">
+                        <span className="text-lg font-black text-slate-900">Grand Total</span>
+                        <span className="text-2xl font-black text-blue-600" style={{ color: branding?.primaryColor }}>${grandTotal.toFixed(2)}</span>
+                    </div>
                 </div>
             </div>
 
             <button
                 onClick={handleCheckout}
                 disabled={isCheckingOut || grandTotal === 0}
-                className="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-slate-200 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:active:scale-100"
+                className="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-slate-200 active:scale-95 transition-all flex items-center justify-center disabled:opacity-50 disabled:active:scale-100 no-print"
                 style={{ backgroundColor: branding?.primaryColor }}
             >
                 {isCheckingOut ? (

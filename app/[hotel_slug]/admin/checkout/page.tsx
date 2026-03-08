@@ -17,6 +17,11 @@ export default function AdminCheckoutPage() {
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
     const [isSettling, setIsSettling] = useState(false);
 
+    const handlePrint = () => {
+        console.log("Printing Admin Invoice...");
+        window.print();
+    };
+
     // Group billing by room
     // Side bar shows rooms that have unpaid items
     const pendingBillRooms = Array.from(new Set(requests.filter(r => (r.price || 0) > 0 && !r.is_paid).map(r => r.room)));
@@ -134,7 +139,7 @@ export default function AdminCheckoutPage() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => window.print()}
+                                        onClick={handlePrint}
                                         className="flex items-center px-6 py-3 bg-slate-50 text-slate-900 font-black rounded-2xl hover:bg-slate-100 transition-colors border border-slate-100 no-print"
                                     >
                                         <Printer className="w-5 h-5 mr-3" /> Print Invoice
