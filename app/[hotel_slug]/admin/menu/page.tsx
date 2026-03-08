@@ -176,7 +176,7 @@ export default function MenuPage() {
                                     <div>
                                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category</label>
                                         <select
-                                            value={editingItem?.category}
+                                            value={editingItem?.category ?? "All Day Snacks"}
                                             onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
                                             className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
                                         >
@@ -188,7 +188,7 @@ export default function MenuPage() {
                                         <input
                                             type="number"
                                             step="0.01"
-                                            value={editingItem?.price}
+                                            value={editingItem?.price ?? ""}
                                             onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
                                             className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
                                             placeholder="12.00"
@@ -201,7 +201,7 @@ export default function MenuPage() {
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Item Title</label>
                                     <input
                                         type="text"
-                                        value={editingItem?.title}
+                                        value={editingItem?.title ?? ""}
                                         onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
                                         className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
                                         placeholder="e.g. Signature Truffle Pizza"
