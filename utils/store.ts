@@ -809,14 +809,22 @@ export async function verifyBookingPin(hotelId: string, roomNumber: string, pin:
         .eq('room_number', roomNumber)
         .eq('booking_pin', pin)
         .eq('is_occupied', true)
-        .maybeSingle();
+        .limit(1);
 
-    if (!data) {
+    if (error) {
+        console.error("AuthStore: Supabase PIN verification error:", error.message);
+        return { success: false, data: null };
+    }
+
+    const roomData = data && data.length > 0 ? data[0] : null;
+
+    if (!roomData) {
         console.warn("AuthStore: No matching occupied room found with this PIN.");
         return { success: false, data: null };
     }
+
     console.log("AuthStore: Supabase PIN verification successful");
-    return { success: true, data };
+    return { success: true, data: roomData };
 }
 
 /**
