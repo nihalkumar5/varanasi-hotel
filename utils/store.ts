@@ -337,10 +337,10 @@ export function useHotelBranding(slug: string | undefined) {
             } else {
                 // Mock branding fallback
                 const demoHotels: Record<string, any> = {
-                    'grand-royale': { id: '1', name: 'The Grand Royale', primaryColor: '#1e293b', accentColor: '#2563eb' },
-                    'azure-bay': { id: '2', name: 'Azure Bay Resort', primaryColor: '#0891b2', accentColor: '#0ea5e9' },
-                    'mountain-lodge': { id: '3', name: 'Mountain Lodge', primaryColor: '#166534', accentColor: '#22c55e' },
-                    'babylon': { id: '4', name: 'Babylon Raipur', primaryColor: '#1e3a8a', accentColor: '#3b82f6' }
+                    'grand-royale': { id: '00000000-0000-0000-0000-000000000001', name: 'The Grand Royale', primaryColor: '#1e293b', accentColor: '#2563eb' },
+                    'azure-bay': { id: '00000000-0000-0000-0000-000000000002', name: 'Azure Bay Resort', primaryColor: '#0891b2', accentColor: '#0ea5e9' },
+                    'mountain-lodge': { id: '00000000-0000-0000-0000-000000000003', name: 'Mountain Lodge', primaryColor: '#166534', accentColor: '#22c55e' },
+                    'babylon': { id: '00000000-0000-0000-0000-000000000004', name: 'Babylon Raipur', primaryColor: '#1e3a8a', accentColor: '#3b82f6' }
                 };
 
                 if (demoHotels[slug]) {

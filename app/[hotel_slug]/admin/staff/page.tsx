@@ -20,6 +20,10 @@ export default function StaffManagement() {
         if (!branding?.id) return;
         setLoading(true);
         const { data, error } = await getAllHotelStaff(branding.id);
+        if (error) {
+            console.error("Failed to load staff:", error);
+            // Don't alert on UUID mismatch in demo mode to avoid spam, but log it
+        }
         if (data) setStaff(data);
         setLoading(false);
     };
