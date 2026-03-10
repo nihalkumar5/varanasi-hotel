@@ -221,7 +221,7 @@ export default function MenuPage() {
 
                                 <div>
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Visual URL (Optional)</label>
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex flex-col space-y-2">
                                         <div className="relative flex-1">
                                             <input
                                                 type="text"
@@ -232,6 +232,9 @@ export default function MenuPage() {
                                             />
                                             <ImageIcon className="absolute left-3 top-3.5 w-4 h-4 text-slate-300" />
                                         </div>
+                                        <p className="text-[10px] text-blue-500 font-bold italic ml-1 flex items-center gap-1">
+                                            <RefreshCw className="w-3 h-3" /> Tip: Google Drive share links work automatically!
+                                        </p>
                                     </div>
                                 </div>
 

@@ -126,6 +126,24 @@ export const sanitizePhoneForWA = (phone: string) => {
     return numeric;
 };
 
+/**
+ * Converts a Google Drive share link to a direct image URL
+ */
+export const convertGDriveLink = (url: string) => {
+    if (!url) return url;
+    // Handle drive.google.com/file/d/.../view
+    const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+        return `https://lh3.googleusercontent.com/u/0/d/${fileIdMatch[1]}`;
+    }
+    // Handle drive.google.com/open?id=...
+    const idMatch = url.match(/[?&]id=([^&]+)/);
+    if (url.includes('drive.google.com') && idMatch && idMatch[1]) {
+        return `https://lh3.googleusercontent.com/u/0/d/${idMatch[1]}`;
+    }
+    return url;
+};
+
 const DEMO_ROOMS_KEY = 'antigravity_demo_rooms';
 const DEMO_REQUESTS_KEY = 'antigravity_demo_requests';
 const DEMO_MENU_KEY = 'antigravity_demo_menu';
@@ -846,8 +864,8 @@ export async function saveHotelBranding(id: string, updates: Partial<HotelBrandi
         .from('hotels')
         .update({
             name: updates.name,
-            logo: updates.logo,
-            logo_image: updates.logoImage,
+            logo: convertGDriveLink(updates.logo || ""),
+            logo_image: convertGDriveLink(updates.logoImage || ""),
             primary_color: updates.primaryColor,
             accent_color: updates.accentColor,
             wifi_name: updates.wifiName,
@@ -1266,20 +1284,22 @@ export function useSpecialOffers(hotelId?: string) {
 export async function saveSpecialOffer(hotelId: string, offer: Partial<SpecialOffer>) {
     if (isDemoMode()) return { data: null, error: null };
 
+    const imageUrl = convertGDriveLink(offer.image_url || "");
+
     if (offer.id) {
         return await supabase
             .from('special_offers')
             .update({
                 title: offer.title,
                 description: offer.description,
-                image_url: offer.image_url,
+                image_url: imageUrl,
                 is_active: offer.is_active
             })
             .eq('id', offer.id);
     } else {
         return await supabase
             .from('special_offers')
-            .insert([{ ...offer, hotel_id: hotelId }]);
+            .insert([{ ...offer, image_url: imageUrl, hotel_id: hotelId }]);
     }
 }
 
@@ -1363,16 +1383,19 @@ export function useSupabaseMenuItems(hotelId?: string) {
 export async function saveSupabaseMenuItem(hotelId: string, item: Partial<MenuItem>) {
     if (isDemoMode()) {
         const items = getDemoMenu(hotelId);
+        const imageUrl = convertGDriveLink(item.image_url || "");
         if (item.id) {
-            const updatedItems = items.map(i => i.id === item.id ? { ...i, ...item } as MenuItem : i);
+            const updatedItems = items.map(i => i.id === item.id ? { ...i, ...item, image_url: imageUrl } as MenuItem : i);
             saveDemoMenu(hotelId, updatedItems);
             return { data: null, error: null };
         } else {
-            const newItem = { ...item, id: Math.random().toString(36).substr(2, 9), hotel_id: hotelId } as MenuItem;
+            const newItem = { ...item, id: Math.random().toString(36).substr(2, 9), hotel_id: hotelId, image_url: imageUrl } as MenuItem;
             saveDemoMenu(hotelId, [...items, newItem]);
             return { data: newItem, error: null };
         }
     }
+
+    const imageUrl = convertGDriveLink(item.image_url || "");
 
     if (item.id) {
         const { data, error } = await supabase
@@ -1382,7 +1405,7 @@ export async function saveSupabaseMenuItem(hotelId: string, item: Partial<MenuIt
                 title: item.title,
                 description: item.description,
                 price: item.price,
-                image_url: item.image_url,
+                image_url: imageUrl,
                 is_available: item.is_available
             })
             .eq('id', item.id);
@@ -1394,7 +1417,7 @@ export async function saveSupabaseMenuItem(hotelId: string, item: Partial<MenuIt
     } else {
         const { data, error } = await supabase
             .from('menu_items')
-            .insert([{ ...item, hotel_id: hotelId }]);
+            .insert([{ ...item, image_url: imageUrl, hotel_id: hotelId }]);
         if (error) {
             console.error("Error inserting menu item:", error.message, error);
             if (error.message.includes('not find')) {
