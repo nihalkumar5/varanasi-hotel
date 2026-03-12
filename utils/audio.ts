@@ -25,26 +25,27 @@ export const startAdminAlert = () => {
     if (isAdminAlerting || !audioContext) return;
     isAdminAlerting = true;
 
-    // A discrete, premium pulsing chime (E major triad)
-    const freqs = [329.63, 415.30, 493.88]; // E4, G#4, B4
+    // A mechanical, urgent buzzer sound (Sawtooth wave at 220Hz)
+    const freq = 220; // A3
     const oscillators: OscillatorNode[] = [];
     const gainNode = audioContext.createGain();
 
-    freqs.forEach(freq => {
+    // Use two oscillators with slight detune for a "rougher" buzzer feel
+    [freq, freq + 1].forEach(f => {
         const osc = audioContext!.createOscillator();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, audioContext!.currentTime);
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(f, audioContext!.currentTime);
         osc.connect(gainNode);
         osc.start();
         oscillators.push(osc);
     });
 
-    // Create a periodic pulsing gain envelope (on for 0.4s, off for 0.6s)
+    // Create a fast pulsing gain envelope (0.2s on, 0.2s off)
     const now = audioContext.currentTime;
-    for (let i = 0; i < 300; i++) { // Pulse for 5 mins max
-        const pulseStart = now + (i * 1.0);
-        gainNode.gain.setTargetAtTime(0.4, pulseStart, 0.05);
-        gainNode.gain.setTargetAtTime(0, pulseStart + 0.4, 0.05);
+    for (let i = 0; i < 600; i++) { // Pulse for 5 mins max
+        const pulseStart = now + (i * 0.4);
+        gainNode.gain.setTargetAtTime(0.3, pulseStart, 0.02);
+        gainNode.gain.setTargetAtTime(0, pulseStart + 0.2, 0.02);
     }
 
     gainNode.connect(audioContext.destination);
