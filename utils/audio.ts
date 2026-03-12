@@ -25,28 +25,39 @@ export const startAdminAlert = () => {
     if (isAdminAlerting || !audioContext) return;
     isAdminAlerting = true;
 
-    // A mechanical, urgent buzzer sound (Sawtooth wave at 220Hz)
-    const freq = 220; // A3
+    // Royal Service Chime (C crystalline arpeggio)
+    // C6 (1046.50), E6 (1318.51), G6 (1567.98), C7 (2093.00)
+    const sequence = [1046.50, 1318.51, 1567.98, 2093.00];
     const oscillators: OscillatorNode[] = [];
     const gainNode = audioContext.createGain();
 
-    // Use two oscillators with slight detune for a "rougher" buzzer feel
-    [freq, freq + 1].forEach(f => {
+    const playNote = (freq: number, startTime: number) => {
         const osc = audioContext!.createOscillator();
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(f, audioContext!.currentTime);
-        osc.connect(gainNode);
-        osc.start();
+        const noteGain = audioContext!.createGain();
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, startTime);
+        
+        noteGain.gain.setValueAtTime(0, startTime);
+        noteGain.gain.linearRampToValueAtTime(0.4, startTime + 0.05);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
+        
+        osc.connect(noteGain);
+        noteGain.connect(gainNode);
+        osc.start(startTime);
         oscillators.push(osc);
-    });
+    };
 
-    // Create a fast pulsing gain envelope (0.2s on, 0.2s off)
+    // Create a repeating luxury arpeggio
     const now = audioContext.currentTime;
-    for (let i = 0; i < 600; i++) { // Pulse for 5 mins max
-        const pulseStart = now + (i * 0.4);
-        gainNode.gain.setTargetAtTime(0.3, pulseStart, 0.02);
-        gainNode.gain.setTargetAtTime(0, pulseStart + 0.2, 0.02);
+    for (let i = 0; i < 150; i++) { // Loop for ~5 mins
+        const loopStart = now + (i * 2.0);
+        sequence.forEach((freq, idx) => {
+            playNote(freq, loopStart + (idx * 0.15));
+        });
     }
+
+    gainNode.connect(audioContext.destination);
 
     gainNode.connect(audioContext.destination);
 
