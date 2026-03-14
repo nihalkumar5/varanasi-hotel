@@ -149,14 +149,18 @@ export const convertGDriveLink = (url: string) => {
 const DEMO_ROOMS_KEY = 'antigravity_demo_rooms';
 const DEMO_REQUESTS_KEY = 'antigravity_demo_requests';
 const DEMO_MENU_KEY = 'antigravity_demo_menu';
+const DEMO_OFFERS_KEY = 'antigravity_demo_special_offers';
 
 const getDemoRooms = (hotelId: string): Room[] => {
     if (typeof window === 'undefined') return [];
     const stored = localStorage.getItem(`${DEMO_ROOMS_KEY}_${hotelId}`);
     return stored ? JSON.parse(stored) : [
         { id: 'r1', hotel_id: hotelId, room_number: '101', is_occupied: true, booking_pin: '1234', created_at: new Date().toISOString() },
-        { id: 'r2', hotel_id: hotelId, room_number: '102', is_occupied: false, booking_pin: null, created_at: new Date().toISOString() },
-        { id: 'r3', hotel_id: hotelId, room_number: '201', is_occupied: false, booking_pin: null, created_at: new Date().toISOString() }
+        { id: 'r2', hotel_id: hotelId, room_number: '102', is_occupied: true, booking_pin: '5678', created_at: new Date().toISOString() },
+        { id: 'r3', hotel_id: hotelId, room_number: '103', is_occupied: false, booking_pin: null, created_at: new Date().toISOString() },
+        { id: 'r4', hotel_id: hotelId, room_number: '201', is_occupied: true, booking_pin: '1122', created_at: new Date().toISOString() },
+        { id: 'r5', hotel_id: hotelId, room_number: '202', is_occupied: false, booking_pin: null, created_at: new Date().toISOString() },
+        { id: 'r6', hotel_id: hotelId, room_number: '301', is_occupied: false, booking_pin: null, created_at: new Date().toISOString() }
     ];
 };
 
@@ -242,6 +246,22 @@ const saveDemoMenu = (hotelId: string, items: MenuItem[]) => {
     window.dispatchEvent(new CustomEvent('demo_menu_updated', { detail: { hotelId } }));
 };
 
+const getDemoOffers = (hotelId: string): SpecialOffer[] => {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem(`${DEMO_OFFERS_KEY}_${hotelId}`);
+    return stored ? JSON.parse(stored) : [
+        { id: '1', hotel_id: hotelId, title: '20% Off Spa', description: 'Enjoy our premium spa services at a discount.', image_url: 'https://images.unsplash.com/photo-1544161515-4ae6ce6db87e?auto=format&fit=crop&q=80', is_active: true },
+        { id: '2', hotel_id: hotelId, title: 'Dinner Buffet', description: 'Complementary dinner buffet for all diamond members.', image_url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80', is_active: true },
+        { id: '3', hotel_id: hotelId, title: 'Airport Shuttle', description: 'Book your luxury shuttle transfer to the airport.', image_url: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80', is_active: true }
+    ];
+};
+
+const saveDemoOffers = (hotelId: string, offers: SpecialOffer[]) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(`${DEMO_OFFERS_KEY}_${hotelId}`, JSON.stringify(offers));
+    window.dispatchEvent(new CustomEvent('demo_offers_updated', { detail: { hotelId } }));
+};
+
 // --- Supabase Hooks & Functions ---
 
 /**
@@ -253,13 +273,13 @@ export function useAuth() {
 
     useEffect(() => {
         // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        supabase.auth.getSession().then(({ data: { session } }: { data: { session: any } }) => {
             setUser(session?.user ?? null);
             setLoading(false);
         });
 
         // Listen for changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
             setUser(session?.user ?? null);
             setLoading(false);
         });
@@ -642,7 +662,7 @@ export function useHotelBranding(slug: string | undefined) {
                 schema: 'public',
                 table: 'hotels',
                 filter: `slug=eq.${slug}`
-            }, (payload) => {
+            }, (payload: any) => {
                 const data = payload.new as any;
                 setBranding({
                     id: data.id,
@@ -845,6 +865,63 @@ export async function updateSupabaseRequestStatus(id: string, status: RequestSta
 
     if (error) console.error("Error updating status:", error);
     return { data, error };
+}
+
+/**
+ * Specifically approve a late checkout request and update the room database
+ */
+export async function approveLateCheckout(requestId: string, hotelId: string, roomNumber: string, newTime: string = "1:00 PM") {
+    if (isDemoMode()) {
+        // 1. Update the request status
+        const requests = getDemoRequests(hotelId);
+        const reqIndex = requests.findIndex(r => r.id === requestId);
+        if (reqIndex !== -1) {
+            requests[reqIndex].status = "Completed";
+            saveDemoRequests(hotelId, requests);
+        }
+
+        // 2. Update the room's checkout time
+        const rooms = getDemoRooms(hotelId);
+        const roomIndex = rooms.findIndex(r => r.room_number === roomNumber);
+        if (roomIndex !== -1) {
+            rooms[roomIndex].checkout_time = newTime;
+            saveDemoRooms(hotelId, rooms);
+        }
+        
+        console.log(`Demo Mode: Approved Late Checkout for Room ${roomNumber} until ${newTime}`);
+        return { error: null };
+    }
+
+    try {
+        // 1. Update the request
+        const { error: reqError } = await supabase
+            .from('requests')
+            .update({ status: 'Completed' })
+            .eq('id', requestId);
+
+        if (reqError) throw reqError;
+
+        // 2. Update the room record
+        const { error: roomError } = await supabase
+            .from('rooms')
+            .update({ checkout_time: newTime })
+            .eq('hotel_id', hotelId)
+            .eq('room_number', roomNumber);
+
+        if (roomError) throw roomError;
+
+        return { error: null };
+    } catch (err: any) {
+        console.error("Error approving late checkout:", err);
+        return { error: err };
+    }
+}
+
+/**
+ * Explicitly reject a service request
+ */
+export async function rejectSupabaseRequest(id: string) {
+    return await updateSupabaseRequestStatus(id, "Rejected");
 }
 
 /**
@@ -1239,10 +1316,7 @@ export function useSpecialOffers(hotelId?: string) {
 
         const fetchOffers = async () => {
             if (isDemoMode()) {
-                setOffers([
-                    { id: '1', hotel_id: hotelId, title: '20% Off Spa', description: 'Enjoy our premium spa services at a discount.', image_url: 'https://images.unsplash.com/photo-1544161515-4ae6ce6db87e?auto=format&fit=crop&q=80', is_active: true },
-                    { id: '2', hotel_id: hotelId, title: 'Dinner Buffet', description: 'Complementary dinner buffet for all diamond members.', image_url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80', is_active: true }
-                ]);
+                setOffers(getDemoOffers(hotelId));
                 setLoading(false);
                 return;
             }
@@ -1284,7 +1358,19 @@ export function useSpecialOffers(hotelId?: string) {
  * Save or add a special offer
  */
 export async function saveSpecialOffer(hotelId: string, offer: Partial<SpecialOffer>) {
-    if (isDemoMode()) return { data: null, error: null };
+    if (isDemoMode()) {
+        const offers = getDemoOffers(hotelId);
+        const imageUrl = convertGDriveLink(offer.image_url || "");
+        if (offer.id) {
+            const updated = offers.map(o => o.id === offer.id ? { ...o, ...offer, image_url: imageUrl } as SpecialOffer : o);
+            saveDemoOffers(hotelId, updated);
+            return { data: null, error: null };
+        } else {
+            const newOffer = { ...offer, id: Math.random().toString(36).substr(2, 9), hotel_id: hotelId, image_url: imageUrl, is_active: true } as SpecialOffer;
+            saveDemoOffers(hotelId, [...offers, newOffer]);
+            return { data: newOffer, error: null };
+        }
+    }
 
     const imageUrl = convertGDriveLink(offer.image_url || "");
 

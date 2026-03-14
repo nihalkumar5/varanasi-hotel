@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { ServiceCard } from "@/components/ServiceCard";
 import {
-    Wifi, Utensils, Phone,
-    Zap, Droplets, Wind, Sparkles, Coffee, Layout, ChefHat, Home, User, Compass, AlertCircle,
-    ChevronLeft, ChevronRight, ExternalLink, Clock, MapPin, Music, Star, Shirt,
-    Wrench
+    Wifi, Utensils, Phone, Layers,
+    Zap, Droplets, Wind, Sparkles, Coffee, Layout, ChefHat, Home, User, Users, Sun, Compass, AlertCircle, Check, Wine, Library,
+    ChevronLeft, ChevronRight, ArrowRight, ExternalLink, Clock, MapPin, Music, Star, Shirt,
+    Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +26,20 @@ export default function GuestDashboard() {
     const params = useParams();
     const hotelSlug = params?.hotel_slug as string;
 
-    const { roomNumber, checkoutDate, checkoutTime, numGuests, checkedInAt } = useGuestRoom();
+    const { roomNumber, checkoutDate, checkoutTime, numGuests, checkedInAt, logout } = useGuestRoom();
     const { branding, loading } = useHotelBranding(hotelSlug);
     const { offers, loading: loadingOffers } = useSpecialOffers(branding?.id);
     const requests = useSupabaseRequests(branding?.id, roomNumber, checkedInAt);
+
+    // State for Quick Services friction (Quantity Selector)
+    const [activeServiceForQty, setActiveServiceForQty] = useState<{
+        label: string;
+        icon: React.ReactNode;
+        internalName: string;
+        hasOptions?: boolean;
+        selectedOption?: string | null;
+        step?: 'type' | 'quantity';
+    } | null>(null);
 
     const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
     const [scrolled, setScrolled] = useState(false);
@@ -73,7 +83,12 @@ export default function GuestDashboard() {
         if (error) {
             setToast({ message: `Error: ${error.message}`, type: "error", isVisible: true });
         } else {
-            setToast({ message: `${type} Request Placed Successfully`, type: "success", isVisible: true });
+            const successWording = type === 'Towel' ? 'Fresh towels are on the way 🧺' : 
+                                  type === 'Water' ? 'Mineral water is on its way 💧' :
+                                  type === 'Cleaning' ? 'Housekeeping has been notified 🧹' :
+                                  type === 'Late Checkout' ? 'Late checkout request received ⏳' :
+                                  `${type} request placed successfully`;
+            setToast({ message: successWording, type: "success", isVisible: true });
         }
     };
 
@@ -105,518 +120,442 @@ export default function GuestDashboard() {
         show: { opacity: 1, y: 0 }
     };
 
+    const handleTileClick = (service: any) => {
+        setActiveServiceForQty({
+            label: service.label,
+            icon: service.icon,
+            internalName: service.internalName,
+            hasOptions: service.hasOptions,
+            selectedOption: null,
+            step: service.hasOptions ? 'type' : 'quantity'
+        });
+    };
+
+    const confirmQuantity = (qty: number) => {
+        if (!activeServiceForQty) return;
+        
+        const finalLabel = activeServiceForQty.selectedOption || activeServiceForQty.label;
+        
+        handleQuickRequest(
+            activeServiceForQty.internalName, 
+            `${finalLabel} (Qty: ${qty}) requested`
+        );
+        setActiveServiceForQty(null);
+    };
+
     return (
-        <div className="pb-40 px-5 pt-6 min-h-screen bg-background max-w-[520px] mx-auto overflow-x-hidden">
-            {/* 1. Branded Header Section (Scroll Shrinking) */}
-            <motion.header
-                animate={{
-                    width: scrolled ? "calc(100% - 40px)" : "calc(100% - 32px)",
-                    top: scrolled ? 12 : 20,
-                    padding: scrolled ? "12px 24px" : "16px 20px"
-                }}
-                className="fixed left-1/2 -translate-x-1/2 max-w-[480px] z-50 bg-white/90 backdrop-blur-2xl rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.06)] flex items-center justify-between transition-all duration-300"
+        <div className="min-h-screen bg-[#FDFBF9] pb-24 max-w-[520px] mx-auto overflow-x-hidden font-sans text-[#1F1F1F]">
+            {/* 1. Hero Hotel Card - "Halo Effect" */}
+            <motion.section 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="relative h-[480px] w-full"
             >
-                <div className="flex items-center overflow-hidden">
-                    <motion.div
-                        animate={{ scale: scrolled ? 0.8 : 1 }}
-                        className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mr-3 border border-slate-100 shrink-0 overflow-hidden"
+                {/* Full-bleed Hotel Image Background */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80" 
+                        className="w-full h-full object-cover" 
+                        alt="Hotel Exterior" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent transparent 40% to-[#EFE7DD] opacity-90" style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(239,231,221,0.9) 80%)' }} />
+                </div>
+
+                {/* Glass Guest Portal Overlay */}
+                <div className="absolute inset-x-6 bottom-12 z-10">
+                    <motion.div 
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.8 }}
+                        className="bg-white/60 backdrop-blur-xl rounded-[26px] p-8 border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.12)] relative"
                     >
-                        {branding?.logoImage ? (
-                            <img src={branding.logoImage} alt={branding.name} className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-sm font-black text-slate-900">{branding?.name?.charAt(0)}</span>
-                        )}
+                        <div className="flex items-start justify-between mb-8">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#CFA46A] mb-1.5">{getTimeGreeting()}</p>
+                                <h1 className="text-[22px] font-serif font-bold text-[#1F1F1F] tracking-tight mb-1">
+                                    {branding?.name || "Mountain Lodge"}
+                                </h1>
+                                <div className="text-[#CFA46A] text-xs mb-2">★★★★★</div>
+                                <div className="flex items-center text-slate-800/60">
+                                    <MapPin className="w-3 h-3 mr-1" />
+                                    <p className="text-[11px] font-bold uppercase tracking-[0.1em]">
+                                        {(branding as any)?.address || "Kiev, Ukraine"}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-lg">
+                                <Check className="w-3 h-3 text-[#CFA46A]" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Verified</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-black/5 flex items-center justify-between">
+                            <div className="flex flex-col">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800/40 mb-1">Checkout</p>
+                                <p className="text-[16px] font-black text-[#1F1F1F]">16 Feb</p>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                                <div className="bg-[#CFA46A] px-4 py-2 rounded-xl shadow-[0_4px_12px_rgba(207,164,106,0.3)]">
+                                    <p className="text-[12px] font-black text-white uppercase tracking-wider">11:00 AM</p>
+                                </div>
+                                <span className="text-[8px] font-black text-[#CFA46A] uppercase tracking-widest animate-pulse">Request Extension</span>
+                            </div>
+                        </div>
                     </motion.div>
-                    <div className="flex flex-col">
-                        <motion.h1
-                            animate={{ fontSize: scrolled ? "16px" : "22px" }}
-                            className="font-serif font-black text-slate-900 leading-none tracking-tight whitespace-nowrap"
+                </div>
+
+                {/* Glass Guest Portal Label Component */}
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20">
+                    <div className="bg-white/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/40 shadow-sm text-[10px] font-black uppercase tracking-[0.2em] text-[#1F1F1F]">
+                        Glass Guest Portal
+                    </div>
+                </div>
+            </motion.section>
+
+            {/* 2. Compact Info Tile (Info Strip) */}
+            <motion.section 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="px-6 -mt-9 mb-10 relative z-10"
+            >
+                <div className="flex items-center justify-between bg-[#F3EAE1] rounded-[18px] px-6 py-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)] h-[85px] border border-white/20">
+                    {/* Room Section */}
+                    <div className="flex-1 flex flex-col items-center">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-2 opacity-70">Room</span>
+                        <div className="flex items-center gap-1.5">
+                            <Bed className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
+                            <span className="text-[15px] font-black text-[#1F1F1F] leading-none tracking-tight">{roomNumber || "101"}</span>
+                        </div>
+                    </div>
+
+                    <div className="w-px h-8 bg-black/5 self-center mx-2"></div>
+
+                    {/* Guests Section */}
+                    <div className="flex-1 flex flex-col items-center">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-2 opacity-70">Staying</span>
+                        <div className="flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
+                            <span className="text-[15px] font-black text-[#1F1F1F] leading-none tracking-tight">{numGuests || 1} Guest</span>
+                        </div>
+                    </div>
+
+                    <div className="w-px h-8 bg-black/5 self-center mx-2"></div>
+
+                    {/* Late Checkout Section (Premium 3D Red Button - Simplified) */}
+                    <div className="flex-1 flex flex-col items-center">
+                        <motion.button 
+                            whileTap={{ scale: 0.96 }}
+                            whileHover={{ y: -2 }}
+                            onClick={() => handleQuickRequest("Late Checkout", "Guest requested late checkout extension")}
+                            className="bg-[#A62626] rounded-[16px] px-2 py-4 flex items-center justify-center shadow-[0_4px_0_0_#751B1B] hover:shadow-[0_6px_0_0_#751B1B] active:shadow-none active:translate-y-[4px] transition-all cursor-pointer border border-[#C53030]/30 w-full min-h-[58px]"
                         >
-                            {branding?.name || "Premium Hotel"}
-                            {scrolled && <span className="text-slate-300 mx-2 font-normal">•</span>}
-                            {scrolled && <span className="text-amber-600">Room {roomNumber || "---"}</span>}
-                        </motion.h1>
-                        <AnimatePresence>
-                            {!scrolled && (
-                                <motion.p
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="text-[8px] font-black uppercase tracking-[0.2em] text-amber-600 mt-1"
+                            <span className="text-[10px] font-black text-white uppercase tracking-wider leading-none text-center">
+                                Late Checkout
+                            </span>
+                        </motion.button>
+                    </div>
+                </div>
+            </motion.section>
+
+            {/* 2.5. Luxury Priority Services Section (Wi-Fi, Dining, etc.) */}
+            <motion.section 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="px-6 mb-10"
+            >
+                <div className="grid grid-cols-3 gap-3">
+                    {[
+                        { label: "Wi-Fi Access", desc: "Connect Now", icon: <Wifi className="w-5 h-5" />, path: "wifi" },
+                        { label: "Room Dining", desc: "Orders", icon: <Utensils className="w-5 h-5" />, path: "restaurant" },
+                        { label: "Taxi Service", desc: "Book Ride", icon: <Car className="w-5 h-5" />, path: "services" }
+                    ].map((s, i) => (
+                        <motion.button
+                            key={i}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
+                            className="bg-white/80 backdrop-blur-xl border border-white/50 p-5 rounded-[26px] flex flex-col items-center text-center shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
+                        >
+                            <div className="w-12 h-12 bg-[#F3EAE1] rounded-2xl flex items-center justify-center mb-4 text-[#1F1F1F] shadow-inner">
+                                {s.icon}
+                            </div>
+                            <h3 className="text-[11px] font-black text-[#1F1F1F] mb-1 leading-tight tracking-tight">{s.label}</h3>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-60">{s.desc}</p>
+                        </motion.button>
+                    ))}
+                    {[
+                        { label: "Housekeeping", desc: "Clean Now", icon: <Sparkles className="w-5 h-5" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Laundry", desc: "Press & Wash", icon: <Shirt className="w-5 h-5" />, path: "services" },
+                        { label: "Maintenance", desc: "Fix Issue", icon: <Wrench className="w-5 h-5" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                    ].map((s, i) => (
+                        <motion.button
+                            key={i}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
+                            className="bg-white/80 backdrop-blur-xl border border-white/50 p-5 rounded-[26px] flex flex-col items-center text-center shadow-[0_10px_30px_rgba(0,0,0,0.04)]"
+                        >
+                            <div className="w-12 h-12 bg-[#F3EAE1] rounded-2xl flex items-center justify-center mb-4 text-[#1F1F1F] shadow-inner">
+                                {s.icon}
+                            </div>
+                            <h3 className="text-[11px] font-black text-[#1F1F1F] mb-1 leading-tight tracking-tight">{s.label}</h3>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-60">{s.desc}</p>
+                        </motion.button>
+                    ))}
+                </div>
+            </motion.section>
+
+            {/* 3. Refined Quick Services Section v3 (Exact Blueprint) */}
+            <motion.section 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="px-6 mb-12"
+            >
+                <div className="bg-[#E8DCCB] rounded-[40px] p-10 relative overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.12)] border border-white/40 noise group/container">
+                    {/* 1. Subtle Textured/Illustrated Background Layer - Split View (Right Side Only) */}
+                    <div className="absolute inset-y-0 right-0 w-[55%] z-0 opacity-[0.6] pointer-events-none transition-transform duration-1000 group-hover/container:scale-105 origin-right">
+                        <img 
+                            src="/images/luxury_hotel_ultra_premium_bg.png" 
+                            alt="Background Illustration"
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#E8DCCB] via-[#E8DCCB]/20 to-transparent" />
+                    </div>
+
+                    {/* 2. Foreground Layer (Header & Tiles) */}
+                    <div className="relative z-10">
+                        <div className="mb-8">
+                            <h2 className="text-[24px] font-serif font-bold text-[#1F1F1F] leading-tight mb-1 tracking-tight">Quick Services</h2>
+                            <p className="text-[10px] font-black text-[#1F1F1F]/40 uppercase tracking-[0.25em]">Personalized for your stay</p>
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-3">
+                            {[
+                                { 
+                                    label: "Reception", 
+                                    internalName: "Reception",
+                                    icon: <Phone className="w-[22px] h-[22px]" />, 
+                                    color: "#B45309", // Warm Amber
+                                },
+                                { 
+                                    label: "Tea/Coffee", 
+                                    internalName: "Tea / Coffee",
+                                    icon: <Coffee className="w-[22px] h-[22px]" />, 
+                                    color: "#8B5E3C",
+                                    hasOptions: true
+                                },
+                                { 
+                                    label: "Water", 
+                                    internalName: "Mineral Water",
+                                    icon: <Droplets className="w-[22px] h-[22px]" />, 
+                                    color: "#5DA7B1"
+                                },
+                                { 
+                                    label: "Towels", 
+                                    internalName: "Towels",
+                                    icon: <Layers className="w-[22px] h-[22px]" />, 
+                                    color: "#7A8D84"
+                                }
+                            ].map((service, i) => (
+                                <motion.button
+                                    key={i}
+                                    whileHover={{ y: -5, scale: 1.02 }}
+                                    whileTap={{ scale: 0.96 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                    onClick={() => handleTileClick(service)}
+                                    className="flex flex-col items-center justify-center gap-2 w-[132px] h-[94px] rounded-[26px] bg-white/65 backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.08)] border border-white relative overflow-hidden group/tile"
                                 >
-                                    Concierge Active
-                                </motion.p>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover/tile:opacity-100 transition-opacity duration-500" />
+                                    <div style={{ color: service.color }} className="relative z-10 mb-1 transition-transform duration-300 group-hover/tile:scale-110">
+                                        {service.icon}
+                                    </div>
+                                    <span className="text-[13px] font-black text-[#1F1F1F] leading-tight tracking-tight text-center font-sans relative z-10">
+                                        {service.label}
+                                    </span>
+                                </motion.button>
+                            ))}
+                        </div>
+
+                        {/* Unified Selection Overlay (Compact & Consistent) */}
+                        <AnimatePresence>
+                            {activeServiceForQty && (
+                                <motion.div 
+                                    initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                                    animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+                                    exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                                    className="absolute inset-0 z-50 bg-[#E8DCCB]/60 flex items-center justify-center p-6"
+                                >
+                                    <motion.div 
+                                        initial={{ scale: 0.9, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        exit={{ scale: 0.9, opacity: 0 }}
+                                        className="bg-[#F6F3EE] rounded-[32px] p-6 pb-8 w-full max-w-[290px] min-h-fit shadow-[0_30px_60px_rgba(0,0,0,0.18)] border border-white flex flex-col items-center"
+                                    >
+                                        <div className="flex flex-col items-center w-full">
+                                            <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-sm text-[#B88952] mb-5">
+                                                {activeServiceForQty.step === 'type' ? (
+                                                    <div className="flex gap-1.5">
+                                                        <Coffee className="w-5 h-5" />
+                                                        <div className="w-[1px] h-5 bg-[#B88952]/20 mx-0.5" />
+                                                        <Wind className="w-5 h-5 scale-x-[-1]" />
+                                                    </div>
+                                                ) : activeServiceForQty.icon}
+                                            </div>
+                                            
+                                            <h3 className="text-[20px] font-serif font-black text-[#1F1F1F] mb-1.5 text-center leading-tight">
+                                                {activeServiceForQty.selectedOption || activeServiceForQty.label}
+                                            </h3>
+                                            <p className="text-[10px] font-black text-[#1F1F1F]/40 uppercase tracking-[0.2em] mb-8">
+                                                {activeServiceForQty.step === 'type' ? "Selection Required" : "Select Quantity"}
+                                            </p>
+                                            
+                                            {activeServiceForQty.step === 'type' ? (
+                                                <div className="flex flex-col gap-3 w-full">
+                                                    {["Hot Tea", "Coffee"].map((option) => (
+                                                        <motion.button
+                                                            key={option}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            onClick={() => setActiveServiceForQty({
+                                                                ...activeServiceForQty,
+                                                                selectedOption: option,
+                                                                step: 'quantity'
+                                                            })}
+                                                            className="flex items-center gap-4 bg-white border border-[#E8DCCB]/50 h-14 px-5 rounded-xl shadow-sm hover:border-[#B88952] transition-colors group"
+                                                        >
+                                                            <div className="text-[#B88952]/60 group-hover:text-[#B88952]">
+                                                                {option === "Coffee" ? <Coffee className="w-4 h-4" /> : <Wind className="w-4 h-4" />}
+                                                            </div>
+                                                            <span className="text-[15px] font-bold text-[#1F1F1F]">{option}</span>
+                                                        </motion.button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="flex gap-3 w-full">
+                                                    {[1, 2].map((num) => (
+                                                        <motion.button
+                                                            key={num}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => confirmQuantity(num)}
+                                                            className="flex-1 bg-white border border-[#E8DCCB]/50 h-16 rounded-xl flex items-center justify-center text-[22px] font-serif font-black text-[#1F1F1F] shadow-sm hover:border-[#B88952] transition-colors"
+                                                        >
+                                                            {num}
+                                                        </motion.button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <button 
+                                            onClick={() => setActiveServiceForQty(null)}
+                                            className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#1F1F1F]/40 hover:text-[#1F1F1F] transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </motion.div>
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
                 </div>
+            </motion.section>
+  
 
-                <motion.div
-                    animate={{ scale: scrolled ? 0.9 : 1 }}
-                    className="px-2 py-1 bg-emerald-50 border border-emerald-100 rounded-full flex items-center shadow-sm"
-                >
-                    <div className="w-1 h-1 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></div>
-                    <span className="text-[7px] font-black uppercase tracking-widest text-emerald-600">Secure Access</span>
-                </motion.div>
-            </motion.header>
-
-            {/* Spacer for fixed header */}
-            <div className="h-[90px]"></div>
-
-            {/* 2. Hero Section (Upgraded Room Card) */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -5 }}
-                className="relative cursor-pointer z-10"
+            {/* 4. Active Requests Section */}
+            <motion.section 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="px-6 mb-10"
             >
-                <div className="relative bg-white rounded-[2.5rem] p-6 pb-7 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col overflow-hidden">
-                    {/* Top Detail Row */}
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <p className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400">Authenticated Room</p>
-                        </div>
-                        <div className="flex items-center text-slate-400">
-                            <div className="flex items-center">
-                                <User className="w-3 h-3 mr-1" />
-                                <span className="text-[10px] font-bold">{numGuests || 1} Guests</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Room Number Hero */}
-                    <div className="mb-6">
-                        <h2 className="text-[36px] font-serif text-slate-900 tracking-tighter leading-none">
-                            Room <span className="text-amber-600 font-bold">{roomNumber || "---"}</span>
-                        </h2>
-                    </div>
-
-                    {/* Check-out Details */}
-                    <div className="mb-6 flex items-end justify-between text-slate-400">
-                        <div>
-                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Check-out</p>
-                            <p className="text-xl font-serif italic text-slate-900 tracking-tight leading-none">
-                                {checkoutDate ? new Date(checkoutDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "24 Jun, 2026"}
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <div className="px-5 py-2.5 bg-amber-50 rounded-2xl border border-amber-100 shadow-sm flex flex-col items-center">
-                                <p className="text-[14px] font-black text-amber-600 uppercase tracking-tighter leading-none">{checkoutTime || "11:00 AM"}</p>
-                                <p className="text-[8px] font-bold text-amber-600/40 uppercase tracking-widest mt-1">Sharp</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </motion.div>
-
-
-            <motion.div
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="space-y-8 mt-10"
-            >
-                {/* 2. Quick Actions Grid (Unified Luxury Palette) */}
-                <motion.section variants={item}>
-                    <div className="bg-slate-900/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-slate-200/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden group">
-                        {/* Subtle Gradient Glow */}
-                        <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full group-hover:bg-amber-500/10 transition-colors duration-700" />
-
-                        <div className="flex overflow-x-auto no-scrollbar snap-x gap-8 relative z-10">
-                            {[
-                                { label: "Wi-Fi", icon: <Wifi />, bg: "bg-amber-600/25 text-amber-700", action: () => { router.push(`/${hotelSlug}/guest/wifi`) } },
-                                {
-                                    label: "Call",
-                                    icon: <Phone />,
-                                    bg: "bg-emerald-600/25 text-emerald-700",
-                                    action: () => {
-                                        if (branding?.receptionPhone) {
-                                            const sanitizedPhone = branding.receptionPhone.replace(/[^0-9+]/g, '');
-                                            window.location.href = `tel:${sanitizedPhone}`;
-                                        } else {
-                                            setToast({
-                                                message: "Reception phone not configured.",
-                                                type: "error",
-                                                isVisible: true
-                                            });
-                                            setTimeout(() => setToast(prev => ({ ...prev, isVisible: false })), 3000);
-                                        }
-                                    }
-                                },
-                                { label: "Dining", icon: <Utensils />, bg: "bg-red-600/25 text-red-700", action: () => { router.push(`/${hotelSlug}/guest/restaurant`) } },
-                                { label: "Maintenance", icon: <Wrench />, bg: "bg-indigo-600/25 text-indigo-700", action: () => { router.push(`/${hotelSlug}/guest/services?type=maintenance`) } },
-                                { label: "Late Checkout", icon: <Clock />, bg: "bg-purple-600/25 text-purple-700", action: () => { router.push(`/${hotelSlug}/guest/late-checkout`) } },
-                                { label: "Laundry", icon: <Shirt />, bg: "bg-slate-900/10 text-slate-900", action: () => { router.push(`/${hotelSlug}/guest/services?type=laundry`) } },
-                            ].map((action, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => action.action()}
-                                    className="flex flex-col items-center group flex-shrink-0 snap-center"
-                                >
-                                    <div className={`w-16 h-16 rounded-2xl ${action.bg} flex items-center justify-center mb-3 shadow-sm group-hover:shadow-md transition-all group-active:scale-95 border border-white/80 backdrop-blur-sm`}>
-                                        {renderIcon(action.icon, "w-7 h-7")}
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 group-hover:text-slate-700 transition-colors">{action.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </motion.section>
-
-                {/* 3. Smart Requests (Express Items - Premium Dark Theme Restored) */}
-                <motion.section variants={item}>
+                <div className="bg-white/50 backdrop-blur-md rounded-[26px] p-6 border border-white shadow-[0_12px_35px_rgba(0,0,0,0.06)]">
                     <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center">
-                            <Zap className="w-4 h-4 text-amber-500 mr-2" />
-                            <h2 className="text-xl font-serif text-slate-900">Quick Requests</h2>
-                        </div>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-300">Fast Response</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { label: "Mineral Water", icon: <Droplets />, notes: "1L Bottle", type: "Water", color: "from-blue-500/10" },
-                            { label: "Clean Towels", icon: <Wind />, notes: "Fresh Set", type: "Towel", color: "from-slate-500/10" },
-                            { label: "Room Cleaning", icon: <Sparkles />, notes: "Full Service", type: "Cleaning", color: "from-emerald-500/10" },
-                            { label: "Tea/Coffee", icon: <Coffee />, notes: "Hot Beverage", type: "TeaCoffee", color: "from-amber-500/10" },
-                        ].map((req, i) => (
-                            <div key={i} className="relative group">
-                                <AnimatePresence mode="wait">
-                                    {req.type === "Cleaning" && showCleaningOptions ? (
-                                        <motion.div
-                                            key="cleaning-options"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            className="bg-slate-900 p-4 rounded-[2.5rem] flex flex-col justify-between min-h-[125px] border border-emerald-500/50 shadow-2xl relative overflow-hidden"
-                                        >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest pl-2">Cleaning Time</p>
-                                                <button
-                                                    onClick={() => {
-                                                        setShowCleaningOptions(false);
-                                                        setShowCleaningTimePicker(false);
-                                                    }}
-                                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-slate-400"
-                                                >
-                                                    <AlertCircle className="w-4 h-4 rotate-45" />
-                                                </button>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 gap-2">
-                                                {!showCleaningTimePicker ? (
-                                                    <>
-                                                        <button
-                                                            onClick={() => {
-                                                                handleQuickRequest("Cleaning", "Immediate / ASAP");
-                                                                setShowCleaningOptions(false);
-                                                            }}
-                                                            className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-emerald-500/20"
-                                                        >
-                                                            <Sparkles className="w-3 h-3 mr-2 text-emerald-500" /> Immediately
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setShowCleaningTimePicker(true)}
-                                                            className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
-                                                        >
-                                                            <Clock className="w-3 h-3 mr-2 text-emerald-500" /> Time Schedule
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        {["10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM"].map((t) => (
-                                                            <button
-                                                                key={t}
-                                                                onClick={() => {
-                                                                    handleQuickRequest("Cleaning", `Scheduled for ${t}`);
-                                                                    setShowCleaningOptions(false);
-                                                                    setShowCleaningTimePicker(false);
-                                                                }}
-                                                                className="py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-[10px] font-bold transition-all border border-white/5"
-                                                            >
-                                                                {t}
-                                                            </button>
-                                                        ))}
-                                                        <button
-                                                            onClick={() => setShowCleaningTimePicker(false)}
-                                                            className="col-span-2 text-[8px] font-black uppercase text-slate-500 hover:text-white transition-colors"
-                                                        >
-                                                            Back
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </motion.div>
-                                    ) : req.type === "TeaCoffee" && showTeaOptions ? (
-                                        <motion.div
-                                            key="options"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            className="bg-slate-900 p-4 rounded-[2.5rem] flex flex-col justify-between min-h-[125px] border border-amber-500/50 shadow-2xl relative overflow-hidden"
-                                        >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest pl-2">Choose One</p>
-                                                <button
-                                                    onClick={() => setShowTeaOptions(false)}
-                                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-slate-400"
-                                                >
-                                                    <AlertCircle className="w-4 h-4 rotate-45" />
-                                                </button>
-                                            </div>
-                                            <div className="grid grid-cols-1 gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        handleQuickRequest("Tea", "Fresh tea service");
-                                                        setShowTeaOptions(false);
-                                                    }}
-                                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
-                                                >
-                                                    <Coffee className="w-3 h-3 mr-2 text-amber-500" /> Tea
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        handleQuickRequest("Coffee", "Fresh coffee service");
-                                                        setShowTeaOptions(false);
-                                                    }}
-                                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
-                                                >
-                                                    <Coffee className="w-3 h-3 mr-2 text-amber-500" /> Coffee
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    ) : req.type === "Water" && showWaterOptions ? (
-                                        <motion.div
-                                            key="water-options"
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.95 }}
-                                            className="bg-slate-900 p-4 rounded-[2.5rem] flex flex-col justify-between min-h-[125px] border border-blue-500/50 shadow-2xl relative overflow-hidden"
-                                        >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest pl-2">Quantity</p>
-                                                <button
-                                                    onClick={() => setShowWaterOptions(false)}
-                                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-slate-400"
-                                                >
-                                                    <AlertCircle className="w-4 h-4 rotate-45" />
-                                                </button>
-                                            </div>
-                                            <div className="grid grid-cols-1 gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        handleQuickRequest("Mineral Water", "1 Bottle");
-                                                        setShowWaterOptions(false);
-                                                    }}
-                                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
-                                                >
-                                                    <Droplets className="w-3 h-3 mr-2 text-blue-500" /> 1 Bottle
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        handleQuickRequest("Mineral Water", "2 Bottles");
-                                                        setShowWaterOptions(false);
-                                                    }}
-                                                    className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white text-xs font-bold transition-all flex items-center justify-center border border-white/5"
-                                                >
-                                                    <Droplets className="w-3 h-3 mr-2 text-blue-500" /> 2 Bottles
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    ) : (
-                                        <motion.button
-                                            key="button"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                            onClick={() => {
-                                                if (req.type === "TeaCoffee") {
-                                                    setShowTeaOptions(true);
-                                                } else if (req.type === "Water") {
-                                                    setShowWaterOptions(true);
-                                                } else if (req.type === "Cleaning") {
-                                                    setShowCleaningOptions(true);
-                                                } else {
-                                                    handleQuickRequest(req.type, req.notes);
-                                                }
-                                            }}
-                                            className={`w-full bg-slate-900 p-6 rounded-[2.5rem] flex flex-col justify-end min-h-[125px] border border-slate-800 shadow-2xl hover:shadow-amber-900/10 hover:border-amber-500/30 transition-all duration-500 active:scale-95 group relative overflow-hidden text-left`}
-                                        >
-                                            {/* Subtle Glow Overlay */}
-                                            <div className={`absolute inset-0 bg-gradient-to-br ${req.color} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
-
-                                            {/* Premium Shine Effect */}
-                                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-[1.5s]"></div>
-
-                                            {/* Background Icon (Subtle Watermark) */}
-                                            <div className="absolute top-4 right-4 text-white opacity-[0.05] group-hover:opacity-[0.1] group-hover:-translate-y-1 group-hover:translate-x-1 transition-all duration-700">
-                                                {renderIcon(req.icon, "w-16 h-16")}
-                                            </div>
-
-                                            {/* Gold Accent Indicator */}
-                                            <div className={`absolute top-6 left-6 w-1 h-3 rounded-full transition-all duration-500 ${submittingType === req.type ? "bg-amber-500 animate-pulse opacity-100" : "bg-amber-500 opacity-0 group-hover:opacity-100 group-hover:-translate-y-1"}`}></div>
-
-                                            <div className="relative z-10 w-full">
-                                                <div className="flex items-center justify-between w-full">
-                                                    <div>
-                                                        <p className="text-lg font-serif text-white leading-tight group-hover:translate-x-1 transition-transform duration-300">{req.label}</p>
-                                                        <p className="text-[9px] font-black text-slate-400 mt-1 uppercase tracking-widest group-hover:translate-x-1 transition-transform duration-500">{req.notes}</p>
-                                                    </div>
-                                                    {submittingType === req.type && (
-                                                        <div className="w-5 h-5 border-2 border-white/20 border-t-amber-500 rounded-full animate-spin"></div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Bottom Accent Line (Branded Gold) */}
-                                            <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-amber-500 to-amber-600 group-hover:w-full transition-all duration-700"></div>
-                                        </motion.button>
-                                    )}
-                                </AnimatePresence>
+                        <h3 className="text-[15px] font-serif font-bold text-[#1F1F1F]">Active Requests</h3>
+                        {activeRequests.length > 0 && (
+                            <div className="bg-[#CFA46A]/20 px-3 py-1 rounded-full">
+                                <span className="text-[9px] font-black uppercase text-[#CFA46A] tracking-widest">{activeRequests.length} Running</span>
                             </div>
-                        ))}
+                        )}
                     </div>
-                </motion.section>
+                    
+                    {activeRequests.length > 0 ? (
+                        <div className="space-y-4">
+                            {activeRequests.map((req, i) => {
+                                const getStatusLabel = (type: string, status: string) => {
+                                    if (status === "Pending") return "Received";
+                                    if (status === "In Progress") {
+                                        if (type === 'Cleaning') return "On the way";
+                                        if (type === 'Dining') return "Preparing";
+                                        if (type === 'Laundry') return "Picked up";
+                                        if (type === 'Late Checkout') return "Reviewing";
+                                        return "Processing";
+                                    }
+                                    return status;
+                                };
 
-                {/* 4. Main Experience Card (Order Cuisine) */}
-                <motion.section variants={item}>
-                    <ServiceCard
-                        featured
-                        title="Order Cuisine"
-                        description="Luxury Dining at your door"
-                        image="/images/luxury/dining.png"
-                        icon={<Utensils className="w-6 h-6" />}
-                        onClick={() => router.push(`/${hotelSlug}/guest/restaurant`)}
-                    />
-                </motion.section>
-
-                {/* 5. Active Requests (Status Tracking) */}
-                <AnimatePresence>
-                    {activeRequests.length > 0 && (
-                        <motion.section
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            variants={item}
-                        >
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center">
-                                    <Clock className="w-4 h-4 text-blue-500 mr-2" />
-                                    <h2 className="text-xl font-serif text-foreground">Your Requests</h2>
-                                </div>
-                                <button onClick={() => router.push(`/${hotelSlug}/guest/status`)} className="text-[10px] font-black text-blue-500 uppercase tracking-widest">View All</button>
-                            </div>
-
-                            <div className="space-y-4">
-                                {activeRequests.slice(0, 2).map((req) => (
-                                    <div key={req.id} className="glass p-5 rounded-[2rem] flex items-center justify-between border border-white/5 shadow-sm">
-                                        <div className="flex items-center">
-                                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mr-4">
-                                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                return (
+                                    <div key={i} className="flex items-center justify-between bg-white/70 rounded-[20px] p-4 border border-white/60 shadow-sm">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="bg-[#CFA46A]/10 text-[#CFA46A] p-2.5 rounded-xl">
+                                                {req.type === 'Cleaning' ? <Sparkles className="w-5 h-5" /> : 
+                                                 req.type === 'Dining' ? <Utensils className="w-5 h-5" /> : 
+                                                 req.type === 'Laundry' ? <Shirt className="w-5 h-5" /> :
+                                                 <Clock className="w-5 h-5" />}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-foreground">{req.type}</p>
-                                                <p className="text-[10px] text-foreground/40 font-medium uppercase tracking-widest mt-0.5">Status: <span className="text-blue-500 font-black">{req.status}</span></p>
+                                                <p className="text-[13px] font-bold text-[#1F1F1F]">{req.type}</p>
+                                                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">{req.status}</p>
                                             </div>
                                         </div>
-                                        <ChevronRight className="w-4 h-4 text-foreground/20" />
+                                        <div className="flex items-center space-x-2">
+                                            <div className="w-2 h-2 bg-[#CFA46A] rounded-full animate-pulse shadow-[0_0_8px_rgba(207,164,106,0.6)]"></div>
+                                            <span className="text-[10px] font-black uppercase text-[#CFA46A] tracking-[0.1em]">
+                                                {getStatusLabel(req.type, req.status)}
+                                            </span>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        </motion.section>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="py-8 text-center bg-white/30 rounded-[20px] border border-dashed border-[#CFA46A]/30">
+                            <p className="text-[11px] font-bold text-[#1F1F1F]/40 uppercase tracking-[0.2em]">Our team is standing by</p>
+                        </div>
                     )}
-                </AnimatePresence>
+                </div>
+            </motion.section>
 
-                {/* 6. Concierge Section (Upsell) */}
-                <motion.section variants={item}>
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center">
-                            <MapPin className="w-4 h-4 text-emerald-500 mr-2" />
-                            <h2 className="text-xl font-serif text-foreground">Concierge Desk</h2>
-                        </div>
+            {/* 5. Concierge CTA */}
+            <motion.section 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="px-6 mb-20"
+            >
+                <motion.div 
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-[#1F1F1F] rounded-[26px] p-8 flex items-center justify-between shadow-2xl relative overflow-hidden"
+                >
+                    <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Need Anything?</p>
+                        <h3 className="text-2xl font-serif text-white font-medium mb-1 tracking-tight">Talk to Concierge</h3>
+                        <p className="text-[11px] text-white/60 font-medium">Available 24/7 for you</p>
                     </div>
+                    <motion.button 
+                        whileTap={{ scale: 0.94 }}
+                        className="relative z-10 h-14 px-8 bg-[#CFA46A] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-xl shadow-[#CFA46A]/20"
+                    >
+                        Start Chat
+                    </motion.button>
+                    <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
+                </motion.div>
+            </motion.section>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        {[
-                            { title: "Explore City", desc: "Nearby Attractions", icon: <Music /> },
-                            { title: "Travel", desc: "Book a Taxi", icon: <MapPin /> },
-                        ].map((c, i) => (
-                            <button
-                                key={i}
-                                className="p-6 glass rounded-[2.5rem] border border-white/5 shadow-sm text-left group transition-all active:scale-95"
-                            >
-                                <div className="w-10 h-10 rounded-2xl bg-foreground/5 flex items-center justify-center mb-4 text-foreground/30 group-hover:text-emerald-500 transition-colors">
-                                    {renderIcon(c.icon, "w-5 h-5")}
-                                </div>
-                                <p className="text-sm font-bold text-foreground leading-tight">{c.title}</p>
-                                <p className="text-[9px] font-medium text-foreground/40 mt-1 uppercase tracking-widest">{c.desc}</p>
-                            </button>
-                        ))}
-                    </div>
-                </motion.section>
-
-                {/* 7. Dynamic Special Offers Slider */}
-                {(offers.length > 0 || loadingOffers) && (
-                    <motion.section variants={item} className="mb-10">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-serif text-slate-900">Special Offers</h2>
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => setCurrentOfferIndex((prev: number) => (prev === 0 ? offers.length - 1 : prev - 1))}
-                                    className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => setCurrentOfferIndex((prev: number) => (prev === offers.length - 1 ? 0 : prev + 1))}
-                                    className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="relative aspect-[16/9] rounded-[2.5rem] overflow-hidden group shadow-xl">
-                            {loadingOffers ? (
-                                <div className="w-full h-full bg-slate-50 animate-pulse flex items-center justify-center">
-                                    <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
-                                </div>
-                            ) : (
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={currentOfferIndex}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        className="relative w-full h-full"
-                                    >
-                                        <img
-                                            src={offers[currentOfferIndex]?.image_url || "https://images.unsplash.com/photo-1544161515-4ae6ce6db87e?auto=format&fit=crop&q=80"}
-                                            alt={offers[currentOfferIndex]?.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
-                                            <div className="flex items-center space-x-2 mb-2">
-                                                <div className="px-2 py-0.5 bg-amber-500/20 border border-amber-500/40 rounded-md">
-                                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-amber-400">Exclusive Privilege</span>
-                                                </div>
-                                            </div>
-                                            <h3 className="text-2xl font-serif text-white mb-2">{offers[currentOfferIndex]?.title}</h3>
-                                            <p className="text-white/70 text-sm font-medium max-w-xs">{offers[currentOfferIndex]?.description}</p>
-                                            <div className="mt-6">
-                                                <button className="px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-black hover:shadow-lg hover:shadow-amber-500/30 transition-all active:scale-95">
-                                                    Claim Offer
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                </AnimatePresence>
-                            )}
-                        </div>
-                    </motion.section>
-                )}
-            </motion.div>
+            <button 
+                onClick={logout}
+                className="fixed bottom-6 left-6 z-[60] text-[10px] font-black uppercase tracking-[0.2em] text-[#1F1F1F]/40 hover:text-red-500 transition-all hover:scale-105 bg-white/60 backdrop-blur-xl px-4 py-2 rounded-full border border-white/40 shadow-xl"
+            >
+                Log Out
+            </button>
 
             <Toast
                 message={toast.message}
@@ -624,6 +563,6 @@ export default function GuestDashboard() {
                 isVisible={toast.isVisible}
                 onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
-        </div >
+        </div>
     );
 }

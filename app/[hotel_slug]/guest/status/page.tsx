@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { ArrowLeft, Clock, CheckCircle2, Loader2, Sparkles, RefreshCcw } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, Loader2, Sparkles, RefreshCcw, Search, Home, Utensils, Layout, User } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { StatusBadge, RequestStatus } from "@/components/StatusBadge";
 import { useSupabaseRequests, useHotelBranding } from "@/utils/store";
@@ -53,54 +53,14 @@ export default function StatusPage() {
 
     const getRequestTheme = (type: string) => {
         const t = type.toLowerCase();
-        if (t.includes("water")) return {
-            bg: "bg-blue-50/80",
-            border: "border-blue-100",
-            text: "text-blue-900",
-            accent: "bg-blue-500",
-            light: "bg-blue-500/10",
-            muted: "text-blue-400"
-        };
-        if (t.includes("dining") || t.includes("food") || t.includes("order")) return {
-            bg: "bg-red-50/80",
-            border: "border-red-100",
-            text: "text-red-900",
-            accent: "bg-[#E31837]",
-            light: "bg-red-500/10",
-            muted: "text-red-400"
-        };
-        if (t.includes("laundry") || t.includes("valet")) return {
-            bg: "bg-indigo-50/80",
-            border: "border-indigo-100",
-            text: "text-indigo-900",
-            accent: "bg-indigo-600",
-            light: "bg-indigo-500/10",
-            muted: "text-indigo-400"
-        };
-        if (t.includes("cleaning") || t.includes("housekeeping") || t.includes("towel")) return {
-            bg: "bg-emerald-50/80",
-            border: "border-emerald-100",
-            text: "text-emerald-900",
-            accent: "bg-emerald-600",
-            light: "bg-emerald-500/10",
-            muted: "text-emerald-400"
-        };
-        if (t.includes("tea") || t.includes("coffee") || t.includes("beverage")) return {
-            bg: "bg-amber-50/80",
-            border: "border-amber-100",
-            text: "text-amber-900",
-            accent: "bg-amber-600",
-            light: "bg-amber-500/10",
-            muted: "text-amber-400"
-        };
-        // Default theme
+        // Normalized premium theme consistent with Marriott Branding
         return {
-            bg: "bg-slate-50/80",
-            border: "border-slate-100",
-            text: "text-slate-900",
-            accent: "bg-slate-900",
-            light: "bg-slate-500/10",
-            muted: "text-slate-400"
+            bg: "bg-white",
+            border: "border-[#F3EDE4]",
+            text: "#1F1F1F",
+            accent: "#4E8F7A",
+            light: "rgba(78, 143, 122, 0.05)",
+            muted: "#94A3B8"
         };
     };
 

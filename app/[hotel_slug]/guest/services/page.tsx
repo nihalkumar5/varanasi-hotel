@@ -2,9 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
-import { ArrowLeft, CheckCircle, Send, MessageSquare } from "lucide-react";
+import { ArrowLeft, CheckCircle, Send, MessageSquare, Home, Utensils, Layout, User, Search } from "lucide-react";
 import { RequestButton } from "@/components/RequestButton";
-import { addSupabaseRequest, useHotelBranding } from "@/utils/store";
+import { addSupabaseRequest, useHotelBranding, useSupabaseRequests } from "@/utils/store";
 import { useGuestRoom } from "../GuestAuthWrapper";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -52,81 +52,90 @@ function ServiceContent() {
 
     if (isSubmitted) {
         return (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center py-20 text-center px-6"
-            >
-                <div className="relative mb-8">
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", damping: 12, delay: 0.2 }}
-                        className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/10 border border-emerald-100"
-                    >
-                        <CheckCircle className="w-12 h-12" />
-                    </motion.div>
-                </div>
-                <h2 className="text-3xl font-serif italic text-slate-900 mb-3">Request Received</h2>
-                <p className="text-slate-500 font-medium mb-10 max-w-[280px]">Our dedicated concierge team has been notified and is attending to your request.</p>
-                <button
+            <div className="min-h-screen noise-bg flex flex-col items-center justify-center py-20 text-center px-10 max-w-[520px] mx-auto font-sans text-[#1F1F1F]">
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", damping: 15 }}
+                    className="w-24 h-24 bg-[#4E8F7A]/10 text-[#4E8F7A] rounded-full flex items-center justify-center shadow-xl shadow-[#4E8F7A]/5 mb-8 border border-[#4E8F7A]/10"
+                >
+                    <CheckCircle className="w-12 h-12" />
+                </motion.div>
+                <h2 className="text-3xl font-serif font-medium text-slate-900 mb-4">Request Received</h2>
+                <p className="text-slate-500 text-sm font-medium mb-12 max-w-[280px] leading-relaxed">Our dedicated concierge team has been notified and is attending to your request.</p>
+                <motion.button
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => router.push(`/${hotelSlug}/guest/status`)}
-                    className="w-full max-w-[300px] bg-slate-900 text-white py-4.5 rounded-2xl font-black text-xs uppercase tracking-[0.25em] shadow-xl shadow-slate-200 active:scale-95 transition-all"
+                    className="w-full max-w-[320px] bg-[#4E8F7A] text-white py-5 rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#4E8F7A]/20 transition-all font-sans"
                 >
                     Track Progress
-                </button>
-            </motion.div>
+                </motion.button>
+            </div>
         );
     }
 
     return (
-        <div className="pb-32 px-5 pt-10 min-h-screen bg-slate-50/50 text-slate-900 max-w-[520px] mx-auto">
-            <button onClick={() => router.back()} className="mb-10 flex items-center text-slate-400 hover:text-slate-600 font-bold transition-all group">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-all border border-slate-100">
-                    <ArrowLeft className="w-5 h-5" />
+        <div className="pb-32 pt-12 min-h-screen noise-bg max-w-[520px] mx-auto overflow-x-hidden font-sans text-[#1F1F1F]">
+            {/* 1. Branded Header */}
+            <header className="px-6 mb-12 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                    <motion.button 
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => router.back()}
+                        className="w-12 h-12 bg-[#4E8F7A] rounded-full flex items-center justify-center shadow-lg shadow-[#4E8F7A]/20"
+                    >
+                        <ArrowLeft className="w-6 h-6 text-white" />
+                    </motion.button>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#4E8F7A]/60 leading-none mb-1.5">Marriott</p>
+                        <h1 className="text-base font-serif font-bold tracking-tight leading-none uppercase">
+                            Digital Concierge
+                        </h1>
+                    </div>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest leading-none">Back to Dashboard</span>
-            </button>
+                <motion.button 
+                    whileTap={{ scale: 0.97 }}
+                    className="w-11 h-11 rounded-full bg-white shadow-sm border border-slate-100/50 flex items-center justify-center text-slate-400"
+                >
+                    <Search className="w-5 h-5" strokeWidth={1.5} />
+                </motion.button>
+            </header>
 
+            {/* 2. Service Headline */}
             <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="mb-10"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="px-6 mb-12"
             >
-                <div className="flex items-center space-x-2 mb-4">
-                    <div className="w-8 h-[1px] bg-amber-500/50"></div>
-                    <p className="text-amber-600 font-black uppercase tracking-[0.25em] text-[10px]">Digital Concierge</p>
+                <p className="text-sm font-medium text-slate-400 mb-2">Suite Experience</p>
+                <h2 className="text-[32px] font-serif leading-[1.1] font-medium tracking-tight">
+                    How can we<br />care for you?
+                </h2>
+                <div className="mt-6 flex items-center space-x-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4E8F7A] animate-pulse"></span>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4E8F7A]">
+                        Service: {serviceTitles[type]}
+                    </p>
                 </div>
-                <h1 className="text-4xl font-serif text-slate-900 tracking-tight leading-tight italic">
-                    How can we<br /><span className="text-amber-600">care for you?</span>
-                </h1>
-                <p className="text-slate-400 mt-4 font-black uppercase tracking-[0.25em] text-[10px] flex items-center">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse mr-2"></span>
-                    Service: {serviceTitles[type]}
-                </p>
             </motion.div>
 
+            {/* 3. Request Form */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white p-8 rounded-[2.5rem] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] border border-slate-100 relative overflow-hidden"
+                transition={{ delay: 0.1 }}
+                className="px-6 mb-16"
             >
-                {/* Decorative Pattern */}
-                <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none">
-                    <MessageSquare className="w-32 h-32 text-slate-900" />
-                </div>
-
-                <div className="flex items-center mb-6 relative z-10">
-                    <div className="w-10 h-10 bg-slate-900 rounded-xl mr-4 flex items-center justify-center shadow-lg border border-slate-800">
-                        <MessageSquare className="w-5 h-5 text-amber-500" />
+                <div className="bg-white p-8 rounded-[32px] shadow-[0_12px_40px_rgba(0,0,0,0.04)] border border-[#F3EDE4]/50 relative overflow-hidden">
+                    <div className="flex items-center mb-8">
+                        <div className="w-11 h-11 bg-[#1F1F1F] rounded-full mr-5 flex items-center justify-center shadow-lg">
+                            <MessageSquare className="w-5 h-5 text-[#4E8F7A]" />
+                        </div>
+                        <label className="text-lg font-serif font-medium text-slate-900">Special Instructions</label>
                     </div>
-                    <label className="text-lg font-serif italic text-slate-900">Special Instructions</label>
-                </div>
 
-                <div className="relative z-10">
                     <textarea
-                        className="w-full h-40 p-6 bg-slate-50 border border-slate-100 rounded-[2rem] mb-8 focus:ring-4 focus:ring-amber-500/5 focus:border-amber-500/30 text-slate-900 font-medium transition-all placeholder:text-slate-300 resize-none outline-none"
+                        className="w-full h-48 p-8 bg-[#F3EDE4]/30 border border-[#F3EDE4] rounded-[24px] mb-10 focus:ring-0 focus:border-[#4E8F7A] text-slate-900 font-medium transition-all placeholder:text-slate-300 resize-none outline-none text-sm leading-relaxed"
                         placeholder="Tell us what you need (e.g., more pillows, foam bath, etc.)"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
@@ -135,12 +144,13 @@ function ServiceContent() {
                     <RequestButton
                         onClick={handleSubmit}
                         loading={isLoading}
-                        className="w-full bg-slate-900 hover:bg-slate-800 text-white py-6 rounded-2xl font-black text-xs uppercase tracking-[0.25em] shadow-xl shadow-slate-200 active:scale-[0.98] transition-all flex items-center justify-center border-none"
+                        className="w-full bg-[#4E8F7A] hover:bg-[#3D705F] text-white py-6 rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg shadow-[#4E8F7A]/20 transition-all flex items-center justify-center border-none font-sans"
                     >
-                        <Send className="w-4 h-4 mr-3 text-amber-500" /> Send Service Request
+                        <Send className="w-4 h-4 mr-3" /> Send Service Request
                     </RequestButton>
                 </div>
             </motion.div>
+
         </div>
     );
 }

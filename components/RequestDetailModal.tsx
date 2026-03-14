@@ -9,9 +9,11 @@ import { motion, AnimatePresence } from "framer-motion";
 interface RequestDetailModalProps {
     request: HotelRequest | null;
     onClose: () => void;
+    onApprove?: (id: string, room: string) => void;
+    onReject?: (id: string) => void;
 }
 
-export function RequestDetailModal({ request, onClose }: RequestDetailModalProps) {
+export function RequestDetailModal({ request, onClose, onApprove, onReject }: RequestDetailModalProps) {
     if (!request) return null;
 
     const isRestaurant = request.type.toLowerCase().includes("restaurant") || request.type.toLowerCase().includes("room service");
@@ -93,12 +95,43 @@ export function RequestDetailModal({ request, onClose }: RequestDetailModalProps
                         )}
                     </div>
 
-                    <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end">
+                    <div className="p-6 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-3">
+                        <div className="flex gap-3">
+                            {onReject && (request.status === "Pending" || request.status === "Assigned") && (
+                                <button
+                                    onClick={() => {
+                                        if (confirm("Reject this request?")) {
+                                            onReject(request.id);
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-all border border-red-100 active:scale-95"
+                                >
+                                    Reject
+                                </button>
+                            )}
+                            
+                            {onApprove && request.type === "Late Checkout" && request.status !== "Completed" && request.status !== "Rejected" && (
+                                <button
+                                    onClick={() => {
+                                        const newTime = prompt("Set new checkout time:", "1:00 PM");
+                                        if (newTime) {
+                                            onApprove(request.id, request.room);
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-100 active:scale-95"
+                                >
+                                    Approve Extension
+                                </button>
+                            )}
+                        </div>
+
                         <button
                             onClick={onClose}
                             className="px-6 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-black transition-all shadow-lg active:scale-95"
                         >
-                            Close Details
+                            Close
                         </button>
                     </div>
                 </motion.div>

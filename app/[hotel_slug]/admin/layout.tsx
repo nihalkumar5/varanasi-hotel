@@ -47,31 +47,35 @@ export default function AdminLayout({
         }
     }, [user, authLoading, hotelSlug, isLoginPage, router]);
 
-    const navItems = [
-        { id: 'dashboard', name: "Main Dashboard", href: `/${hotelSlug}/admin/dashboard`, icon: <LayoutDashboard className="w-5 h-5" />, roles: ['admin'] },
-        { id: 'kitchen', name: "Kitchen Board", href: `/${hotelSlug}/admin/kitchen`, icon: <Utensils className="w-5 h-5" />, roles: ['admin', 'kitchen'] },
-        { id: 'housekeeping', name: "Housekeeping", href: `/${hotelSlug}/admin/housekeeping`, icon: <Shirt className="w-5 h-5" />, roles: ['admin', 'housekeeping'] },
-        { id: 'reception', name: "Reception Board", href: `/${hotelSlug}/admin/reception`, icon: <ConciergeBell className="w-5 h-5" />, roles: ['admin', 'reception'] },
-        { id: 'requests', name: "All Requests", href: `/${hotelSlug}/admin/requests`, icon: <Inbox className="w-5 h-5" />, roles: ['admin', 'reception'] },
-        { id: 'checkout', name: "Billing & Checkout", href: `/${hotelSlug}/admin/checkout`, icon: <Receipt className="w-5 h-5" />, roles: ['admin', 'reception'] },
-        { id: 'rooms', name: "Rooms & QR", href: `/${hotelSlug}/admin/rooms`, icon: <Hotel className="w-5 h-5" />, roles: ['admin', 'reception'] },
-        { id: 'menu', name: "Menu Management", href: `/${hotelSlug}/admin/menu`, icon: <Utensils className="w-5 h-5" />, roles: ['admin', 'kitchen'] },
-        { id: 'analytics', name: "Data Analytics", href: `/${hotelSlug}/admin/analytics`, icon: <BarChart className="w-5 h-5" />, roles: ['admin'] },
-        { id: 'staff', name: "Staff Management", href: `/${hotelSlug}/admin/staff`, icon: <Users className="w-5 h-5" />, roles: ['admin'] },
-        { id: 'branding', name: "Hotel Branding", href: `/${hotelSlug}/admin/branding`, icon: <Settings className="w-5 h-5" />, roles: ['admin'] },
+    const navSections = [
+        {
+            title: "Operations",
+            items: [
+                { id: 'dashboard', name: "Dashboard", href: `/${hotelSlug}/admin/dashboard`, icon: LayoutDashboard, roles: ['admin'] },
+                { id: 'kitchen', name: "Kitchen Board", href: `/${hotelSlug}/admin/kitchen`, icon: Utensils, roles: ['admin', 'kitchen'] },
+                { id: 'housekeeping', name: "Housekeeping", href: `/${hotelSlug}/admin/housekeeping`, icon: Shirt, roles: ['admin', 'housekeeping'] },
+                { id: 'reception', name: "Reception", href: `/${hotelSlug}/admin/reception`, icon: ConciergeBell, roles: ['admin', 'reception'] },
+            ]
+        },
+        {
+            title: "Service Flow",
+            items: [
+                { id: 'requests', name: "Active Requests", href: `/${hotelSlug}/admin/requests`, icon: Inbox, roles: ['admin', 'reception'] },
+                { id: 'checkout', name: "Billing & Invoices", href: `/${hotelSlug}/admin/checkout`, icon: Receipt, roles: ['admin', 'reception'] },
+                { id: 'rooms', name: "Room Status", href: `/${hotelSlug}/admin/rooms`, icon: Hotel, roles: ['admin', 'reception'] },
+            ]
+        },
+        {
+            title: "Management",
+            items: [
+                { id: 'analytics', name: "Analytics", href: `/${hotelSlug}/admin/analytics`, icon: BarChart, roles: ['admin'] },
+                { id: 'staff', name: "Staff Management", href: `/${hotelSlug}/admin/staff`, icon: Users, roles: ['admin'] },
+                { id: 'branding', name: "System Config", href: `/${hotelSlug}/admin/branding`, icon: Settings, roles: ['admin'] },
+            ]
+        }
     ];
 
-    // Filtered nav items based on role
     const userRole = profile?.role || (process.env.NEXT_PUBLIC_FORCE_DEMO === 'true' ? 'admin' : 'staff');
-    const filteredNavItems = navItems.filter(item => item.roles.includes(userRole));
-
-    // Check if current path is allowed
-    const isPathAllowed = () => {
-        if (userRole === 'admin') return true;
-        const currentItem = navItems.find(item => pathname === item.href);
-        if (!currentItem) return true; // Internal or unknown routes
-        return currentItem.roles.includes(userRole);
-    };
 
     if (isLoginPage) {
         return <main className="min-h-screen bg-slate-50">{children}</main>;
@@ -79,79 +83,73 @@ export default function AdminLayout({
 
     if (authLoading || profileLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            </div>
-        );
-    }
-
-    if (!isPathAllowed()) {
-        return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-                <div className="max-w-md w-full bg-white rounded-[2.5rem] p-10 shadow-2xl border border-red-50 text-center">
-                    <div className="w-20 h-20 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <ShieldAlert className="w-10 h-10" />
-                    </div>
-                    <h1 className="text-2xl font-black text-slate-900 mb-2">Access Restricted</h1>
-                    <p className="text-slate-500 font-medium mb-8">You do not have permission to access this department. Please return to your assigned dashboard.</p>
-                    <button
-                        onClick={() => router.back()}
-                        className="w-full py-4 rounded-xl bg-slate-900 text-white font-bold transition-transform active:scale-95"
-                    >
-                        Go Back
-                    </button>
-                </div>
+            <div className="min-h-screen flex items-center justify-center bg-[#0F172A]">
+                <Loader2 className="w-8 h-8 text-[#C6A25A] animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 text-gray-900 flex">
-            <aside className="w-72 bg-white border-r hidden md:flex flex-col h-screen sticky top-0 shadow-sm transition-all duration-300">
-                <div className="p-8 border-b">
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tighter">
-                        Hotel <span className="text-blue-600">Admin</span>
-                    </h1>
-                    <div className="flex items-center mt-2 px-3 py-1 bg-slate-100 rounded-full w-fit">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 mr-2" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{userRole}</span>
+        <div className="min-h-screen bg-[#F8F8F8] text-slate-900 flex font-inter">
+            {/* Command Center Sidebar */}
+            <aside className="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col h-screen sticky top-0 z-50 shadow-sm transition-all duration-300">
+                <div className="p-6 border-b border-slate-100 flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-[#0F172A] rounded-xl flex items-center justify-center shadow-lg">
+                        <ShieldAlert className="w-6 h-6 text-[#C6A25A]" />
+                    </div>
+                    <div>
+                        <p className="font-black text-slate-900 text-sm tracking-tight leading-none">Command Center</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Live Ops</p>
                     </div>
                 </div>
 
-                <nav className="p-4 space-y-1.5 flex-1 overflow-y-auto">
-                    {filteredNavItems.map((item) => {
-                        const isActive = pathname === item.href;
+                <div className="flex-1 overflow-y-auto p-4 space-y-8 mt-4">
+                    {navSections.map((section, sIdx) => {
+                        const filteredItems = section.items.filter(item => item.roles.includes(userRole));
+                        if (filteredItems.length === 0) return null;
+                        
                         return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                className={`flex items-center px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 group ${isActive
-                                    ? 'bg-blue-50 text-blue-600 shadow-sm shadow-blue-100'
-                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                    }`}
-                            >
-                                <div className={`mr-3.5 transition-colors duration-200 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-900'}`}>
-                                    {isActive ? React.cloneElement(item.icon, { className: "w-5 h-5" }) : item.icon}
-                                </div>
-                                {item.name}
-                                {isActive && (
-                                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]" />
-                                )}
-                            </Link>
+                            <section key={sIdx}>
+                                <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">{section.title}</p>
+                                <nav className="space-y-1">
+                                    {filteredItems.map((item) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.id}
+                                                href={item.href}
+                                                className={`w-full flex items-center px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${isActive 
+                                                    ? 'bg-[#0F172A] text-white shadow-lg' 
+                                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+                                            >
+                                                <item.icon className={`w-4 h-4 mr-3 ${isActive ? 'text-[#C6A25A]' : 'text-slate-400'}`} />
+                                                {item.name}
+                                            </Link>
+                                        );
+                                    })}
+                                </nav>
+                            </section>
                         );
                     })}
-                </nav>
+                </div>
 
-                <div className="p-4 border-t bg-slate-50/50">
+                <div className="p-4 border-t border-slate-100 space-y-2">
                     <button
                         onClick={() => router.push(`/${hotelSlug}/guest/dashboard`)}
                         className="w-full flex items-center justify-center px-4 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm active:scale-[0.98]"
                     >
                         Switch to Guest View
                     </button>
+                    <button
+                        onClick={async () => { await router.push(`/${hotelSlug}/admin/login`); }}
+                        className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all"
+                    >
+                        <ShieldAlert className="w-4 h-4 mr-3" />
+                        System Exit
+                    </button>
                 </div>
             </aside>
-            <main className="flex-1 overflow-x-hidden w-full bg-slate-50/30">
+            <main className="flex-1 overflow-x-hidden w-full bg-[#F8F8F8]">
                 {children}
             </main>
         </div>

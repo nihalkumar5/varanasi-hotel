@@ -1,7 +1,7 @@
 import React from "react";
-import { CheckCircle2, Clock, Loader2, PlayCircle } from "lucide-react";
+import { CheckCircle2, Clock, Loader2, PlayCircle, XCircle } from "lucide-react";
 
-export type RequestStatus = "Pending" | "Assigned" | "In Progress" | "Completed";
+export type RequestStatus = "Pending" | "Assigned" | "In Progress" | "Completed" | "Rejected";
 
 export function StatusBadge({ status }: { status: RequestStatus }) {
     const statusConfig = {
@@ -9,6 +9,7 @@ export function StatusBadge({ status }: { status: RequestStatus }) {
         Assigned: { color: "bg-blue-100/50 text-blue-600 border-blue-200", icon: <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> },
         "In Progress": { color: "bg-[#E31837]/10 text-[#E31837] border-red-200", icon: <PlayCircle className="w-3.5 h-3.5 mr-1.5" /> },
         Completed: { color: "bg-emerald-100/50 text-emerald-600 border-emerald-200", icon: <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> },
+        Rejected: { color: "bg-red-100/50 text-red-600 border-red-200", icon: <XCircle className="w-3.5 h-3.5 mr-1.5" /> },
     };
 
     const config = statusConfig[status];

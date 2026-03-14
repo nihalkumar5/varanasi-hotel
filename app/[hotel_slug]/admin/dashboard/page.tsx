@@ -3,9 +3,23 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { StatusBadge, RequestStatus } from "@/components/StatusBadge";
-import { CheckCircle, Volume2, VolumeX, Eye, Utensils, Bell, Search, LogOut, RefreshCw } from "lucide-react";
+import { 
+    CheckCircle, Volume2, VolumeX, Eye, Utensils, Bell, Search, 
+    LogOut, RefreshCw, XCircle, LayoutDashboard, UtensilsCrossed, 
+    Home, MessageSquare, ClipboardList, CreditCard, Users, 
+    BarChart3, Settings, ShieldAlert, Clock, Map as MapIcon, 
+    AlertCircle, Sparkles, ChevronRight
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHotelBranding, useSupabaseRequests, updateSupabaseRequestStatus, HotelRequest, signOut } from "@/utils/store";
+import { 
+    useHotelBranding, 
+    useSupabaseRequests, 
+    updateSupabaseRequestStatus, 
+    HotelRequest, 
+    signOut,
+    approveLateCheckout,
+    rejectSupabaseRequest
+} from "@/utils/store";
 import { startAdminAlert, stopAdminAlert, startWaterAlert, stopWaterAlert, initAudioContext } from "@/utils/audio";
 import { RequestDetailModal } from "@/components/RequestDetailModal";
 
@@ -17,19 +31,31 @@ export default function AdminDashboard() {
     const { branding, loading } = useHotelBranding(hotelSlug);
     const requests = useSupabaseRequests(branding?.id);
 
-    const [audioEnabled, setAudioEnabled] = useState(true); // Default to true
+    const [audioEnabled, setAudioEnabled] = useState(true);
     const [audioInitialized, setAudioInitialized] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<HotelRequest | null>(null);
     const [activeTab, setActiveTab] = useState<"queue" | "active" | "history">("queue");
     const [searchQuery, setSearchQuery] = useState("");
+    const [showMap, setShowMap] = useState(false);
 
-    // Load initial preference from localStorage and setup global click listener
+    const handleApproveLateCheckout = async (requestId: string, room: string) => {
+        if (!branding?.id) return;
+        const newTime = prompt("Specify the approved checkout time:", "1:00 PM");
+        if (newTime) {
+            await approveLateCheckout(requestId, branding.id, room, newTime);
+        }
+    };
+
+    const handleRejectRequest = async (id: string) => {
+        if (confirm("Are you sure you want to reject this request?")) {
+            await rejectSupabaseRequest(id);
+        }
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('admin_audio_enabled');
-            if (saved !== null) {
-                setAudioEnabled(saved === 'true');
-            }
+            if (saved !== null) setAudioEnabled(saved === 'true');
 
             const handleGlobalClick = () => {
                 if (!audioInitialized) {
@@ -56,7 +82,7 @@ export default function AdminDashboard() {
         const hasPending = requests.some(r => r.status === "Pending");
 
         if (hasWater) {
-            stopAdminAlert(); // Stop regular if water is present
+            stopAdminAlert();
             startWaterAlert();
         } else if (hasPending) {
             stopWaterAlert();
@@ -73,277 +99,345 @@ export default function AdminDashboard() {
 
     const toggleAudio = () => {
         if (!audioEnabled) {
-            // Enabling audio
             initAudioContext();
             setAudioEnabled(true);
             setAudioInitialized(true);
             localStorage.setItem('admin_audio_enabled', 'true');
         } else {
-            // Muting audio - requires confirmation as per user request
-            const confirmed = window.confirm("WARNING: Muting alarms may lead to missed guest requests. Are you sure you want to silence the traffic control signals?");
-            if (confirmed) {
+            if (window.confirm("WARNING: Muting alarms may lead to missed guest requests. Silence signals?")) {
                 setAudioEnabled(false);
                 localStorage.setItem('admin_audio_enabled', 'false');
             }
         }
     };
 
-    const getRowStyle = (type: string) => {
-        const lowerType = type.toLowerCase();
-        if (lowerType === "water") {
-            return "bg-blue-50/50 hover:bg-blue-100/50 border-l-8 border-l-blue-600 animate-pulse";
-        }
-        if (lowerType.includes("restaurant") || lowerType.includes("room service")) {
-            return "bg-amber-50/20 hover:bg-amber-50 border-l-4 border-l-amber-400";
-        }
-        return "hover:bg-gray-50/50 border-l-4 border-l-transparent";
+    const getPriority = (type: string) => {
+        const lower = type.toLowerCase();
+        if (lower.includes("checkout") || lower.includes("water") || lower.includes("reception")) return "High";
+        if (lower.includes("towel") || lower.includes("cleaning")) return "Medium";
+        return "Normal";
     };
 
-    // Filter out Food and Water for Reception (Kitchen handles these now)
-    const receptionRequests = requests.filter(r => {
+    const getPriorityColor = (priority: string) => {
+        if (priority === "High") return "text-red-500 bg-red-50";
+        if (priority === "Medium") return "text-amber-500 bg-amber-50";
+        return "text-green-500 bg-green-50";
+    };
+
+    // Filter signals
+    const filteredRequests = requests.filter(r => {
         const type = r.type.toLowerCase();
-        return !["water", "dining", "restaurant", "room service", "food"].some(t => type.includes(t));
-    });
+        const isReception = !["water", "dining", "restaurant", "room service", "food"].some(t => type.includes(t));
+        return isReception && (
+            r.room.includes(searchQuery) ||
+            r.type.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }).sort((a, b) => b.timestamp - a.timestamp);
 
-    const sortedRequests = [...receptionRequests].sort((a, b) => b.timestamp - a.timestamp);
+    const queueSignals = filteredRequests.filter(r => r.status === "Pending");
+    const activeSignals = filteredRequests.filter(r => r.status === "Assigned" || r.status === "In Progress");
+    const historySignals = filteredRequests.filter(r => r.status === "Completed" || r.status === "Rejected");
 
-    const filteredBySearch = sortedRequests.filter(r =>
-        r.room.includes(searchQuery) ||
-        r.type.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const currentSignals = activeTab === "queue" ? queueSignals : (activeTab === "active" ? activeSignals : historySignals);
 
-    const queueRequests = filteredBySearch.filter(r => r.status === "Pending");
-    const activeRequests = filteredBySearch.filter(r => r.status === "Assigned" || r.status === "In Progress");
-    const historyRequests = filteredBySearch.filter(r => r.status === "Completed");
-
-    const currentDisplayRequests = activeTab === "queue" ? queueRequests : (activeTab === "active" ? activeRequests : historyRequests);
-
-    const billedRequests = requests.filter(r => (r.price || 0) > 0);
-    const totalRevenue = billedRequests.reduce((sum, r) => sum + (r.total || 0), 0);
-    const checkoutRequests = requests.filter(r => r.type === "Checkout Requested" && r.status !== "Completed");
+    const totalRevenue = requests.filter(r => (r.price || 0) > 0).reduce((sum, r) => sum + (r.total || 0), 0);
+    const pendingCheckouts = requests.filter(r => r.type === "Checkout Requested" && r.status !== "Completed").length;
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="min-h-screen flex items-center justify-center bg-[#0F172A]">
+            <RefreshCw className="w-12 h-12 text-[#C6A25A] animate-spin" />
         </div>
     );
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            {/* Audio Signal Awareness Banner */}
-            <AnimatePresence>
-                {!audioEnabled && (
-                    <motion.div
-                        initial={{ y: -100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -100, opacity: 0 }}
-                        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4"
-                    >
-                        <button
-                            onClick={toggleAudio}
-                            className="w-full bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between group hover:bg-slate-800 transition-all border-b-4 border-slate-700 active:border-b-0 active:translate-y-1"
-                        >
-                            <div className="flex items-center">
-                                <div className="bg-red-500/20 p-2 rounded-xl mr-4 animate-pulse">
-                                    <VolumeX className="w-5 h-5 text-red-400" />
-                                </div>
-                                <div className="text-left">
-                                    <p className="font-black text-sm uppercase tracking-wider">Signals Are Muted</p>
-                                    <p className="text-[10px] font-bold text-slate-400 opacity-80">You will not hear new guest alerts. Click to activate.</p>
-                                </div>
-                            </div>
-                            <div className="bg-white text-slate-900 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:scale-105 transition-transform">
-                                Turn On
-                            </div>
-                        </button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Subtle initialization prompt if enabled but browser blocked */}
-            <AnimatePresence>
-                {audioEnabled && !audioInitialized && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="fixed bottom-6 right-6 z-50 pointer-events-none"
-                    >
-                        <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center">
-                            <RefreshCw className="w-3 h-3 mr-2 animate-spin-slow" />
-                            Audio Standby - Click anywhere to activate
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Traffic Control</h1>
-                    <p className="text-slate-500 font-medium">Managing {requests.length} total signals for {branding?.name}</p>
+        <div className="flex flex-col min-h-screen">
+            {/* 2️⃣ Header Upgrade (Command Center Style) */}
+            <header className="h-20 bg-[#0B0F19] flex items-center justify-between px-8 text-white sticky top-0 z-40 shadow-2xl">
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-black tracking-tight flex items-center">
+                        Traffic Control <span className="ml-3 text-[10px] bg-red-600 px-2 py-0.5 rounded-full animate-pulse-gold font-bold uppercase tracking-widest text-white">Live</span>
+                    </h1>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{branding?.name || "Grand Royale Operations"}</p>
                 </div>
 
-                <div className="flex items-center space-x-3 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-64">
-                        <input
-                            type="text"
-                            placeholder="Search Room / Type..."
+                <div className="flex items-center space-x-6">
+                    {/* 6️⃣ Live Alarm Button Indicator */}
+                    <button 
+                        onClick={toggleAudio}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-full border transition-all ${audioEnabled ? 'border-red-500 bg-red-500/10 text-red-400' : 'border-slate-700 text-slate-500'}`}
+                    >
+                        <div className={`w-2 h-2 rounded-full ${audioEnabled ? 'bg-red-500 animate-alert shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-slate-600'}`} />
+                        <span className="text-xs font-black uppercase tracking-widest">
+                            {audioEnabled ? `${queueSignals.length} Live Alerts` : "Signals Muted"}
+                        </span>
+                    </button>
+
+                    <div className="h-8 w-px bg-slate-800" />
+
+                    <div className="relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input 
+                            type="text" 
+                            placeholder="Filter signals..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-2xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500/10 transition-all outline-none"
+                            className="bg-slate-900 border border-slate-800 rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-[#C6A25A]/20 focus:border-[#C6A25A] outline-none transition-all w-48 focus:w-64"
                         />
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     </div>
 
-                    <button
-                        onClick={toggleAudio}
-                        className={`flex items-center px-5 py-2.5 rounded-2xl font-bold transition-all shadow-sm active:scale-95 ${audioEnabled ? 'bg-red-600 text-white shadow-red-100' : 'bg-white text-slate-600 border border-slate-200'}`}
-                    >
-                        {audioEnabled ? <Volume2 className="w-5 h-5 mr-2" /> : <VolumeX className="w-5 h-5 mr-2" />}
-                        {audioEnabled ? "Live Alarms" : "Signals Muted"}
-                    </button>
+                    <Bell className="w-5 h-5 text-slate-400 hover:text-white transition-colors cursor-pointer" />
+                    
+                    <div className="flex items-center space-x-3 bg-slate-900 py-1.5 pl-1.5 pr-4 rounded-full border border-slate-800">
+                        <div className="w-7 h-7 bg-[#C6A25A] rounded-full flex items-center justify-center font-black text-[#0F172A] text-xs">A</div>
+                        <span className="text-xs font-bold text-slate-300">Admin</span>
+                    </div>
+                </div>
+            </header>
 
-                    <button
-                        onClick={async () => {
-                            await signOut();
-                            router.push(`/${hotelSlug}/admin/login`);
-                        }}
-                        className="flex items-center px-5 py-2.5 rounded-2xl font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+            <div className="p-8 space-y-8 flex-1">
+                {/* 3️⃣ Stats Cards (Live Operational Cards) */}
+                <div className="grid grid-cols-4 gap-6">
+                    <div className="bg-white p-6 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
+                            <Home className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Arrivals Today</p>
+                            <p className="text-2xl font-black text-slate-900">{queueSignals.length}</p>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner">
+                            <AlertCircle className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Signals</p>
+                            <p className="text-2xl font-black text-slate-900">{activeSignals.length}</p>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-inner">
+                            <CreditCard className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue Today</p>
+                            <p className="text-2xl font-black text-green-600">₹{totalRevenue.toFixed(0)}</p>
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-[18px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 flex items-center space-x-4 hover:border-[#C6A25A] cursor-pointer transition-all group" onClick={() => router.push(`/${hotelSlug}/admin/checkout`)}>
+                        <div className="w-12 h-12 bg-slate-50 text-slate-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C6A25A]/10 group-hover:text-[#C6A25A]">
+                            <MapIcon className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-[#C6A25A]">Pending Checkout</p>
+                            <p className="text-2xl font-black text-slate-900">{pendingCheckouts} Rooms</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Operational Feed Controls */}
+                <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <div className="flex space-x-8">
+                        {[
+                            { id: "queue", label: "Open Signals", count: queueSignals.length },
+                            { id: "active", label: "Active Dispatch", count: activeSignals.length },
+                            { id: "history", label: "Archive", count: historySignals.length }
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`relative pb-4 text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'text-[#0F172A]' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                {tab.label} ({tab.count})
+                                {activeTab === tab.id && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-1 bg-[#C6A25A] rounded-full" />}
+                            </button>
+                        ))}
+                    </div>
+                    <button 
+                        onClick={() => setShowMap(!showMap)}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${showMap ? 'bg-[#0F172A] text-white' : 'bg-white border text-slate-600'}`}
                     >
-                        <LogOut className="w-5 h-5 mr-2" />
-                        Log Out
+                        <MapIcon className="w-4 h-4" />
+                        <span>{showMap ? "Hide Floor Map" : "Live Hotel Map"}</span>
                     </button>
                 </div>
-            </div>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                <button onClick={() => setActiveTab("queue")} className={`p-6 rounded-3xl border transition-all text-left ${activeTab === 'queue' ? 'bg-amber-50 border-amber-200 ring-2 ring-amber-500/20' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'queue' ? 'text-amber-600' : 'text-slate-400'}`}>New Arrivals</p>
-                    <p className="text-3xl font-black text-slate-900 mt-1">{queueRequests.length}</p>
-                </button>
-                <button onClick={() => setActiveTab("active")} className={`p-6 rounded-3xl border transition-all text-left ${activeTab === 'active' ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-500/20' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${activeTab === 'active' ? 'text-blue-600' : 'text-slate-400'}`}>In Action</p>
-                    <p className="text-3xl font-black text-slate-900 mt-1">{activeRequests.length}</p>
-                </button>
-                <div className="bg-white p-6 rounded-3xl border border-slate-100">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue</p>
-                    <p className="text-3xl font-black text-blue-600 mt-1">₹{totalRevenue.toFixed(0)}</p>
-                </div>
-                <button onClick={() => router.push(`/${hotelSlug}/admin/checkout`)} className="bg-white p-6 rounded-3xl border border-slate-100 hover:border-blue-200 transition-colors text-left group">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-blue-600 transition-colors">Checkouts</p>
-                    <p className="text-3xl font-black text-slate-900 mt-1">{checkoutRequests.length} Ready</p>
-                </button>
-            </div>
-
-            {/* Tab Header */}
-            <div className="bg-white rounded-t-[2.5rem] border-x border-t border-slate-100 p-6 flex items-center justify-between shadow-sm">
-                <h2 className="text-xl font-black text-slate-900 capitalize">
-                    {activeTab === 'queue' ? '🔥 Open Queue' : (activeTab === 'active' ? '⚡ Active Dispatch' : '📁 Resolution Archive')}
-                </h2>
-                <div className="flex space-x-1">
-                    {["queue", "active", "history"].map(t => (
-                        <button
-                            key={t}
-                            onClick={() => setActiveTab(t as any)}
-                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                {/* 🔟 Live Hotel Map Feature */}
+                <AnimatePresence>
+                    {showMap && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
                         >
-                            {t}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Main Traffic Table */}
-            <div className="bg-white rounded-b-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden mb-12">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="bg-slate-50/50 border-b border-slate-100">
-                            <th className="p-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Guest Room</th>
-                            <th className="p-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Request Type</th>
-                            <th className="p-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Timer</th>
-                            <th className="p-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Action Control</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                        {currentDisplayRequests.length === 0 ? (
-                            <tr>
-                                <td colSpan={4} className="p-20 text-center text-slate-300 font-bold tracking-tight italic">
-                                    No {activeTab} signals at this time...
-                                </td>
-                            </tr>
-                        ) : (
-                            currentDisplayRequests.map((req) => (
-                                <tr key={req.id} className={`transition-all duration-300 group ${getRowStyle(req.type)}`}>
-                                    <td className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black mr-4 shadow-xl shadow-slate-200">
-                                                {req.room}
-                                            </div>
-                                            <div>
-                                                <span className="font-black text-slate-900 block">Room {req.room}</span>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Premium Guest</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="p-5">
-                                        <div className="flex items-center mb-1">
-                                            {(req.type.toLowerCase().includes("restaurant") || req.type.toLowerCase().includes("room service")) ?
-                                                <Utensils className="w-4 h-4 mr-2 text-amber-600" /> :
-                                                <Bell className="w-4 h-4 mr-2 text-blue-600" />
-                                            }
-                                            <span className="font-black text-slate-900">{req.type}</span>
-                                        </div>
-                                        {req.notes && (
-                                            <div className="text-xs text-slate-400 group-hover:text-slate-600 transition-colors line-clamp-1 italic font-medium">"{req.notes}"</div>
-                                        )}
-                                    </td>
-                                    <td className="p-5 text-center">
-                                        <div className="flex flex-col items-center">
-                                            <span className="text-xs font-black text-slate-900">{req.time}</span>
-                                            <span className="text-[8px] font-black text-slate-300 uppercase mt-0.5">Elapsed</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-5 text-right">
-                                        <div className="flex items-center justify-end space-x-3">
-                                            <button
-                                                onClick={() => setSelectedRequest(req)}
-                                                className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 group-hover:shadow-sm"
-                                                title="View Signals"
+                            <div className="bg-[#0F172A] rounded-3xl p-8 border border-slate-800 shadow-2xl relative">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-3 h-3 bg-[#C6A25A] rounded-full animate-pulse shadow-[0_0_10px_#C6A25A]" />
+                                        <span className="text-xs font-black text-white uppercase tracking-[0.2em]">Floor 01 Operations</span>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="flex items-center space-x-2"><div className="w-2 h-2 bg-slate-700 rounded-full" /><span className="text-[10px] text-slate-400 uppercase font-bold">Standard</span></div>
+                                        <div className="flex items-center space-x-2"><div className="w-2 h-2 bg-green-500 rounded-full" /><span className="text-[10px] text-slate-400 uppercase font-bold">Occupied</span></div>
+                                        <div className="flex items-center space-x-2"><div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" /><span className="text-[10px] text-slate-400 uppercase font-bold">Signal</span></div>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-6 gap-4">
+                                    {Array.from({ length: 12 }).map((_, i) => {
+                                        const roomNum = (101 + i).toString();
+                                        const hasSignal = requests.some(r => r.room === roomNum && r.status === "Pending");
+                                        return (
+                                            <div 
+                                                key={i} 
+                                                className={`h-24 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${hasSignal ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'bg-slate-900 border-slate-800'}`}
                                             >
-                                                <Eye className="w-5 h-5" />
-                                            </button>
+                                                <span className={`text-lg font-black ${hasSignal ? 'text-white' : 'text-slate-500'}`}>{roomNum}</span>
+                                                {hasSignal && <Bell className="w-4 h-4 text-red-500 mt-2 animate-bounce" />}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-transparent to-transparent pointer-events-none opacity-40" />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                                            {req.status === "Pending" && (
-                                                <button onClick={() => updateStatus(req.id, "Assigned")} className="bg-slate-900 text-white px-6 py-2.5 rounded-2xl font-black text-xs hover:bg-black transition-all shadow-xl shadow-slate-200 active:scale-95">
-                                                    Accept Signal
-                                                </button>
+                {/* 4️⃣ Queue Section - Operational Feed Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <AnimatePresence mode="popLayout">
+                        {currentSignals.length === 0 ? (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="col-span-full py-20 bg-white rounded-3xl border border-dashed border-slate-200 flex flex-col items-center justify-center"
+                            >
+                                <Sparkles className="w-12 h-12 text-slate-200 mb-4" />
+                                <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">All Signals Resolved</p>
+                            </motion.div>
+                        ) : (
+                            currentSignals.map((signal) => {
+                                const priority = getPriority(signal.type);
+                                return (
+                                    <motion.div
+                                        key={signal.id}
+                                        layout
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, x: -100 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:border-[#C6A25A]/30 transition-all group relative overflow-hidden"
+                                    >
+                                        {/* Priority Indicator Line */}
+                                        <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${priority === 'High' ? 'bg-red-500' : (priority === 'Medium' ? 'bg-amber-500' : 'bg-green-500')}`} />
+                                        
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-12 h-12 bg-[#0F172A] text-white rounded-2xl flex items-center justify-center font-black text-lg shadow-lg">
+                                                    {signal.room}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-slate-900 group-hover:text-[#C6A25A] transition-colors">Room {signal.room}</h3>
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-full inline-block mt-1">Premium Guest</span>
+                                                </div>
+                                            </div>
+                                            <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${getPriorityColor(priority)}`}>
+                                                {priority} Priority
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4 mb-8">
+                                            <div>
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Request Signal</p>
+                                                <div className="flex items-center text-slate-900 font-black">
+                                                    <Bell className="w-4 h-4 mr-2 text-[#C6A25A]" />
+                                                    {signal.type}
+                                                </div>
+                                                {signal.notes && <p className="text-xs text-slate-500 font-medium mt-2 italic line-clamp-2">"{signal.notes}"</p>}
+                                            </div>
+
+                                            <div className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl">
+                                                <div>
+                                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Time Registered</p>
+                                                    <p className="text-xs font-black text-slate-900">{signal.time}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Status</p>
+                                                    <span className="text-[10px] font-black text-slate-900 uppercase">{signal.status}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* 9️⃣ Micro Interaction Action Buttons */}
+                                        <div className="flex items-center space-x-2">
+                                            {signal.status === "Pending" && (
+                                                <>
+                                                    {signal.type === "Late Checkout" ? (
+                                                        <button 
+                                                            onClick={() => handleApproveLateCheckout(signal.id, signal.room)}
+                                                            className="flex-1 bg-green-600 text-white h-11 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg active:scale-95"
+                                                        >
+                                                            Approve Ext.
+                                                        </button>
+                                                    ) : (
+                                                        <button 
+                                                            onClick={() => updateStatus(signal.id, "Assigned")}
+                                                            className="flex-1 bg-[#0F172A] text-white h-11 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-lg active:scale-95 flex items-center justify-center space-x-2"
+                                                        >
+                                                            <span>Accept Signal</span>
+                                                            <ChevronRight className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    <button 
+                                                        onClick={() => handleRejectRequest(signal.id)}
+                                                        className="px-4 bg-red-50 text-red-600 h-11 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-100 transition-all border border-red-100"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </>
                                             )}
-                                            {req.status === "Assigned" && (
-                                                <button onClick={() => updateStatus(req.id, "In Progress")} className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-xs hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-95">
+
+                                            {signal.status === "Assigned" && (
+                                                <button 
+                                                    onClick={() => updateStatus(signal.id, "In Progress")}
+                                                    className="flex-1 bg-blue-600 text-white h-11 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg"
+                                                >
                                                     Start Mission
                                                 </button>
                                             )}
-                                            {req.status === "In Progress" && (
-                                                <button onClick={() => updateStatus(req.id, "Completed")} className="bg-green-600 text-white px-6 py-2.5 rounded-2xl font-black text-xs hover:bg-green-700 transition-all shadow-xl shadow-green-100 active:scale-95 flex items-center">
-                                                    <CheckCircle className="w-4 h-4 mr-2" /> Complete
+
+                                            {signal.status === "In Progress" && (
+                                                <button 
+                                                    onClick={() => updateStatus(signal.id, "Completed")}
+                                                    className="flex-1 bg-green-600 text-white h-11 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg flex items-center justify-center space-x-2"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    <span>Resolve Signal</span>
                                                 </button>
                                             )}
-                                            {req.status === "Completed" && (
-                                                <div className="flex items-center text-green-600 font-black text-[10px] uppercase tracking-widest italic pr-4">
-                                                    <CheckCircle className="w-3 h-3 mr-1" /> Archived
-                                                </div>
-                                            )}
+
+                                            <button 
+                                                onClick={() => setSelectedRequest(signal)}
+                                                className="w-11 h-11 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center hover:bg-[#0F172A] hover:text-white transition-all border border-slate-100"
+                                            >
+                                                <Eye className="w-5 h-5" />
+                                            </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))
+                                    </motion.div>
+                                );
+                            })
                         )}
-                    </tbody>
-                </table>
+                    </AnimatePresence>
+                </div>
             </div>
 
             <RequestDetailModal
                 request={selectedRequest}
                 onClose={() => setSelectedRequest(null)}
+                onApprove={handleApproveLateCheckout}
+                onReject={handleRejectRequest}
             />
         </div>
     );
