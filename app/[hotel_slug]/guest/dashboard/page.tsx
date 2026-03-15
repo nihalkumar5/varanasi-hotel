@@ -342,9 +342,15 @@ export default function GuestDashboard() {
                                 onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
                                 className="flex h-[92px] w-full items-center justify-center rounded-[18px] border border-black/10 bg-[#d8d8d8] p-3 transition-all duration-200"
                             >
-                                <div className="flex items-center justify-center text-black">
-                                    {renderIcon(s.icon, "h-7 w-7")}
-                                </div>
+                                {s.label === "Wi-Fi Info" ? (
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-[16px] border border-[#cfcfcf] bg-[#efefef] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-2px_6px_rgba(0,0,0,0.12),0_3px_8px_rgba(0,0,0,0.12)]">
+                                        {renderIcon(s.icon, "h-7 w-7 text-[#3d3d3d] drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]")}
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center text-black">
+                                        {renderIcon(s.icon, "h-7 w-7")}
+                                    </div>
+                                )}
                             </motion.button>
                             <h3 className="mt-1.5 text-[10px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </div>
