@@ -30,6 +30,8 @@ function LoginContent() {
 
     const handleLogin = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        console.log(`[Portal] Login attempt: ${email} for hotel: ${hotelSlug}`);
+        
         if (!email || !password) {
             setError("Credentials required.");
             return;
@@ -39,35 +41,53 @@ function LoginContent() {
         setError("");
 
         try {
+            // Check if we are in demo mode
             if (process.env.NEXT_PUBLIC_FORCE_DEMO === 'true') {
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                let mockRole: 'admin' | 'kitchen' | 'housekeeping' = 'admin';
-                if (email.includes('kitchen')) mockRole = 'kitchen';
-                else if (email.includes('housekeeping')) mockRole = 'housekeeping';
-
-                let redirectPath = `/${hotelSlug}/admin/dashboard`;
-                if (mockRole === 'kitchen') redirectPath = `/${hotelSlug}/admin/kitchen`;
-                else if (mockRole === 'housekeeping') redirectPath = `/${hotelSlug}/admin/housekeeping`;
-
-                window.location.href = redirectPath;
+                console.log("[Portal] Demo mode active. Using mock auth.");
+                await new Promise(resolve => setTimeout(resolve, 800));
+                window.location.href = `/${hotelSlug}/admin/dashboard`;
                 return;
             }
 
+            console.log("[Portal] Calling Supabase signIn...");
             const { data, error: authError } = await signIn(email, password);
-            if (authError) throw authError;
+            
+            if (authError) {
+                console.error("[Portal] Auth error:", authError.message);
+                throw authError;
+            }
 
             if (data.user) {
+                console.log("[Portal] Auth successful. User ID:", data.user.id);
+                console.log("[Portal] Checking profile for redirect routing...");
+                
                 const { data: profile } = await getUserProfile(data.user.id);
+                console.log("[Portal] Profile fetched:", profile?.role || "default admin");
+
                 let redirectPath = `/${hotelSlug}/admin/dashboard`;
                 if (profile?.role === 'kitchen') redirectPath = `/${hotelSlug}/admin/kitchen`;
                 else if (profile?.role === 'housekeeping') redirectPath = `/${hotelSlug}/admin/housekeeping`;
+
+                console.log("[Portal] Redirecting to:", redirectPath);
+                // Hard refresh to ensure session cookies are picked up by middleware
                 window.location.href = redirectPath;
+            } else {
+                console.warn("[Portal] No user data returned from signIn");
+                throw new Error("Authentication failed: No user found.");
             }
         } catch (err: any) {
+            console.error("[Portal] Login flow failed:", err);
             setError(err.message || "Invalid credentials.");
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleReset = () => {
+        console.log("[Portal] Resetting portal state...");
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = `/${hotelSlug}/admin/login`;
     };
 
     return (
@@ -194,6 +214,16 @@ function LoginContent() {
                                 <span className="text-[11px] font-black uppercase tracking-[2px]">Verified Identity</span>
                             </div>
                             <span className="text-[9px] font-bold text-white uppercase tracking-[1px] text-center">Secure Staff Access</span>
+                        </div>
+
+                        {/* 9️⃣ Debug/Reset Helper */}
+                        <div className="mt-4 flex justify-center">
+                            <button 
+                                onClick={handleReset}
+                                className="text-[8px] font-bold text-white/20 uppercase tracking-[2px] hover:text-white/50 transition-colors"
+                            >
+                                Reset Portal Session
+                            </button>
                         </div>
                     </div>
 
