@@ -200,12 +200,12 @@ export default function GuestDashboard() {
     };
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-[#FDFBF9] pb-32 font-sans text-[#1F1F1F] md:mx-auto md:max-w-[520px]">
+        <div className="min-h-screen overflow-x-hidden bg-[#FDFBF9] pb-20 font-sans text-[#1F1F1F] md:mx-auto md:max-w-[520px]">
             {/* 1. Hero Hotel Card - "Halo Effect" */}
             <motion.section 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="relative h-[530px] w-full overflow-hidden sm:h-[500px]"
+                className="relative h-[260px] w-full overflow-hidden sm:h-[320px]"
             >
                 {/* Full-bleed Hotel Image Background */}
                 <div className="absolute inset-0 z-0">
@@ -217,56 +217,55 @@ export default function GuestDashboard() {
                     <div
                         className="absolute inset-0"
                         style={{
-                            background:
-                                "linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.45)), linear-gradient(to bottom, rgba(0,0,0,0.05) 15%, rgba(239,231,221,0.92) 88%)",
+                            background: "linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.45))",
                         }}
                     />
                 </div>
 
-                {/* Glass Guest Portal Overlay */}
-                <div className="absolute inset-x-4 top-[126px] z-10 sm:inset-x-6 sm:top-[108px]">
-                    <motion.div 
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                        className="relative rounded-[30px] border border-white/30 bg-white/75 p-7 shadow-[0_25px_60px_rgba(0,0,0,0.2)] backdrop-blur-[18px] [filter:drop-shadow(0_40px_50px_rgba(0,0,0,0.2))] sm:rounded-[26px] sm:p-8"
-                    >
-                        <div className="mb-8 flex items-start justify-between gap-4">
-                            <div>
-                                <h1 className="mb-2 text-[32px] font-serif font-bold uppercase leading-[0.95] tracking-[0.01em] text-[#111111]">
-                                    {branding?.name || "Mountain Lodge"}
-                                </h1>
-                                <div className="mb-3 text-[15px] tracking-[0.22em] text-[#C6A25A]">★★★★★</div>
-                                <div className="flex items-center text-slate-700/75">
-                                    <MapPin className="mr-1.5 h-3.5 w-3.5" />
-                                    <p className="text-[14px] font-semibold tracking-[0.08em]">
-                                        {(branding as any)?.address || "Kiev, Ukraine"}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between border-t border-black/5 pt-6">
-                            <div className="flex flex-col">
-                                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800/40">Checkout</p>
-                                <p className="text-[17px] font-black tracking-[0.04em] text-[#C6A25A]">
-                                    {displayCheckoutDate} <span className="px-1.5 text-[#B9A388]">·</span> {displayCheckoutTime}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-1.5 rounded-[10px] bg-[#111111] px-2.5 py-1.5 text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]">
-                                <Check className="h-3 w-3 text-[#CFA46A]" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.16em]">Verified Guest</span>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-
                 {/* Glass Header */}
-                <div className="absolute inset-x-4 top-5 z-20 sm:inset-x-6 sm:top-8">
+                <div className="absolute inset-x-4 top-6 z-20 sm:inset-x-6">
                     <div className="flex items-center justify-center rounded-[18px] border border-white/35 bg-white/35 px-5 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.08)] backdrop-blur-[18px]">
                         <span className="text-[11px] font-black uppercase tracking-[0.28em] text-[#111111]">
                             Guest Portal
                         </span>
+                    </div>
+                </div>
+            </motion.section>
+
+            {/* 1.5 Floating Hotel Info Card */}
+            <motion.section
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="-mt-12 mb-6 px-4"
+            >
+                <div className="rounded-[24px] border border-white/30 bg-white/75 p-6 shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-[18px]">
+                    <div className="mb-5">
+                        <h1 className="mb-2 text-[28px] font-serif font-bold uppercase leading-[0.95] tracking-[0.01em] text-[#111111]">
+                            {branding?.name || "Mountain Lodge"}
+                        </h1>
+                        <div className="mb-3 text-[15px] tracking-[0.22em] text-[#C6A25A]">★★★★★</div>
+                        <div className="flex items-center text-slate-700/75">
+                            <MapPin className="mr-2 h-3.5 w-3.5" />
+                            <p className="text-[14px] font-semibold tracking-[0.08em]">
+                                {(branding as any)?.address || "Kiev, Ukraine"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-black/5 pt-5">
+                        <div className="flex items-center gap-2">
+                            <div className="flex flex-col">
+                                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800/40">Checkout</p>
+                                <p className="text-[16px] font-black tracking-[0.04em] text-[#C6A25A]">
+                                    {displayCheckoutDate} <span className="px-2 text-[#B9A388]">·</span> {displayCheckoutTime}
+                                </p>
+                            </div>
+                            <div className="ml-auto flex items-center gap-1 rounded-[10px] bg-[#111111] px-2.5 py-1.5 text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]">
+                                <Check className="h-3 w-3 text-[#CFA46A]" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.16em]">Verified Guest</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </motion.section>
@@ -276,30 +275,30 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="relative z-10 mb-8 -mt-[15px] px-0 sm:-mt-1 sm:px-6"
+                className="relative z-10 mb-6 px-4"
             >
-                <div className="flex h-[88px] items-center justify-between rounded-[24px] border border-white/20 bg-[#F3EAE1]/96 px-4 py-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)] sm:rounded-[18px]">
+                <div className="flex h-[72px] items-center justify-between rounded-[16px] border border-white/20 bg-[#F3EAE1]/96 px-4 py-3 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
                     {/* Room Section */}
                     <div className="flex-1 flex flex-col items-center">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-2 opacity-70">Room</span>
+                        <span className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-70">Room</span>
                         <div className="flex items-center gap-1.5">
                             <Bed className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
-                            <span className="text-[15px] font-black text-[#1F1F1F] leading-none tracking-tight">{roomNumber || "101"}</span>
+                            <span className="text-[14px] font-black text-[#1F1F1F] leading-none tracking-tight">{roomNumber || "101"}</span>
                         </div>
                     </div>
 
-                    <div className="w-px h-8 bg-black/5 self-center mx-2"></div>
+                    <div className="mx-4 h-8 w-px self-center bg-black/5"></div>
 
                     {/* Guests Section */}
                     <div className="flex-1 flex flex-col items-center">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.25em] mb-2 opacity-70">Staying</span>
+                        <span className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-70">Staying</span>
                         <div className="flex items-center gap-1.5">
                             <Users className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
-                            <span className="text-[15px] font-black text-[#1F1F1F] leading-none tracking-tight">{guestCountLabel}</span>
+                            <span className="text-[14px] font-black text-[#1F1F1F] leading-none tracking-tight">{guestCountLabel}</span>
                         </div>
                     </div>
 
-                    <div className="w-px h-8 bg-black/5 self-center mx-2"></div>
+                    <div className="mx-4 h-8 w-px self-center bg-black/5"></div>
 
                     {/* Late Checkout Section (Premium 3D Red Button - Simplified) */}
                     <div className="flex-1 flex flex-col items-center">
@@ -307,7 +306,7 @@ export default function GuestDashboard() {
                             whileTap={{ scale: 0.96 }}
                             whileHover={{ scale: 1.03 }}
                             onClick={() => handleQuickRequest("Late Checkout", "Guest requested late checkout extension")}
-                            className="flex min-h-[58px] w-full items-center justify-center rounded-[16px] border border-[#C53030]/30 bg-[#C62828] px-[18px] py-[10px] shadow-[0_4px_0_0_#751B1B] transition-all hover:shadow-[0_6px_0_0_#751B1B] active:translate-y-[4px] active:shadow-none"
+                            className="flex min-h-[48px] w-full items-center justify-center rounded-[16px] border border-[#C53030]/30 bg-[#C62828] px-[18px] py-3 shadow-[0_4px_0_0_#751B1B] transition-all hover:shadow-[0_6px_0_0_#751B1B] active:translate-y-[4px] active:shadow-none"
                         >
                             <span className="text-[10px] font-black text-white uppercase tracking-wider leading-none text-center">
                                 Late Checkout
@@ -322,43 +321,41 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className="mb-10 px-0 sm:px-6"
+                className="mb-8 px-4"
             >
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                     {[
-                        { label: "Wi-Fi", desc: "Connect", icon: <Wifi className="h-[18px] w-[18px]" />, path: "wifi" },
-                        { label: "Dining", desc: "Orders", icon: <Utensils className="h-[18px] w-[18px]" />, path: "restaurant" },
-                        { label: "Taxi", desc: "Book", icon: <Car className="h-[18px] w-[18px]" />, path: "services" }
+                        { label: "Wi-Fi", desc: "Connect", icon: <Wifi className="h-7 w-7" />, path: "wifi" },
+                        { label: "Dining", desc: "Orders", icon: <Utensils className="h-7 w-7" />, path: "restaurant" },
+                        { label: "Taxi", desc: "Book", icon: <Car className="h-7 w-7" />, path: "services" }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
-                            className="flex min-h-[92px] flex-col items-center justify-start rounded-[20px] border border-white/70 bg-white/88 px-3 py-3.5 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
+                            className="flex h-[92px] flex-col items-center justify-center rounded-[16px] border border-white/70 bg-white/88 p-4 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
                         >
-                            <div className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
+                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
                                 {s.icon}
                             </div>
-                            <h3 className="mb-1 text-[9px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
-                            <p className="text-[6px] font-bold uppercase tracking-[0.22em] text-slate-400 opacity-75">{s.desc}</p>
+                            <h3 className="text-[10px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
                         </motion.button>
                     ))}
                     {[
-                        { label: "Cleaning", desc: "Now", icon: <Sparkles className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
-                        { label: "Laundry", desc: "Press", icon: <Shirt className="h-[18px] w-[18px]" />, path: "services" },
-                        { label: "Support", desc: "Issue", icon: <Wrench className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                        { label: "Cleaning", desc: "Now", icon: <Sparkles className="h-7 w-7" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Laundry", desc: "Press", icon: <Shirt className="h-7 w-7" />, path: "services" },
+                        { label: "Support", desc: "Issue", icon: <Wrench className="h-7 w-7" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                            className="flex min-h-[92px] flex-col items-center justify-start rounded-[20px] border border-white/70 bg-white/88 px-3 py-3.5 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
+                            className="flex h-[92px] flex-col items-center justify-center rounded-[16px] border border-white/70 bg-white/88 p-4 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
                         >
-                            <div className="mb-2.5 flex h-9 w-9 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
+                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
                                 {s.icon}
                             </div>
-                            <h3 className="mb-1 text-[9px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
-                            <p className="text-[6px] font-bold uppercase tracking-[0.22em] text-slate-400 opacity-75">{s.desc}</p>
+                            <h3 className="text-[10px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
                         </motion.button>
                     ))}
                 </div>

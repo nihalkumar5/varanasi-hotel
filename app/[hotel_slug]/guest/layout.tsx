@@ -30,7 +30,7 @@ export default function GuestLayout({
 
     return (
         <GuestAuthWrapper>
-            <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 antialiased pb-24 overflow-x-hidden">
+            <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50 pb-20 text-slate-900 antialiased">
                 {/* Ambient Background Gradient (only shown when authenticated) */}
                 <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from),_transparent_50%)] from-blue-50/50 to-transparent"></div>
 

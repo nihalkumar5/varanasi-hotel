@@ -21,14 +21,14 @@ export function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-5 left-1/2 z-50 flex w-[calc(100%-32px)] max-w-[480px] -translate-x-1/2 items-center justify-between rounded-[28px] border border-white/45 bg-white/72 px-6 py-3.5 font-sans shadow-[0_15px_35px_rgba(0,0,0,0.1)] backdrop-blur-xl">
+        <nav className="fixed bottom-4 left-1/2 z-50 flex h-16 w-[calc(100%-32px)] max-w-[480px] -translate-x-1/2 items-center justify-between rounded-[24px] border border-white/45 bg-white/72 px-4 font-sans shadow-[0_15px_35px_rgba(0,0,0,0.1)] backdrop-blur-xl">
             {items.map((item) => {
                 const active = isActive(item.key);
                 return (
                     <Link
                         key={item.key}
                         href={item.href}
-                        className="relative flex min-w-[62px] flex-col items-center gap-1.5"
+                        className="relative flex min-w-[62px] flex-col items-center gap-1"
                     >
                         <motion.div whileTap={{ scale: 0.94 }}>
                             <item.icon 
