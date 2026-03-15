@@ -253,9 +253,9 @@ export default function GuestDashboard() {
                                     {displayCheckoutDate} <span className="px-1.5 text-[#B9A388]">·</span> {displayCheckoutTime}
                                 </p>
                             </div>
-                            <div className="flex items-center gap-1.5 rounded-xl bg-[#111111] px-3 py-2 text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]">
-                                <Check className="h-3.5 w-3.5 text-[#CFA46A]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.18em]">Verified Guest</span>
+                            <div className="flex items-center gap-1.5 rounded-[10px] bg-[#111111] px-2.5 py-1.5 text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]">
+                                <Check className="h-3 w-3 text-[#CFA46A]" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.16em]">Verified Guest</span>
                             </div>
                         </div>
                     </motion.div>
@@ -276,7 +276,7 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="relative z-10 mb-8 -mt-2 px-4 sm:-mt-1 sm:px-6"
+                className="relative z-10 mb-8 -mt-[15px] px-0 sm:-mt-1 sm:px-6"
             >
                 <div className="flex h-[88px] items-center justify-between rounded-[24px] border border-white/20 bg-[#F3EAE1]/96 px-4 py-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)] sm:rounded-[18px]">
                     {/* Room Section */}
@@ -322,7 +322,7 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className="mb-10 px-4 sm:px-6"
+                className="mb-10 px-0 sm:px-6"
             >
                 <div className="grid grid-cols-3 gap-3">
                     {[
