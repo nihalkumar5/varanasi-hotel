@@ -13,6 +13,7 @@ export default function GuestLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const isGuestDashboard = pathname?.endsWith("/guest/dashboard");
 
     useEffect(() => {
         const unlock = () => {
@@ -33,7 +34,13 @@ export default function GuestLayout({
                 {/* Ambient Background Gradient (only shown when authenticated) */}
                 <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from),_transparent_50%)] from-blue-50/50 to-transparent"></div>
 
-                <main className="flex-1 w-full max-w-md mx-auto relative px-5 pt-8">
+                <main
+                    className={
+                        isGuestDashboard
+                            ? "relative flex-1 w-full"
+                            : "relative flex-1 w-full max-w-md mx-auto px-5 pt-8"
+                    }
+                >
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={pathname}
