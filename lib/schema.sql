@@ -132,15 +132,6 @@ DROP POLICY IF EXISTS "Profiles are viewable by owners" ON profiles;
 CREATE POLICY "Profiles are viewable by owners" ON profiles
     FOR SELECT USING (auth.uid() = user_id);
 
-DROP POLICY IF EXISTS "Profiles are viewable by hotel staff" ON profiles;
-CREATE POLICY "Profiles are viewable by hotel staff" ON profiles
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM profiles AS p 
-            WHERE p.user_id = auth.uid() 
-            AND p.hotel_id = profiles.hotel_id
-        )
-    );
 
 DROP POLICY IF EXISTS "Allow profile creation during signup" ON profiles;
 CREATE POLICY "Allow profile creation during signup" ON profiles 
