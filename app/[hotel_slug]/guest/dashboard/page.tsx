@@ -325,9 +325,9 @@ export default function GuestDashboard() {
             >
                 <div className="grid grid-cols-3 gap-[14px]">
                     {[
-                        { label: "Wi-Fi", icon: <Wifi className="h-[18px] w-[18px]" />, path: "wifi" },
-                        { label: "Dining", icon: <Utensils className="h-[18px] w-[18px]" />, path: "restaurant" },
-                        { label: "Taxi", icon: <Car className="h-[18px] w-[18px]" />, path: "services" }
+                        { label: "Wi-Fi", icon: <Wifi className="h-7 w-7" />, path: "wifi" },
+                        { label: "Dining", icon: <Utensils className="h-7 w-7" />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car className="h-7 w-7" />, path: "services" }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
@@ -336,16 +336,16 @@ export default function GuestDashboard() {
                             onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
                             className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/80 bg-white/60 shadow-[0_4px_10px_rgba(0,0,0,0.1),0_0_12px_rgba(255,255,255,0.6)] backdrop-blur-[10px]">
+                            <div className="flex items-center justify-center text-[#2b2b2b]">
                                 {s.icon}
                             </div>
                             <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
                     {[
-                        { label: "Cleaning", icon: <Sparkles className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
-                        { label: "Laundry", icon: <Shirt className="h-[18px] w-[18px]" />, path: "services" },
-                        { label: "Support", icon: <Wrench className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                        { label: "Cleaning", icon: <Sparkles className="h-7 w-7" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Laundry", icon: <Shirt className="h-7 w-7" />, path: "services" },
+                        { label: "Support", icon: <Wrench className="h-7 w-7" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
@@ -354,7 +354,7 @@ export default function GuestDashboard() {
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
                             className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/80 bg-white/60 shadow-[0_4px_10px_rgba(0,0,0,0.1),0_0_12px_rgba(255,255,255,0.6)] backdrop-blur-[10px]">
+                            <div className="flex items-center justify-center text-[#2b2b2b]">
                                 {s.icon}
                             </div>
                             <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
