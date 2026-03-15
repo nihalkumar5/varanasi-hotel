@@ -109,6 +109,7 @@ export default function GuestDashboard() {
     const [showCleaningTimePicker, setShowCleaningTimePicker] = useState(false);
 
     const [submittingType, setSubmittingType] = React.useState<string | null>(null);
+    const [showMoreServices, setShowMoreServices] = useState(false);
     const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; isVisible: boolean }>({
         message: "",
         type: "success",
@@ -323,44 +324,54 @@ export default function GuestDashboard() {
                 transition={{ delay: 0.55 }}
                 className="mb-8 px-4"
             >
-                <div className="grid grid-cols-3 gap-[14px]">
+                <div className="grid grid-cols-4 gap-3">
                     {[
-                        { label: "Wi-Fi", icon: <Wifi strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", path: "wifi" },
-                        { label: "Dining", icon: <Utensils strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", path: "restaurant" },
-                        { label: "Taxi", icon: <Car strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", path: "services" }
-                    ].map((s, i) => (
-                        <motion.button
-                            key={i}
-                            whileTap={{ scale: 0.96 }}
-                            whileHover={{ y: -2 }}
-                            onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
-                            className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
-                        >
-                            <div className="flex items-center justify-center">
-                                {renderIcon(s.icon, s.iconClass)}
-                            </div>
-                            <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
-                        </motion.button>
-                    ))}
-                    {[
-                        { label: "Cleaning", icon: <Sparkles strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
-                        { label: "Laundry", icon: <Shirt strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", path: "services" },
-                        { label: "Support", icon: <Wrench strokeWidth={2.4} />, iconClass: "h-8 w-8 text-black fill-black/95 stroke-black drop-shadow-[0_3px_6px_rgba(0,0,0,0.18)]", action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                        { label: "Wi-Fi Info", icon: <Wifi strokeWidth={2.3} />, path: "wifi" },
+                        { label: "Room Service", icon: <Utensils strokeWidth={2.3} />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car strokeWidth={2.3} />, path: "services" },
+                        { label: "Support", icon: <Users strokeWidth={2.3} />, action: () => handleQuickRequest("Reception", "Guest requested concierge support") },
+                        { label: "Laundry", icon: <Shirt strokeWidth={2.3} />, path: "services" },
+                        { label: "Amenities", icon: <Bell strokeWidth={2.3} />, path: "services" },
+                        { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={2.3} />, action: () => setShowMoreServices((prev) => !prev) }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
                             whileTap={{ scale: 0.96 }}
                             whileHover={{ y: -2 }}
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                            className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
+                            className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[18px] border border-black/5 bg-white/55 p-3 text-center shadow-[0_8px_18px_rgba(0,0,0,0.06)] transition-all duration-200"
                         >
-                            <div className="flex items-center justify-center">
-                                {renderIcon(s.icon, s.iconClass)}
+                            <div className="flex items-center justify-center text-black">
+                                {renderIcon(s.icon, "h-7 w-7")}
                             </div>
-                            <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
+                            <h3 className="text-[11px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
                 </div>
+                {showMoreServices && (
+                    <div className="mt-3 grid grid-cols-4 gap-3">
+                        {[
+                            { label: "Wake Call", icon: <Clock strokeWidth={2.3} />, action: () => handleQuickRequest("Reception", "Wake-up call requested") },
+                            { label: "Mini Bar", icon: <Wine strokeWidth={2.3} />, path: "services" },
+                            { label: "Airport", icon: <Compass strokeWidth={2.3} />, action: () => handleQuickRequest("Reception", "Airport transfer requested") },
+                            { label: "Spa", icon: <Waves strokeWidth={2.3} />, path: "services" }
+                        ].map((s, i) => (
+                            <motion.button
+                                key={i}
+                                whileTap={{ scale: 0.96 }}
+                                whileHover={{ y: -2 }}
+                                onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
+                                className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[18px] border border-black/5 bg-white/55 p-3 text-center shadow-[0_8px_18px_rgba(0,0,0,0.06)] transition-all duration-200"
+                            >
+                                <div className="flex items-center justify-center text-black">
+                                    {renderIcon(s.icon, "h-7 w-7")}
+                                </div>
+                                <h3 className="text-[11px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
+                            </motion.button>
+                        ))}
+                    </div>
+                )}
             </motion.section>
 
             {/* 3. Refined Quick Services Section v3 (Exact Blueprint) */}
