@@ -76,34 +76,59 @@ export async function middleware(request: NextRequest) {
 
         // 1. Check if user is logged in
         if (!session) {
+            console.log(`[Middleware] No session found for path: ${url.pathname}. Redirecting to login.`);
             return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login`, request.url));
         }
 
+        console.log(`[Middleware] Authenticated user ${session.user.id} accessing ${hotelSlug}`);
+
         // 2. Verify hotel association via profiles table
+        // We first fetch the profile and join with hotels to verify the slug
         const { data: profile, error } = await supabase
             .from('profiles')
             .select('*, hotels!inner(slug)')
             .eq('user_id', session.user.id)
             .eq('hotels.slug', hotelSlug)
-            .single();
+            .maybeSingle();
 
-        if (error || !profile) {
+        if (error) {
+            console.error(`[Middleware] Database error during authorization for ${session.user.id}:`, error.message);
+            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=db_error`, request.url));
+        }
+
+        if (!profile) {
+            console.warn(`[Middleware] No profile found for user ${session.user.id} at hotel ${hotelSlug}`);
+            
+            // Check if user has ANY profile to provide better feedback
+            const { data: anyProfile } = await supabase
+                .from('profiles')
+                .select('*, hotels(slug)')
+                .eq('user_id', session.user.id)
+                .limit(1);
+            
+            if (anyProfile && anyProfile.length > 0) {
+                console.log(`[Middleware] User has a profile for a different hotel: ${anyProfile[0].hotels?.slug}`);
+            }
+
             // PROACTIVE FIX: Check if the slug was 'geeta-hotel' but should be 'geeta'
             if (hotelSlug.endsWith('-hotel')) {
                 const altSlug = hotelSlug.replace(/-hotel$/, '');
+                console.log(`[Middleware] Retrying with alternative slug: ${altSlug}`);
                 const { data: altProfile } = await supabase
                     .from('profiles')
                     .select('*, hotels!inner(slug)')
                     .eq('user_id', session.user.id)
                     .eq('hotels.slug', altSlug)
-                    .single();
+                    .maybeSingle();
 
                 if (altProfile) {
+                    console.log(`[Middleware] Found profile for alternative slug. Redirecting.`);
                     return NextResponse.redirect(new URL(`/${altSlug}/admin/dashboard`, request.url));
                 }
             }
             return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=unauthorized`, request.url));
         }
+        console.log(`[Middleware] Access granted to ${session.user.id} for hotel ${profile.hotel_id}`);
     }
 
     return response;

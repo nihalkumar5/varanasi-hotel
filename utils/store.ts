@@ -323,13 +323,18 @@ export function useProfile(userId?: string) {
 }
 
 // --- Authentication & Profiles ---
-export const getUserProfile = async (userId: string): Promise<{ data: UserProfile | null; error: any }> => {
+export const getUserProfile = async (userId: string, hotelId?: string): Promise<{ data: UserProfile | null; error: any }> => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('profiles')
             .select('*')
-            .eq('user_id', userId)
-            .single();
+            .eq('user_id', userId);
+        
+        if (hotelId) {
+            query = query.eq('hotel_id', hotelId);
+        }
+
+        const { data, error } = await query.maybeSingle();
 
         return { data, error };
     } catch (err) {

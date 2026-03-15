@@ -112,7 +112,7 @@ function LoginContent() {
                                 {branding?.name || "The Grand Royale"}
                             </h1>
                             <p className="font-[family-name:var(--font-inter)] text-[12px] font-black text-white/60 uppercase tracking-[3px] text-center">
-                                Staff Portal
+                                Management Portal
                             </p>
                         </div>
 
@@ -123,6 +123,16 @@ function LoginContent() {
                                 className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-2xl text-[11px] font-bold mb-6 text-center"
                             >
                                 {error}
+                                {error === "Access denied. Your account is not authorized for this property." && (
+                                    <div className="mt-2 pt-2 border-t border-red-500/20">
+                                        <button 
+                                            onClick={() => router.push('/register')}
+                                            className="text-white underline hover:text-[#E8D3A8]"
+                                        >
+                                            Register this hotel property?
+                                        </button>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 

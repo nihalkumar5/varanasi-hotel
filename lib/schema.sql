@@ -45,11 +45,12 @@ CREATE TABLE IF NOT EXISTS special_offers (
 -- 2. Staff Profiles (Authentication Link)
 CREATE TABLE IF NOT EXISTS profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     hotel_id UUID REFERENCES hotels(id) ON DELETE CASCADE,
     full_name TEXT,
     role TEXT DEFAULT 'admin', -- 'admin' | 'staff'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, hotel_id)
 );
 
 -- 3. Rooms (Check-in and Access Control)

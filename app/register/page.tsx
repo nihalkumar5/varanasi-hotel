@@ -95,6 +95,7 @@ export default function RegisterHotelPage() {
             }
 
             // 2. Insert the Hotel
+            console.log("[Registration] Inserting hotel:", formData.name);
             const { data: hotelData, error: hotelError } = await supabase
                 .from('hotels')
                 .insert([
@@ -110,13 +111,17 @@ export default function RegisterHotelPage() {
                 .single();
 
             if (hotelError) {
+                console.error("[Registration] Hotel insert error:", hotelError);
                 if (hotelError.code === '23505') {
                     throw new Error("This URL slug is already taken. Try another one.");
                 }
                 throw hotelError;
             }
 
+            console.log("[Registration] Hotel created successfully with ID:", hotelData.id);
+
             // 3. Create the Profile link
+            console.log("[Registration] Creating profile for user:", authData.user.id);
             const { error: profileError } = await supabase
                 .from('profiles')
                 .insert([
@@ -128,7 +133,12 @@ export default function RegisterHotelPage() {
                     }
                 ]);
 
-            if (profileError) throw profileError;
+            if (profileError) {
+                console.error("[Registration] Profile creation error:", profileError);
+                throw profileError;
+            }
+
+            console.log("[Registration] Profile created successfully. Redirecting to dashboard...");
 
             // Success redirect to admin
             router.push(`/${formData.slug}/admin/dashboard`);
