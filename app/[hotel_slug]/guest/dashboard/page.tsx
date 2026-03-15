@@ -325,9 +325,9 @@ export default function GuestDashboard() {
             >
                 <div className="grid grid-cols-3 gap-[14px]">
                     {[
-                        { label: "Wi-Fi", icon: <Wifi className="h-7 w-7" />, path: "wifi" },
-                        { label: "Dining", icon: <Utensils className="h-7 w-7" />, path: "restaurant" },
-                        { label: "Taxi", icon: <Car className="h-7 w-7" />, path: "services" }
+                        { label: "Wi-Fi", icon: <Wifi strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#4B6CB7] drop-shadow-[0_4px_10px_rgba(75,108,183,0.35)]", path: "wifi" },
+                        { label: "Dining", icon: <Utensils strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#B36A2E] drop-shadow-[0_4px_10px_rgba(179,106,46,0.32)]", path: "restaurant" },
+                        { label: "Taxi", icon: <Car strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#3E7F66] drop-shadow-[0_4px_10px_rgba(62,127,102,0.32)]", path: "services" }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
@@ -336,16 +336,16 @@ export default function GuestDashboard() {
                             onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
                             className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="flex items-center justify-center text-[#2b2b2b]">
-                                {s.icon}
+                            <div className="flex items-center justify-center">
+                                {renderIcon(s.icon, s.iconClass)}
                             </div>
                             <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
                     {[
-                        { label: "Cleaning", icon: <Sparkles className="h-7 w-7" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
-                        { label: "Laundry", icon: <Shirt className="h-7 w-7" />, path: "services" },
-                        { label: "Support", icon: <Wrench className="h-7 w-7" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                        { label: "Cleaning", icon: <Sparkles strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#8C6AA6] drop-shadow-[0_4px_10px_rgba(140,106,166,0.32)]", action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Laundry", icon: <Shirt strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#5B6C8D] drop-shadow-[0_4px_10px_rgba(91,108,141,0.32)]", path: "services" },
+                        { label: "Support", icon: <Wrench strokeWidth={1.8} />, iconClass: "h-8 w-8 text-[#A66A5B] drop-shadow-[0_4px_10px_rgba(166,106,91,0.32)]", action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
@@ -354,8 +354,8 @@ export default function GuestDashboard() {
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
                             className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="flex items-center justify-center text-[#2b2b2b]">
-                                {s.icon}
+                            <div className="flex items-center justify-center">
+                                {renderIcon(s.icon, s.iconClass)}
                             </div>
                             <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
