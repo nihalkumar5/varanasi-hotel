@@ -30,22 +30,18 @@ export function BottomNav() {
                         href={item.href}
                         className="relative flex min-w-[62px] flex-col items-center gap-1"
                     >
-                        <motion.div whileTap={{ scale: 0.94 }}>
+                        <motion.div
+                            whileTap={{ scale: 0.94 }}
+                            className={`rounded-full p-2 transition-all duration-300 ${active ? "bg-black shadow-[0_6px_14px_rgba(0,0,0,0.28)]" : "bg-transparent"}`}
+                        >
                             <item.icon 
-                                className={`h-[22px] w-[22px] transition-all duration-300 ${active ? "text-[#CFA46A] fill-[#CFA46A]/20" : "text-[#1F1F1F] opacity-35"}`} 
+                                className={`h-[22px] w-[22px] transition-all duration-300 ${active ? "text-white fill-white/10" : "text-[#1F1F1F] opacity-35"}`} 
                                 strokeWidth={active ? 2.5 : 2} 
                             />
                         </motion.div>
-                        <span className={`text-[9px] font-black uppercase tracking-[0.18em] transition-all duration-300 ${active ? "text-[#CFA46A]" : "text-slate-500/70"}`}>
+                        <span className={`text-[9px] font-black uppercase tracking-[0.18em] transition-all duration-300 ${active ? "text-black" : "text-slate-500/70"}`}>
                             {item.label}
                         </span>
-                        {active && (
-                            <motion.div
-                                layoutId="nav-dot"
-                                className="absolute -bottom-1.5 h-1.5 w-1.5 rounded-full bg-[#CFA46A] shadow-[0_2px_4px_rgba(207,164,106,0.4)]"
-                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                            />
-                        )}
                     </Link>
                 );
             })}
