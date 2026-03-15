@@ -76,24 +76,43 @@ export async function middleware(request: NextRequest) {
 
         // 1. Check if user is logged in
         if (!session) {
-            console.log(`[Middleware] No session found for path: ${url.pathname}. Redirecting to login.`);
-            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login`, request.url));
+            const redirectUrl = new URL(`/${hotelSlug}/admin/login?error=no_session`, request.url);
+            console.log(`[Middleware] No session found. Redirecting to: ${redirectUrl.toString()}`);
+            return NextResponse.redirect(redirectUrl);
         }
 
         console.log(`[Middleware] Authenticated user ${session.user.id} accessing ${hotelSlug}`);
 
-        // 2. Verify hotel association via profiles table
-        // We first fetch the profile and join with hotels to verify the slug
-        const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*, hotels!inner(slug)')
-            .eq('user_id', session.user.id)
-            .eq('hotels.slug', hotelSlug)
+        // Fetch hotel ID first to simplify the query and avoid join issues
+        const { data: hotel, error: hotelError } = await supabase
+            .from('hotels')
+            .select('id, slug')
+            .eq('slug', hotelSlug)
             .maybeSingle();
 
-        if (error) {
-            console.error(`[Middleware] Database error during authorization for ${session.user.id}:`, error.message);
-            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=db_error`, request.url));
+        if (hotelError) {
+            console.error(`[Middleware] Error fetching hotel for slug ${hotelSlug}:`, hotelError);
+            const msg = encodeURIComponent(hotelError.message || 'Hotel fetch failed');
+            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=db_error&detail=hotel_fetch_failed&msg=${msg}`, request.url));
+        }
+
+        if (!hotel) {
+            console.warn(`[Middleware] Hotel not found for slug: ${hotelSlug}`);
+            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=no_hotel`, request.url));
+        }
+
+        // Now fetch the profile associated with this user and hotel
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .eq('hotel_id', hotel.id)
+            .maybeSingle();
+
+        if (profileError) {
+            console.error(`[Middleware] Error fetching profile for user ${session.user.id} at hotel ${hotel.id}:`, profileError);
+            const msg = encodeURIComponent(profileError.message || 'Profile fetch failed');
+            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=db_error&detail=profile_fetch_failed&msg=${msg}`, request.url));
         }
 
         if (!profile) {
@@ -114,19 +133,29 @@ export async function middleware(request: NextRequest) {
             if (hotelSlug.endsWith('-hotel')) {
                 const altSlug = hotelSlug.replace(/-hotel$/, '');
                 console.log(`[Middleware] Retrying with alternative slug: ${altSlug}`);
-                const { data: altProfile } = await supabase
-                    .from('profiles')
-                    .select('*, hotels!inner(slug)')
-                    .eq('user_id', session.user.id)
-                    .eq('hotels.slug', altSlug)
+                const { data: altHotel } = await supabase
+                    .from('hotels')
+                    .select('id')
+                    .eq('slug', altSlug)
                     .maybeSingle();
 
-                if (altProfile) {
-                    console.log(`[Middleware] Found profile for alternative slug. Redirecting.`);
-                    return NextResponse.redirect(new URL(`/${altSlug}/admin/dashboard`, request.url));
+                if (altHotel) {
+                    const { data: altProfile } = await supabase
+                        .from('profiles')
+                        .select('id')
+                        .eq('user_id', session.user.id)
+                        .eq('hotel_id', altHotel.id)
+                        .maybeSingle();
+
+                    if (altProfile) {
+                        console.log(`[Middleware] Found profile for alternative slug. Redirecting.`);
+                        return NextResponse.redirect(new URL(`/${altSlug}/admin/dashboard`, request.url));
+                    }
                 }
             }
-            return NextResponse.redirect(new URL(`/${hotelSlug}/admin/login?error=unauthorized`, request.url));
+            const redirectUrl = new URL(`/${hotelSlug}/admin/login?error=no_profile`, request.url);
+            console.log(`[Middleware] Access denied (no profile). Redirecting to: ${redirectUrl.toString()}`);
+            return NextResponse.redirect(redirectUrl);
         }
         console.log(`[Middleware] Access granted to ${session.user.id} for hotel ${profile.hotel_id}`);
     }

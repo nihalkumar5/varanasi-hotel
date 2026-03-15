@@ -23,10 +23,20 @@ function LoginContent() {
 
     useEffect(() => {
         const errorType = searchParams.get('error');
-        if (errorType === 'unauthorized') {
+        const detail = searchParams.get('detail');
+        console.log(`[Portal] Login page loaded with error: ${errorType}, detail: ${detail}`);
+        
+        if (errorType === 'unauthorized' || errorType === 'no_profile') {
             setError("Access denied. Your account is not authorized for this property.");
+        } else if (errorType === 'no_session') {
+            setError("Your session has expired. Please log in again.");
+        } else if (errorType === 'no_hotel') {
+            setError(`The hotel property '${hotelSlug}' was not found.`);
+        } else if (errorType === 'db_error') {
+            const msg = searchParams.get('msg');
+            setError(`A database error occurred: ${msg || detail || 'unknown'}. Please try again later.`);
         }
-    }, [searchParams]);
+    }, [searchParams, hotelSlug]);
 
     const handleLogin = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -59,9 +69,15 @@ function LoginContent() {
 
             if (data.user) {
                 console.log("[Portal] Auth successful. User ID:", data.user.id);
+                console.log("[Portal] Session check:", !!data.session);
                 console.log("[Portal] Checking profile for redirect routing...");
                 
-                const { data: profile } = await getUserProfile(data.user.id);
+                const { data: profile, error: profileError } = await getUserProfile(data.user.id);
+                
+                if (profileError) {
+                    console.error("[Portal] Profile fetch error:", profileError);
+                }
+                
                 console.log("[Portal] Profile fetched:", profile?.role || "default admin");
 
                 let redirectPath = `/${hotelSlug}/admin/dashboard`;
@@ -72,7 +88,7 @@ function LoginContent() {
                 // Hard refresh to ensure session cookies are picked up by middleware
                 window.location.href = redirectPath;
             } else {
-                console.warn("[Portal] No user data returned from signIn");
+                console.warn("[Portal] No user data returned from signIn. Full data:", data);
                 throw new Error("Authentication failed: No user found.");
             }
         } catch (err: any) {
@@ -83,10 +99,20 @@ function LoginContent() {
         }
     };
 
-    const handleReset = () => {
-        console.log("[Portal] Resetting portal state...");
+    const handleReset = async () => {
+        console.log("[Portal] Resetting portal state and signing out...");
         localStorage.clear();
         sessionStorage.clear();
+        
+        // Try to clear Supabase cookies and session
+        try {
+            const { signOut } = await import("@/utils/store");
+            await signOut();
+            console.log("[Portal] Signed out successfully.");
+        } catch (err) {
+            console.error("[Portal] Error during sign out:", err);
+        }
+        
         window.location.href = `/${hotelSlug}/admin/login`;
     };
 
