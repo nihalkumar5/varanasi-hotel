@@ -323,41 +323,45 @@ export default function GuestDashboard() {
                 transition={{ delay: 0.55 }}
                 className="mb-8 px-4"
             >
-                <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-[20px] border border-[#1F1F1F]/5 bg-gradient-to-b from-[#F6F0E7] to-[#ECE2D5] p-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.08)]">
+                <div className="grid grid-cols-3 gap-[14px]">
                     {[
-                        { label: "Wi-Fi", desc: "Connect", icon: <Wifi className="h-7 w-7" />, path: "wifi" },
-                        { label: "Dining", desc: "Orders", icon: <Utensils className="h-7 w-7" />, path: "restaurant" },
-                        { label: "Taxi", desc: "Book", icon: <Car className="h-7 w-7" />, path: "services" }
+                        { label: "Wi-Fi", icon: <Wifi className="h-[18px] w-[18px]" />, path: "wifi" },
+                        { label: "Dining", icon: <Utensils className="h-[18px] w-[18px]" />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car className="h-[18px] w-[18px]" />, path: "services" }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
-                            whileTap={{ scale: 0.95 }}
+                            whileTap={{ scale: 0.96 }}
+                            whileHover={{ y: -2 }}
                             onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
-                            className="flex h-[92px] flex-col items-center justify-center rounded-[16px] border border-white/70 bg-white/88 p-4 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
+                            className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
+                            <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/80 bg-white/60 shadow-[0_4px_10px_rgba(0,0,0,0.1),0_0_12px_rgba(255,255,255,0.6)] backdrop-blur-[10px]">
                                 {s.icon}
                             </div>
-                            <h3 className="text-[10px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
+                            <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
                     {[
-                        { label: "Cleaning", desc: "Now", icon: <Sparkles className="h-7 w-7" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
-                        { label: "Laundry", desc: "Press", icon: <Shirt className="h-7 w-7" />, path: "services" },
-                        { label: "Support", desc: "Issue", icon: <Wrench className="h-7 w-7" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
+                        { label: "Cleaning", icon: <Sparkles className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Laundry", icon: <Shirt className="h-[18px] w-[18px]" />, path: "services" },
+                        { label: "Support", icon: <Wrench className="h-[18px] w-[18px]" />, action: () => handleQuickRequest("Maintenance", "Maintenance requested") }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
-                            whileTap={{ scale: 0.95 }}
+                            whileTap={{ scale: 0.96 }}
+                            whileHover={{ y: -2 }}
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                            className="flex h-[92px] flex-col items-center justify-center rounded-[16px] border border-white/70 bg-white/88 p-4 text-center shadow-[0_10px_22px_rgba(0,0,0,0.045)] backdrop-blur-xl"
+                            className="flex h-[92px] flex-col items-center justify-center gap-1.5 rounded-[20px] border border-white/60 bg-white/35 p-[14px] text-center shadow-[0_10px_25px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-[18px] transition-all duration-200"
                         >
-                            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-[16px] bg-[#F4F1EC] text-[#1F1F1F] shadow-inner">
+                            <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/80 bg-white/60 shadow-[0_4px_10px_rgba(0,0,0,0.1),0_0_12px_rgba(255,255,255,0.6)] backdrop-blur-[10px]">
                                 {s.icon}
                             </div>
-                            <h3 className="text-[10px] font-black leading-tight tracking-tight text-[#1F1F1F]">{s.label}</h3>
+                            <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
+                </div>
                 </div>
             </motion.section>
 
