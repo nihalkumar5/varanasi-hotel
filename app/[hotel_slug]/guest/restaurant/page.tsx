@@ -36,8 +36,27 @@ export default function RestaurantPage() {
         if (category === "All Day Snacks") return { active: true };
         if (!branding) return { active: true };
 
+        const toMinutes = (value: string) => {
+            const [hoursText, minutesText] = value.split(":");
+            const hours = Number(hoursText);
+            const minutes = Number(minutesText);
+
+            if (
+                Number.isNaN(hours) ||
+                Number.isNaN(minutes) ||
+                hours < 0 ||
+                hours > 23 ||
+                minutes < 0 ||
+                minutes > 59
+            ) {
+                return 0;
+            }
+
+            return hours * 60 + minutes;
+        };
+
         const now = new Date();
-        const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
         let start = "00:00", end = "23:59";
         if (category === "Breakfast") {
@@ -51,7 +70,15 @@ export default function RestaurantPage() {
             end = branding.dinnerEnd || "22:30";
         }
 
-        const isActive = currentTime >= start && currentTime <= end;
+        const startMinutes = toMinutes(start);
+        const endMinutes = toMinutes(end);
+
+        // Supports both normal windows (07:00 -> 10:30) and overnight windows (19:00 -> 01:00).
+        const isActive =
+            startMinutes <= endMinutes
+                ? currentMinutes >= startMinutes && currentMinutes <= endMinutes
+                : currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+
         return { active: isActive, start, end };
     };
 
