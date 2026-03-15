@@ -340,7 +340,7 @@ export default function GuestDashboard() {
                                 whileTap={{ scale: 0.96 }}
                                 whileHover={{ y: -2 }}
                                 onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                                className="flex h-[92px] w-full items-center justify-center rounded-[18px] border border-black/5 bg-white/55 p-3 shadow-[0_8px_18px_rgba(0,0,0,0.06)] transition-all duration-200"
+                                className="flex h-[92px] w-full items-center justify-center rounded-[18px] border border-black/10 bg-[#d8d8d8] p-3 transition-all duration-200"
                             >
                                 <div className="flex items-center justify-center text-black">
                                     {renderIcon(s.icon, "h-7 w-7")}
@@ -363,7 +363,7 @@ export default function GuestDashboard() {
                                     whileTap={{ scale: 0.96 }}
                                     whileHover={{ y: -2 }}
                                     onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                                    className="flex h-[92px] w-full items-center justify-center rounded-[18px] border border-black/5 bg-white/55 p-3 shadow-[0_8px_18px_rgba(0,0,0,0.06)] transition-all duration-200"
+                                    className="flex h-[92px] w-full items-center justify-center rounded-[18px] border border-black/10 bg-[#d8d8d8] p-3 transition-all duration-200"
                                 >
                                     <div className="flex items-center justify-center text-black">
                                         {renderIcon(s.icon, "h-7 w-7")}
