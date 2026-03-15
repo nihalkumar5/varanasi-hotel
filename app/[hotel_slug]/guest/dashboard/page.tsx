@@ -323,7 +323,6 @@ export default function GuestDashboard() {
                 transition={{ delay: 0.55 }}
                 className="mb-8 px-4"
             >
-                <div className="rounded-[20px] border border-[#1F1F1F]/5 bg-gradient-to-b from-[#F6F0E7] to-[#ECE2D5] p-3.5 shadow-[0_10px_28px_rgba(0,0,0,0.08)]">
                 <div className="grid grid-cols-3 gap-[14px]">
                     {[
                         { label: "Wi-Fi", icon: <Wifi className="h-[18px] w-[18px]" />, path: "wifi" },
@@ -361,7 +360,6 @@ export default function GuestDashboard() {
                             <h3 className="text-[12px] font-medium leading-tight text-[#2b2b2b]">{s.label}</h3>
                         </motion.button>
                     ))}
-                </div>
                 </div>
             </motion.section>
 
