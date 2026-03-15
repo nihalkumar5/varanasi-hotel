@@ -6,7 +6,7 @@ import {
     Wifi, Utensils, Phone, Layers,
     Zap, Droplets, Wind, Sparkles, Coffee, Layout, ChefHat, Home, User, Users, Sun, Compass, AlertCircle, Check, Wine, Library,
     ChevronLeft, ChevronRight, ArrowRight, ExternalLink, Clock, MapPin, Music, Star, Shirt, WashingMachine,
-    Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa
+    Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa, Briefcase
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -250,7 +250,7 @@ export default function GuestDashboard() {
                         <div className="flex items-center text-slate-700/75">
                             <MapPin className="mr-2 h-3.5 w-3.5" />
                             <p className="text-[14px] font-semibold tracking-[0.08em]">
-                                {(branding as any)?.address || "Kiev, Ukraine"}
+                                {branding?.city || "Raipur, India"}
                             </p>
                         </div>
                     </div>
@@ -332,7 +332,7 @@ export default function GuestDashboard() {
                         { label: "Taxi", icon: <Car strokeWidth={2.3} />, path: "services/taxi" },
                         { label: "Maintenance", icon: <Wrench strokeWidth={2.3} />, path: "services/maintenance" },
                         { label: "Laundry", icon: <WashingMachine strokeWidth={2.3} />, path: "services/laundry" },
-                        { label: "Amenities", icon: <Bell strokeWidth={2.3} />, path: "services" },
+                        { label: "Luggage", icon: <Briefcase strokeWidth={2.3} />, path: "services/luggage" },
                         { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, path: "services/cleaning" },
                         { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={2.3} />, action: () => setShowMoreServices((prev) => !prev) }
                     ].map((s, i) => (
@@ -433,7 +433,7 @@ export default function GuestDashboard() {
                                     whileTap={{ scale: 0.96 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                     onClick={() => handleTileClick(service)}
-                                    className="group/tile relative flex h-24 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/15 bg-white/5 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-[18px] transition-all duration-200"
+                                    className="group/tile relative flex h-24 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/8 bg-white/5 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-[18px] transition-all duration-200"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover/tile:opacity-100" />
                                     <div
@@ -493,7 +493,7 @@ export default function GuestDashboard() {
                                                                 selectedOption: option,
                                                                 step: 'quantity'
                                                             })}
-                                                            className="flex items-center gap-4 bg-white border border-[#E8DCCB]/50 h-14 px-5 rounded-xl shadow-sm hover:border-[#B88952] transition-colors group"
+                                                            className="flex items-center gap-4 bg-white border border-[#E8DCCB]/30 h-14 px-5 rounded-xl shadow-sm hover:border-[#B88952]/70 transition-colors group"
                                                         >
                                                             <div className="text-[#B88952]/60 group-hover:text-[#B88952]">
                                                                 {option === "Coffee" ? <Coffee className="w-4 h-4" /> : <Wind className="w-4 h-4" />}
@@ -509,7 +509,7 @@ export default function GuestDashboard() {
                                                             key={num}
                                                             whileTap={{ scale: 0.95 }}
                                                             onClick={() => confirmQuantity(num)}
-                                                            className="flex-1 bg-white border border-[#E8DCCB]/50 h-16 rounded-xl flex items-center justify-center text-[22px] font-serif font-black text-[#1F1F1F] shadow-sm hover:border-[#B88952] transition-colors"
+                                                            className="flex-1 bg-white border border-[#E8DCCB]/30 h-16 rounded-xl flex items-center justify-center text-[22px] font-serif font-black text-[#1F1F1F] shadow-sm hover:border-[#B88952]/70 transition-colors"
                                                         >
                                                             {num}
                                                         </motion.button>

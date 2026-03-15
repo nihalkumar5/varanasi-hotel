@@ -102,6 +102,16 @@ export default function BrandingPage() {
                                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
                                 />
                             </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">City</label>
+                                <input
+                                    type="text"
+                                    value={config.city || ""}
+                                    onChange={(e) => setConfig({ ...config, city: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
+                                    placeholder="e.g. Raipur, India"
+                                />
+                            </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Logo Initial</label>

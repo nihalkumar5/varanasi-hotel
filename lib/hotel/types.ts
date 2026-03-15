@@ -9,6 +9,7 @@ export interface HotelBranding {
     id: string;
     slug: string;
     name: string;
+    city?: string;
     logo?: string;
     logoImage?: string;
     primaryColor: string;

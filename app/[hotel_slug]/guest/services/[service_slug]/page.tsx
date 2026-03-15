@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
     ArrowLeft,
     Bell,
+    Briefcase,
     Car,
     CheckCircle2,
     Clock3,
@@ -217,6 +218,23 @@ const SERVICE_CONFIG: Record<string, ServiceConfig> = {
             iconPanel: "from-[#cec9f1]/80 to-[#a9a1db]/72 border-[#c2bdea]",
         },
     },
+    luggage: {
+        title: "Luggage Assistant",
+        subtitle: "Get luggage support from our team for smooth room movement.",
+        requestType: "Luggage Assistance",
+        placeholder: "Add bag count, room number, and timing if needed.",
+        eta: "Bell desk in 5-10 min",
+        icon: <Briefcase className="h-6 w-6" />,
+        quickNotes: ["Bring to Room", "Drop Luggage"],
+        theme: {
+            page: "bg-[radial-gradient(circle_at_top,_#dadad7_0%,_#bcbbb6_55%,_#a8a6a0_100%)]",
+            overlay: "bg-[linear-gradient(160deg,rgba(255,255,255,0.21)_0%,rgba(255,255,255,0.05)_46%,rgba(214,162,89,0.11)_100%)]",
+            panel: "bg-[linear-gradient(145deg,rgba(239,222,188,0.42),rgba(218,188,133,0.3))] border-[#e3cb9f]/60",
+            chip: "bg-[linear-gradient(145deg,rgba(236,217,181,0.74),rgba(214,183,126,0.58))] border-[#e0c597]/70",
+            chipText: "text-[#5a4920]",
+            iconPanel: "from-[#ebddb8]/80 to-[#d6b678]/72 border-[#ddc494]",
+        },
+    },
 };
 
 const FALLBACK_SERVICE: ServiceConfig = {
@@ -257,10 +275,12 @@ export default function ServiceDetailPage() {
     const [selectedCleaningTime, setSelectedCleaningTime] = useState<string | null>(null);
     const [selectedMaintenanceIssue, setSelectedMaintenanceIssue] = useState<string | null>(null);
     const [selectedAirportPlan, setSelectedAirportPlan] = useState<string | null>(null);
+    const [selectedLuggageAction, setSelectedLuggageAction] = useState<string | null>(null);
 
     const isCleaningPage = serviceSlug === "cleaning";
     const isMaintenancePage = serviceSlug === "maintenance" || serviceSlug === "support";
     const isAirportPage = serviceSlug === "airport-transfer";
+    const isLuggagePage = serviceSlug === "luggage";
 
     const airportCharges = [
         { label: "Sedan", value: branding?.airportTransferCharge1?.trim() || "" },
@@ -293,6 +313,9 @@ export default function ServiceDetailPage() {
             }
             if (isAirportPage && selectedAirportPlan) {
                 return `Airport transfer plan selected: ${selectedAirportPlan}`;
+            }
+            if (isLuggagePage && selectedLuggageAction) {
+                return `Luggage assistance: ${selectedLuggageAction}`;
             }
             return "";
         })();
@@ -408,6 +431,28 @@ export default function ServiceDetailPage() {
                         </div>
                     )}
 
+                    {isLuggagePage && (
+                        <div className="mt-6">
+                            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Choose Luggage Action</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[
+                                    { label: "Bring to Room", helper: "Move bags to your room" },
+                                    { label: "Drop Luggage", helper: "Pick up and drop at concierge" },
+                                ].map((action) => (
+                                    <button
+                                        key={action.label}
+                                        type="button"
+                                        onClick={() => setSelectedLuggageAction(action.label)}
+                                        className={`rounded-[14px] border px-3 py-3 text-left backdrop-blur-[8px] ${selectedLuggageAction === action.label ? `${config.theme.chip} ${config.theme.chipText}` : "border-white/40 bg-white/35 text-[#2f2218]"}`}
+                                    >
+                                        <p className="text-[12px] font-semibold">{action.label}</p>
+                                        <p className="mt-1 text-[10px] text-slate-600">{action.helper}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {isCleaningPage ? (
                         <div className="mt-6">
                             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Choose Cleaning Time</p>
@@ -495,7 +540,8 @@ export default function ServiceDetailPage() {
                             disabled={
                                 (isCleaningPage && !selectedCleaningTime) ||
                                 (isMaintenancePage && !selectedMaintenanceIssue) ||
-                                (isAirportPage && airportCharges.length > 0 && !selectedAirportPlan)
+                                (isAirportPage && airportCharges.length > 0 && !selectedAirportPlan) ||
+                                (isLuggagePage && !selectedLuggageAction)
                             }
                             className="mt-6 flex w-full items-center justify-center rounded-[16px] border-none bg-[linear-gradient(145deg,rgba(255,168,93,0.92),rgba(244,130,39,0.9))] py-4 text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-[0_16px_30px_rgba(109,66,20,0.28)] disabled:opacity-50"
                         >

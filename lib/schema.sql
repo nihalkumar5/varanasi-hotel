@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     slug TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
+    city TEXT,
     logo TEXT, -- Small character or short name for logo fallback
     logo_image TEXT, -- URL to actual logo image
     primary_color TEXT DEFAULT '#2563eb',
@@ -264,6 +265,7 @@ END $$;
 
 -- 7. WhatsApp Automation & Late Checkout (Migration)
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS welcome_message TEXT;
+ALTER TABLE hotels ADD COLUMN IF NOT EXISTS city TEXT;
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS checkout_date TEXT;
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS checkout_time TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS checkout_message TEXT;
