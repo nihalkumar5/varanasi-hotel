@@ -233,10 +233,10 @@ export default function GuestDashboard() {
                     >
                         <div className="mb-8 flex items-start justify-between gap-4">
                             <div>
-                                <h1 className="mb-2 text-[28px] font-serif font-bold uppercase leading-none tracking-tight text-[#1F1F1F]">
+                                <h1 className="mb-2 text-[32px] font-serif font-bold uppercase leading-[0.95] tracking-[0.01em] text-[#111111]">
                                     {branding?.name || "Mountain Lodge"}
                                 </h1>
-                                <div className="mb-3 text-sm tracking-[0.22em] text-[#C6A25A]">★★★★★</div>
+                                <div className="mb-3 text-[15px] tracking-[0.22em] text-[#C6A25A]">★★★★★</div>
                                 <div className="flex items-center text-slate-700/75">
                                     <MapPin className="mr-1.5 h-3.5 w-3.5" />
                                     <p className="text-[14px] font-semibold tracking-[0.08em]">
@@ -258,7 +258,6 @@ export default function GuestDashboard() {
                                 </p>
                             </div>
                             <div className="flex flex-col items-end gap-1 text-right">
-                                <span className="text-[10px] font-black uppercase tracking-[0.18em] text-[#111111]">Verified Guest</span>
                                 <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500">Change</span>
                             </div>
                         </div>
