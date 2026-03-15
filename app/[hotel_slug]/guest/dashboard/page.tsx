@@ -224,7 +224,7 @@ export default function GuestDashboard() {
                 </div>
 
                 {/* Glass Guest Portal Overlay */}
-                <div className="absolute inset-x-4 top-[110px] z-10 sm:inset-x-6 sm:top-[92px]">
+                <div className="absolute inset-x-4 top-[126px] z-10 sm:inset-x-6 sm:top-[108px]">
                     <motion.div 
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -276,7 +276,7 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="relative z-10 mb-8 mt-5 px-4 sm:mt-0 sm:px-6"
+                className="relative z-10 mb-8 -mt-2 px-4 sm:-mt-1 sm:px-6"
             >
                 <div className="flex h-[88px] items-center justify-between rounded-[24px] border border-white/20 bg-[#F3EAE1]/96 px-4 py-4 shadow-[0_8px_20px_rgba(0,0,0,0.06)] sm:rounded-[18px]">
                     {/* Room Section */}
