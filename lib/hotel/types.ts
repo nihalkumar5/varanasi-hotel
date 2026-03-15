@@ -13,6 +13,7 @@ export interface HotelBranding {
     logoImage?: string;
     primaryColor: string;
     accentColor: string;
+    serviceIconColor?: string;
     wifiName?: string;
     wifiPassword?: string;
     receptionPhone?: string;

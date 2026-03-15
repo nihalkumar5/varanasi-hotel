@@ -68,6 +68,7 @@ export default function AdminLayout({
         {
             title: "Management",
             items: [
+                { id: 'menu', name: "Menu Management", href: `/${hotelSlug}/admin/menu`, icon: Utensils, roles: ['admin', 'kitchen'] },
                 { id: 'analytics', name: "Analytics", href: `/${hotelSlug}/admin/analytics`, icon: BarChart, roles: ['admin'] },
                 { id: 'staff', name: "Staff Management", href: `/${hotelSlug}/admin/staff`, icon: Users, roles: ['admin'] },
                 { id: 'branding', name: "System Config", href: `/${hotelSlug}/admin/branding`, icon: Settings, roles: ['admin'] },

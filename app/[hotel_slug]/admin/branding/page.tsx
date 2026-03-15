@@ -224,6 +224,25 @@ export default function BrandingPage() {
                                     className="w-full h-12 rounded-xl cursor-pointer"
                                 />
                             </div>
+                            <div className="col-span-2">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Service Icon Color</label>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="color"
+                                        value={config.serviceIconColor || "#2f2f2f"}
+                                        onChange={(e) => setConfig({ ...config, serviceIconColor: e.target.value })}
+                                        className="h-12 w-16 rounded-xl cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={config.serviceIconColor || "#2f2f2f"}
+                                        onChange={(e) => setConfig({ ...config, serviceIconColor: e.target.value })}
+                                        className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 outline-none focus:ring-2 transition-all"
+                                        placeholder="#2f2f2f"
+                                    />
+                                </div>
+                                <p className="mt-2 text-[10px] text-slate-400 font-medium">Applied on guest dashboard service icons.</p>
+                            </div>
                         </div>
                     </section>
 

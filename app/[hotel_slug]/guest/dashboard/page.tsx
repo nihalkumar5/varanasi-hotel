@@ -128,6 +128,7 @@ export default function GuestDashboard() {
     const displayCheckoutDate = formatCheckoutDate(checkoutDate);
     const displayCheckoutTime = formatCheckoutTime(checkoutTime);
     const guestCountLabel = `${numGuests || 1} ${(numGuests || 1) === 1 ? "Guest" : "Guests"}`;
+    const serviceIconColor = branding?.serviceIconColor || "#2f2f2f";
 
     const handleQuickRequest = async (type: string, notes: string) => {
         if (!branding?.id || submittingType) return;
@@ -327,9 +328,9 @@ export default function GuestDashboard() {
                 <div className="grid grid-cols-4 gap-x-3 gap-y-4">
                     {[
                         { label: "Wi-Fi Info", icon: <Wifi strokeWidth={2.3} />, path: "wifi" },
-                        { label: "Room Service", icon: <img src="/icons/dinner-svgrepo-com.svg" alt="Room Service" className="h-8 w-8 object-contain" />, path: "restaurant" },
-                        { label: "Taxi", icon: <img src="/icons/taxi-4-svgrepo-com.svg" alt="Taxi" className="h-8 w-8 object-contain" />, path: "services/taxi" },
-                        { label: "Maintenance", icon: <img src="/icons/maintenance-svgrepo-com.svg" alt="Maintenance" className="h-8 w-8 object-contain" />, path: "services/maintenance" },
+                        { label: "Room Service", icon: <Utensils strokeWidth={2.3} />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car strokeWidth={2.3} />, path: "services/taxi" },
+                        { label: "Maintenance", icon: <Wrench strokeWidth={2.3} />, path: "services/maintenance" },
                         { label: "Laundry", icon: <WashingMachine strokeWidth={2.3} />, path: "services/laundry" },
                         { label: "Amenities", icon: <Bell strokeWidth={2.3} />, path: "services" },
                         { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, path: "services/cleaning" },
@@ -342,29 +343,9 @@ export default function GuestDashboard() {
                                 onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
                                 className="flex w-full flex-col items-center justify-center px-1 py-1 transition-all duration-200"
                             >
-                                {s.label === "Wi-Fi Info" ? (
-                                    <img
-                                        src="/icons/wifi-high-svgrepo-com.svg"
-                                        alt="Wi-Fi"
-                                        className="h-10 w-10 object-contain"
-                                    />
-                                ) : s.label === "Laundry" ? (
-                                    <img
-                                        src="/icons/laundry-machine-svgrepo-com.svg"
-                                        alt="Laundry"
-                                        className="h-10 w-10 object-contain"
-                                    />
-                                ) : s.label === "Cleaning" ? (
-                                    <img
-                                        src="/icons/cleaning-svgrepo-com.svg"
-                                        alt="Cleaning"
-                                        className="h-10 w-10 object-contain"
-                                    />
-                                ) : (
-                                    <div className="flex items-center justify-center">
-                                        {renderIcon(s.icon, "h-9 w-9 text-[#2f2f2f]")}
-                                    </div>
-                                )}
+                                <div className="flex items-center justify-center" style={{ color: serviceIconColor }}>
+                                    {renderIcon(s.icon, "h-9 w-9")}
+                                </div>
                             </motion.button>
                             <h3 className="mt-1.5 text-[10px] font-medium leading-tight text-[#2b2b2b] font-serif">{s.label}</h3>
                         </div>
@@ -375,7 +356,7 @@ export default function GuestDashboard() {
                         {[
                             { label: "Wake Call", icon: <Clock strokeWidth={2.3} />, path: "services/wake-call" },
                             { label: "Mini Bar", icon: <Wine strokeWidth={2.3} />, path: "services/mini-bar" },
-                            { label: "Airport", icon: <img src="/icons/airport-departures-svgrepo-com.svg" alt="Airport" className="h-8 w-8 object-contain" />, path: "services/airport-transfer" },
+                            { label: "Airport", icon: <Compass strokeWidth={2.3} />, path: "services/airport-transfer" },
                             { label: "Spa", icon: <Waves strokeWidth={2.3} />, path: "services/spa" }
                         ].map((s, i) => (
                             <div key={i} className="px-1 text-center">
@@ -385,8 +366,8 @@ export default function GuestDashboard() {
                                     onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
                                     className="flex w-full flex-col items-center justify-center px-1 py-1 transition-all duration-200"
                                 >
-                                    <div className="flex items-center justify-center">
-                                        {renderIcon(s.icon, "h-9 w-9 text-[#2f2f2f]")}
+                                    <div className="flex items-center justify-center" style={{ color: serviceIconColor }}>
+                                        {renderIcon(s.icon, "h-9 w-9")}
                                     </div>
                                 </motion.button>
                                 <h3 className="mt-1.5 text-[10px] font-medium leading-tight text-[#2b2b2b] font-serif">{s.label}</h3>

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     logo_image TEXT, -- URL to actual logo image
     primary_color TEXT DEFAULT '#2563eb',
     accent_color TEXT DEFAULT '#4f46e5',
+    service_icon_color TEXT DEFAULT '#2f2f2f',
     wifi_name TEXT,
     wifi_password TEXT,
     reception_phone TEXT,
@@ -271,6 +272,7 @@ ALTER TABLE hotels ADD COLUMN IF NOT EXISTS late_checkout_phone TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS late_checkout_charge_1 TEXT DEFAULT 'Complimentary';
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS late_checkout_charge_2 TEXT DEFAULT '₹1,500';
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS late_checkout_charge_3 TEXT DEFAULT 'Full Day Rate';
+ALTER TABLE hotels ADD COLUMN IF NOT EXISTS service_icon_color TEXT DEFAULT '#2f2f2f';
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS airport_transfer_charge_1 TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS airport_transfer_charge_2 TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS airport_transfer_charge_3 TEXT;

@@ -12,6 +12,7 @@ type HotelRow = {
     logo_image?: string | null;
     primary_color?: string | null;
     accent_color?: string | null;
+    service_icon_color?: string | null;
     wifi_name?: string | null;
     wifi_password?: string | null;
     reception_phone?: string | null;
@@ -48,6 +49,7 @@ const mapHotelRowToBranding = (row: HotelRow): HotelBranding => ({
     logoImage: row.logo_image ?? undefined,
     primaryColor: row.primary_color ?? "#2563eb",
     accentColor: row.accent_color ?? "#3b82f6",
+    serviceIconColor: row.service_icon_color ?? undefined,
     wifiName: row.wifi_name ?? undefined,
     wifiPassword: row.wifi_password ?? undefined,
     receptionPhone: row.reception_phone ?? undefined,
@@ -186,6 +188,7 @@ export async function saveHotelBranding(id: string, updates: Partial<HotelBrandi
             logo_image: convertGDriveLink(updates.logoImage ?? ""),
             primary_color: updates.primaryColor,
             accent_color: updates.accentColor,
+            service_icon_color: updates.serviceIconColor,
             wifi_name: updates.wifiName,
             wifi_password: updates.wifiPassword,
             reception_phone: updates.receptionPhone,
