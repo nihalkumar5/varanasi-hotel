@@ -130,6 +130,9 @@ export default function GuestDashboard() {
     const guestCountLabel = `${numGuests || 1} ${(numGuests || 1) === 1 ? "Guest" : "Guests"}`;
     const serviceIconColor = branding?.serviceIconColor || "#2f2f2f";
     const receptionPhone = branding?.receptionPhone?.trim();
+    const heroImage =
+        branding?.heroImage ||
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80";
 
     const handleQuickRequest = async (type: string, notes: string) => {
         if (!branding?.id || submittingType) return;
@@ -226,7 +229,7 @@ export default function GuestDashboard() {
                 {/* Full-bleed Hotel Image Background */}
                 <div className="absolute inset-0 z-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80" 
+                        src={heroImage}
                         className="w-full h-full object-cover" 
                         alt="Hotel Exterior" 
                     />
@@ -616,11 +619,11 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="mb-20 px-0 sm:px-6"
+                className="mb-20 px-4 sm:px-6"
             >
                 <motion.div 
                     whileTap={{ scale: 0.98 }}
-                    className="bg-[#1F1F1F] rounded-[22px] p-6 flex items-center justify-between shadow-2xl relative overflow-hidden"
+                    className="mx-auto max-w-[430px] bg-[#1F1F1F] rounded-[22px] p-5 flex items-center justify-between shadow-2xl relative overflow-hidden"
                 >
                     <div className="relative z-10">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Need Anything?</p>

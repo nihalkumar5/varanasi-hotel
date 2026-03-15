@@ -148,6 +148,37 @@ export default function BrandingPage() {
                                     )}
                                 </div>
                             </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Guest Hero Image URL</label>
+                                <input
+                                    type="text"
+                                    value={config.heroImage || ""}
+                                    onChange={(e) => setConfig({ ...config, heroImage: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
+                                    placeholder="https://... (hotel exterior image)"
+                                />
+                                <div className="relative mt-3 w-full h-[56px] bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center overflow-hidden hover:bg-slate-100 transition-colors cursor-pointer">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => {
+                                                    setConfig({ ...config, heroImage: reader.result as string });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                    <span className="text-xs font-bold text-slate-500">{config.heroImage ? "Change Hero Image" : "Upload Hero Image"}</span>
+                                </div>
+                                {config.heroImage && (
+                                    <button onClick={() => setConfig({ ...config, heroImage: undefined })} className="text-[10px] text-red-500 font-bold mt-2 uppercase">Remove Hero Image</button>
+                                )}
+                            </div>
                         </div>
                     </section>
 

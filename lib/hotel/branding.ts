@@ -11,6 +11,7 @@ type HotelRow = {
     city?: string | null;
     logo?: string | null;
     logo_image?: string | null;
+    hero_image?: string | null;
     primary_color?: string | null;
     accent_color?: string | null;
     service_icon_color?: string | null;
@@ -49,6 +50,7 @@ const mapHotelRowToBranding = (row: HotelRow): HotelBranding => ({
     city: row.city ?? undefined,
     logo: row.logo ?? undefined,
     logoImage: row.logo_image ?? undefined,
+    heroImage: row.hero_image ?? undefined,
     primaryColor: row.primary_color ?? "#2563eb",
     accentColor: row.accent_color ?? "#3b82f6",
     serviceIconColor: row.service_icon_color ?? undefined,
@@ -189,6 +191,7 @@ export async function saveHotelBranding(id: string, updates: Partial<HotelBrandi
             city: updates.city,
             logo: convertGDriveLink(updates.logo ?? ""),
             logo_image: convertGDriveLink(updates.logoImage ?? ""),
+            hero_image: convertGDriveLink(updates.heroImage ?? ""),
             primary_color: updates.primaryColor,
             accent_color: updates.accentColor,
             service_icon_color: updates.serviceIconColor,

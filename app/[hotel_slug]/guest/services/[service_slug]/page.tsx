@@ -500,22 +500,6 @@ export default function ServiceDetailPage() {
                             {!airportComingSoon && (
                                 <>
                                     <div className="mt-6">
-                                        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Quick Notes</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {config.quickNotes.map((note) => (
-                                                <button
-                                                    key={note}
-                                                    type="button"
-                                                    onClick={() => setNotes((prev) => (prev ? `${prev}, ${note}` : note))}
-                                                    className="rounded-full border border-white/45 bg-white/38 px-3 py-1.5 text-[11px] font-semibold text-[#2f2218] backdrop-blur-[8px]"
-                                                >
-                                                    {note}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6">
                                         <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
                                             Request Details
                                         </label>

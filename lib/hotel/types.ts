@@ -12,6 +12,7 @@ export interface HotelBranding {
     city?: string;
     logo?: string;
     logoImage?: string;
+    heroImage?: string;
     primaryColor: string;
     accentColor: string;
     serviceIconColor?: string;

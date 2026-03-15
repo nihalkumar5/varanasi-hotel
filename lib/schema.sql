@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     city TEXT,
     logo TEXT, -- Small character or short name for logo fallback
     logo_image TEXT, -- URL to actual logo image
+    hero_image TEXT, -- URL for guest dashboard hero image
     primary_color TEXT DEFAULT '#2563eb',
     accent_color TEXT DEFAULT '#4f46e5',
     service_icon_color TEXT DEFAULT '#2f2f2f',
@@ -266,6 +267,7 @@ END $$;
 -- 7. WhatsApp Automation & Late Checkout (Migration)
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS welcome_message TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE hotels ADD COLUMN IF NOT EXISTS hero_image TEXT;
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS checkout_date TEXT;
 ALTER TABLE rooms ADD COLUMN IF NOT EXISTS checkout_time TEXT;
 ALTER TABLE hotels ADD COLUMN IF NOT EXISTS checkout_message TEXT;
