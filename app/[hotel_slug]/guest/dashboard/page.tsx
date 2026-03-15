@@ -306,7 +306,7 @@ export default function GuestDashboard() {
                         <motion.button 
                             whileTap={{ scale: 0.96 }}
                             whileHover={{ scale: 1.03 }}
-                            onClick={() => handleQuickRequest("Late Checkout", "Guest requested late checkout extension")}
+                            onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
                             className="flex min-h-[48px] w-full items-center justify-center rounded-[16px] border border-[#C53030]/30 bg-[#C62828] px-[18px] py-3 shadow-[0_4px_0_0_#751B1B] transition-all hover:shadow-[0_6px_0_0_#751B1B] active:translate-y-[4px] active:shadow-none"
                         >
                             <span className="text-[10px] font-black text-white uppercase tracking-wider leading-none text-center">
@@ -328,11 +328,11 @@ export default function GuestDashboard() {
                     {[
                         { label: "Wi-Fi Info", icon: <Wifi strokeWidth={2.3} />, path: "wifi" },
                         { label: "Room Service", icon: <img src="/icons/dinner-svgrepo-com.svg" alt="Room Service" className="h-8 w-8 object-contain" />, path: "restaurant" },
-                        { label: "Taxi", icon: <img src="/icons/taxi-4-svgrepo-com.svg" alt="Taxi" className="h-8 w-8 object-contain" />, path: "services" },
-                        { label: "Support", icon: <img src="/icons/maintenance-svgrepo-com.svg" alt="Support" className="h-8 w-8 object-contain" />, action: () => handleQuickRequest("Reception", "Guest requested concierge support") },
-                        { label: "Laundry", icon: <WashingMachine strokeWidth={2.3} />, path: "services" },
+                        { label: "Taxi", icon: <img src="/icons/taxi-4-svgrepo-com.svg" alt="Taxi" className="h-8 w-8 object-contain" />, path: "services/taxi" },
+                        { label: "Support", icon: <img src="/icons/maintenance-svgrepo-com.svg" alt="Support" className="h-8 w-8 object-contain" />, path: "services/support" },
+                        { label: "Laundry", icon: <WashingMachine strokeWidth={2.3} />, path: "services/laundry" },
                         { label: "Amenities", icon: <Bell strokeWidth={2.3} />, path: "services" },
-                        { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, action: () => handleQuickRequest("Cleaning", "Housekeeping requested") },
+                        { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, path: "services/cleaning" },
                         { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={2.3} />, action: () => setShowMoreServices((prev) => !prev) }
                     ].map((s, i) => (
                         <div key={i} className="px-1 text-center">
@@ -373,16 +373,16 @@ export default function GuestDashboard() {
                 {showMoreServices && (
                     <div className="mt-4 grid grid-cols-4 gap-x-3 gap-y-4">
                         {[
-                            { label: "Wake Call", icon: <Clock strokeWidth={2.3} />, action: () => handleQuickRequest("Reception", "Wake-up call requested") },
-                            { label: "Mini Bar", icon: <Wine strokeWidth={2.3} />, path: "services" },
-                            { label: "Airport", icon: <img src="/icons/airport-departures-svgrepo-com.svg" alt="Airport" className="h-8 w-8 object-contain" />, action: () => handleQuickRequest("Reception", "Airport transfer requested") },
-                            { label: "Spa", icon: <Waves strokeWidth={2.3} />, path: "services" }
+                            { label: "Wake Call", icon: <Clock strokeWidth={2.3} />, path: "services/wake-call" },
+                            { label: "Mini Bar", icon: <Wine strokeWidth={2.3} />, path: "services/mini-bar" },
+                            { label: "Airport", icon: <img src="/icons/airport-departures-svgrepo-com.svg" alt="Airport" className="h-8 w-8 object-contain" />, path: "services/airport-transfer" },
+                            { label: "Spa", icon: <Waves strokeWidth={2.3} />, path: "services/spa" }
                         ].map((s, i) => (
                             <div key={i} className="px-1 text-center">
                                 <motion.button
                                     whileTap={{ scale: 0.96 }}
                                     whileHover={{ y: -2 }}
-                                    onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
+                                    onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
                                     className="flex w-full flex-col items-center justify-center px-1 py-1 transition-all duration-200"
                                 >
                                     <div className="flex items-center justify-center">
