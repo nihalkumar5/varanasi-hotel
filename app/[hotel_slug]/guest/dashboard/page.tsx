@@ -366,67 +366,67 @@ export default function GuestDashboard() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="mb-8 px-4"
+                className="mb-8 mt-8 px-5"
             >
-                <div className="relative overflow-hidden rounded-[24px] border border-white/25 p-7 shadow-[0_30px_60px_rgba(0,0,0,0.15)]">
+                <div className="relative overflow-hidden rounded-[24px] border border-white/10 p-6 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
                     <div
                         className="absolute inset-0"
                         style={{
-                            background: "linear-gradient(180deg, #E5D7C3, #DCCCB5)",
+                            background: "radial-gradient(circle at top, #0f172a, #020617)",
                         }}
                     />
 
                     {/* 2. Foreground Layer (Header & Tiles) */}
                     <div className="relative z-10">
                         <div className="mb-[18px]">
-                            <h2 className="mb-1.5 font-serif text-[24px] font-semibold leading-tight text-[#1F1F1F]">Quick Services</h2>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#1F1F1F]/60">Personalized for your stay</p>
+                            <h2 className="mb-1.5 font-serif text-[24px] font-semibold leading-tight text-[#F8FAFC]">Quick Services</h2>
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#CBD5E1]/85">Personalized for your stay</p>
                         </div>
                         
-                        <div className="mt-[18px] grid grid-cols-1 gap-[14px]">
+                        <div className="mt-[18px] grid grid-cols-2 gap-4">
                             {[
                                 { 
                                     label: "Reception", 
                                     internalName: "Reception",
                                     icon: <Phone className="h-5 w-5" />, 
-                                    color: "#B45309",
+                                    color: "#FFB86B",
                                 },
                                 { 
                                     label: "Tea/Coffee", 
                                     internalName: "Tea / Coffee",
                                     icon: <Coffee className="h-5 w-5" />, 
-                                    color: "#8B5E3C",
+                                    color: "#E8A86D",
                                     hasOptions: true
                                 },
                                 { 
-                                    label: "Water", 
+                                    label: "Mineral Water", 
                                     internalName: "Mineral Water",
                                     icon: <Droplets className="h-5 w-5" />, 
-                                    color: "#5DA7B1"
+                                    color: "#6FD3FF"
                                 },
                                 { 
-                                    label: "Towels", 
+                                    label: "Fresh Towels", 
                                     internalName: "Towels",
                                     icon: <Layers className="h-5 w-5" />, 
-                                    color: "#7A8D84"
+                                    color: "#8AD4C1"
                                 }
                             ].map((service, i) => (
                                 <motion.button
                                     key={i}
-                                    whileHover={{ y: -2, boxShadow: "0 18px 40px rgba(0,0,0,0.15)" }}
+                                    whileHover={{ y: -4, boxShadow: "0 18px 40px rgba(0,0,0,0.15)" }}
                                     whileTap={{ scale: 0.96 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                                     onClick={() => handleTileClick(service)}
-                                    className="group/tile relative flex h-[58px] w-full items-center gap-2.5 overflow-hidden rounded-[16px] border border-white/60 bg-white/45 px-4 py-3 text-left shadow-[0_8px_20px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-[14px] transition-all duration-200"
+                                    className="group/tile relative flex h-24 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/15 bg-white/5 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-[18px] transition-all duration-200"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-white/35 to-transparent opacity-0 transition-opacity duration-500 group-hover/tile:opacity-100" />
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover/tile:opacity-100" />
                                     <div
                                         style={{ color: service.color }}
-                                        className="relative z-10 flex h-9 w-9 items-center justify-center rounded-[12px] bg-white/60 transition-transform duration-300 group-hover/tile:scale-110"
+                                        className="relative z-10 flex h-10 w-10 items-center justify-center rounded-[12px] bg-white/8 transition-transform duration-300 group-hover/tile:scale-110"
                                     >
                                         {service.icon}
                                     </div>
-                                    <span className="relative z-10 font-sans text-[13px] font-medium leading-tight text-[#2A2A2A]">
+                                    <span className="relative z-10 text-center font-sans text-[13px] font-medium leading-tight tracking-[0.2px] text-[#EAEAEA]">
                                         {service.label}
                                     </span>
                                 </motion.button>
