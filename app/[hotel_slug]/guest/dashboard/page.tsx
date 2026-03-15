@@ -129,6 +129,7 @@ export default function GuestDashboard() {
     const displayCheckoutTime = formatCheckoutTime(checkoutTime);
     const guestCountLabel = `${numGuests || 1} ${(numGuests || 1) === 1 ? "Guest" : "Guests"}`;
     const serviceIconColor = branding?.serviceIconColor || "#2f2f2f";
+    const receptionPhone = branding?.receptionPhone?.trim();
 
     const handleQuickRequest = async (type: string, notes: string) => {
         if (!branding?.id || submittingType) return;
@@ -179,6 +180,19 @@ export default function GuestDashboard() {
     };
 
     const handleTileClick = (service: any) => {
+        if (service.internalName === "Reception") {
+            if (receptionPhone) {
+                window.location.href = `tel:${receptionPhone}`;
+            } else {
+                setToast({
+                    message: "Reception number is not configured yet",
+                    type: "error",
+                    isVisible: true
+                });
+            }
+            return;
+        }
+
         setActiveServiceForQty({
             label: service.label,
             icon: service.icon,
@@ -327,14 +341,14 @@ export default function GuestDashboard() {
             >
                 <div className="grid grid-cols-4 gap-x-3 gap-y-4">
                     {[
-                        { label: "Wi-Fi Info", icon: <Wifi strokeWidth={2.3} />, path: "wifi" },
-                        { label: "Room Service", icon: <Utensils strokeWidth={2.3} />, path: "restaurant" },
-                        { label: "Taxi", icon: <Car strokeWidth={2.3} />, path: "services/taxi" },
-                        { label: "Maintenance", icon: <Wrench strokeWidth={2.3} />, path: "services/maintenance" },
-                        { label: "Laundry", icon: <WashingMachine strokeWidth={2.3} />, path: "services/laundry" },
-                        { label: "Luggage", icon: <Briefcase strokeWidth={2.3} />, path: "services/luggage" },
-                        { label: "Cleaning", icon: <Sparkles strokeWidth={2.3} />, path: "services/cleaning" },
-                        { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={2.3} />, action: () => setShowMoreServices((prev) => !prev) }
+                        { label: "Wi-Fi Info", icon: <Wifi strokeWidth={1.7} />, path: "wifi" },
+                        { label: "Room Service", icon: <Utensils strokeWidth={1.7} />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car strokeWidth={1.7} />, path: "services/taxi" },
+                        { label: "Maintenance", icon: <Wrench strokeWidth={1.7} />, path: "services/maintenance" },
+                        { label: "Laundry", icon: <WashingMachine strokeWidth={1.7} />, path: "services/laundry" },
+                        { label: "Luggage", icon: <Briefcase strokeWidth={1.7} />, path: "services/luggage" },
+                        { label: "Cleaning", icon: <Bath strokeWidth={1.7} />, path: "services/cleaning" },
+                        { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={1.7} />, action: () => setShowMoreServices((prev) => !prev) }
                     ].map((s, i) => (
                         <div key={i} className="px-1 text-center">
                             <motion.button
@@ -354,10 +368,10 @@ export default function GuestDashboard() {
                 {showMoreServices && (
                     <div className="mt-4 grid grid-cols-4 gap-x-3 gap-y-4">
                         {[
-                            { label: "Wake Call", icon: <Clock strokeWidth={2.3} />, path: "services/wake-call" },
-                            { label: "Mini Bar", icon: <Wine strokeWidth={2.3} />, path: "services/mini-bar" },
-                            { label: "Airport", icon: <Compass strokeWidth={2.3} />, path: "services/airport-transfer" },
-                            { label: "Spa", icon: <Waves strokeWidth={2.3} />, path: "services/spa" }
+                            { label: "Wake Call", icon: <Clock strokeWidth={1.7} />, path: "services/wake-call" },
+                            { label: "Mini Bar", icon: <Wine strokeWidth={1.7} />, path: "services/mini-bar" },
+                            { label: "Airport", icon: <Compass strokeWidth={1.7} />, path: "services/airport-transfer" },
+                            { label: "Spa", icon: <Waves strokeWidth={1.7} />, path: "services/spa" }
                         ].map((s, i) => (
                             <div key={i} className="px-1 text-center">
                                 <motion.button
@@ -606,16 +620,16 @@ export default function GuestDashboard() {
             >
                 <motion.div 
                     whileTap={{ scale: 0.98 }}
-                    className="bg-[#1F1F1F] rounded-[26px] p-8 flex items-center justify-between shadow-2xl relative overflow-hidden"
+                    className="bg-[#1F1F1F] rounded-[22px] p-6 flex items-center justify-between shadow-2xl relative overflow-hidden"
                 >
                     <div className="relative z-10">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-2">Need Anything?</p>
-                        <h3 className="text-2xl font-serif text-white font-medium mb-1 tracking-tight">Talk to Concierge</h3>
-                        <p className="text-[11px] text-white/60 font-medium">Available 24/7 for you</p>
+                        <h3 className="text-xl font-serif text-white font-medium mb-1 tracking-tight">Talk to Concierge</h3>
+                        <p className="text-[10px] text-white/60 font-medium">Available 24/7 for you</p>
                     </div>
                     <motion.button 
                         whileTap={{ scale: 0.94 }}
-                        className="relative z-10 h-14 px-8 bg-[#CFA46A] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-xl shadow-[#CFA46A]/20"
+                        className="relative z-10 h-11 px-6 bg-[#CFA46A] text-white text-[10px] font-black uppercase tracking-[0.18em] rounded-full shadow-xl shadow-[#CFA46A]/20"
                     >
                         Start Chat
                     </motion.button>
