@@ -261,10 +261,12 @@ export default function GuestDashboard() {
                     </motion.div>
                 </div>
 
-                {/* Glass Guest Portal Label Component */}
-                <div className="absolute left-1/2 top-5 z-20 -translate-x-1/2 sm:top-12">
-                    <div className="rounded-full border border-white/40 bg-white/40 px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#1F1F1F] shadow-sm backdrop-blur-md">
-                        Glass Guest Portal
+                {/* Glass Header */}
+                <div className="absolute inset-x-4 top-5 z-20 sm:inset-x-6 sm:top-8">
+                    <div className="flex items-center justify-center rounded-[18px] border border-white/35 bg-white/35 px-5 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.08)] backdrop-blur-[18px]">
+                        <span className="text-[11px] font-black uppercase tracking-[0.28em] text-[#111111]">
+                            Guest Portal
+                        </span>
                     </div>
                 </div>
             </motion.section>
