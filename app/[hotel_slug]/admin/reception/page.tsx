@@ -303,7 +303,28 @@ export default function ReceptionPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex gap-4 mt-8">
+                                                {/* QR Code */}
+                                                {(() => {
+                                                    const guestUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${hotelSlug}/guest/dashboard`;
+                                                    return (
+                                                        <div className="mt-4 bg-[#FDFBF9] border border-black/[0.03] rounded-[24px] p-5 flex items-center gap-4">
+                                                            <div className="bg-white p-2 rounded-2xl shadow-sm border border-black/[0.02]">
+                                                                <QRCode
+                                                                    value={guestUrl}
+                                                                    size={60}
+                                                                    fgColor="#1F1F1F"
+                                                                    bgColor="white"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[9px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-1">Guest Portal</p>
+                                                                <p className="text-[10px] font-black text-[#1F1F1F] leading-tight">Scan to access<br/>digital folio</p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+
+                                                <div className="flex gap-4 mt-6">
                                                     <button
                                                         onClick={() => handlePrintQR(room.room_number)}
                                                         className="w-14 h-14 bg-white border border-black/[0.05] text-[#1F1F1F] rounded-[20px] hover:bg-[#1F1F1F] hover:text-white transition-all flex items-center justify-center shadow-sm"
