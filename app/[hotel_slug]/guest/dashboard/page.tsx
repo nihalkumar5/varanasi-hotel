@@ -385,4 +385,5 @@ export default function GuestDashboard() {
             />
         </div>
     );
+}
 
