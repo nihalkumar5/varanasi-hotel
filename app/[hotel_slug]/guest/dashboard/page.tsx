@@ -6,13 +6,14 @@ import {
     Wifi, Utensils, Phone, Layers,
     Zap, Droplets, Wind, Sparkles, Coffee, Layout, ChefHat, Home, User, Users, Sun, Compass, AlertCircle, Check, Wine, Library,
     ChevronLeft, ChevronRight, ArrowRight, ExternalLink, Clock, MapPin, Music, Star, Shirt, WashingMachine,
-    Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa, Briefcase
+    Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa, Briefcase, RefreshCw,
+    ConciergeBell, Brush
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHotelBranding, useSupabaseRequests, addSupabaseRequest, useSpecialOffers } from "@/utils/store";
 import { useGuestRoom } from "../GuestAuthWrapper";
-import { Toast } from "@/components/Toast";
+import { SuccessFolio } from "@/components/SuccessFolio";
 
 // Helper to safely render icons with className
 const renderIcon = (icon: React.ReactNode, className: string) => {
@@ -22,63 +23,15 @@ const renderIcon = (icon: React.ReactNode, className: string) => {
 };
 
 const formatCheckoutDate = (value?: string) => {
-    if (!value) return "Checkout TBD";
-
-    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (isoMatch) {
-        const [, year, month, day] = isoMatch;
-        const parsed = new Date(Number(year), Number(month) - 1, Number(day));
-        return parsed.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-        });
-    }
-
-    const slashMatch = value.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
-    if (slashMatch) {
-        const [, first, second, third] = slashMatch;
-        const year = third.length === 2 ? `20${third}` : third;
-        const parsed = new Date(Number(year), Number(second) - 1, Number(first));
-
-        if (!Number.isNaN(parsed.getTime())) {
-            return parsed.toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-            });
-        }
-    }
-
-    const parsed = new Date(value);
-    if (!Number.isNaN(parsed.getTime())) {
-        return parsed.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-        });
-    }
-
-    return value;
+    if (!value) return "TBD";
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+    return date.toLocaleDateString("en-GB", { day: "numeric", month: "long" });
 };
 
 const formatCheckoutTime = (value?: string) => {
-    if (!value) return "TBD";
-
-    if (/[ap]m/i.test(value)) {
-        return value.toUpperCase();
-    }
-
-    const timeMatch = value.match(/^(\d{1,2}):(\d{2})$/);
-    if (!timeMatch) return value;
-
-    const [, hourText, minute] = timeMatch;
-    const hours = Number(hourText);
-
-    if (Number.isNaN(hours) || hours > 23) {
-        return value;
-    }
-
-    const period = hours >= 12 ? "PM" : "AM";
-    const normalizedHour = hours % 12 || 12;
-    return `${normalizedHour}:${minute} ${period}`;
+    if (!value) return "11:00 AM";
+    return value;
 };
 
 export default function GuestDashboard() {
@@ -91,7 +44,6 @@ export default function GuestDashboard() {
     const { offers, loading: loadingOffers } = useSpecialOffers(branding?.id);
     const requests = useSupabaseRequests(branding?.id, roomNumber, checkedInAt);
 
-    // State for Quick Services friction (Quantity Selector)
     const [activeServiceForQty, setActiveServiceForQty] = useState<{
         label: string;
         icon: React.ReactNode;
@@ -103,23 +55,14 @@ export default function GuestDashboard() {
 
     const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
     const [scrolled, setScrolled] = useState(false);
-    const [showTeaOptions, setShowTeaOptions] = useState(false);
-    const [showWaterOptions, setShowWaterOptions] = useState(false);
-    const [showCleaningOptions, setShowCleaningOptions] = useState(false);
-    const [showCleaningTimePicker, setShowCleaningTimePicker] = useState(false);
-
-    const [submittingType, setSubmittingType] = React.useState<string | null>(null);
     const [showMoreServices, setShowMoreServices] = useState(false);
-    const [toast, setToast] = React.useState<{ message: string; type: "success" | "error"; isVisible: boolean }>({
-        message: "",
-        type: "success",
-        isVisible: false
+    const [submittingType, setSubmittingType] = React.useState<string | null>(null);
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string }>({
+        open: false, title: "", message: ""
     });
 
     React.useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
-        };
+        const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -127,37 +70,9 @@ export default function GuestDashboard() {
     const activeRequests = requests.filter(r => r.status === "Pending" || r.status === "In Progress");
     const displayCheckoutDate = formatCheckoutDate(checkoutDate);
     const displayCheckoutTime = formatCheckoutTime(checkoutTime);
-    const guestCountLabel = `${numGuests || 1} ${(numGuests || 1) === 1 ? "Guest" : "Guests"}`;
-    const serviceIconColor = branding?.serviceIconColor || "#2f2f2f";
-    const receptionPhone = branding?.receptionPhone?.trim();
-    const conciergeWhatsapp = branding?.conciergeWhatsapp?.trim();
-    const heroImage =
-        branding?.heroImage ||
-        "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80";
+    const serviceIconColor = branding?.serviceIconColor || "#CFA46A";
+    const heroImage = branding?.heroImage || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80";
     const activeOffers = offers.filter((offer) => offer.is_active);
-
-    React.useEffect(() => {
-        if (!activeOffers.length) {
-            setCurrentOfferIndex(0);
-            return;
-        }
-
-        setCurrentOfferIndex((previous) => (previous >= activeOffers.length ? 0 : previous));
-    }, [activeOffers.length]);
-
-    React.useEffect(() => {
-        if (activeOffers.length <= 1) {
-            return;
-        }
-
-        const intervalId = window.setInterval(() => {
-            setCurrentOfferIndex((previous) =>
-                previous === activeOffers.length - 1 ? 0 : previous + 1,
-            );
-        }, 4200);
-
-        return () => window.clearInterval(intervalId);
-    }, [activeOffers.length]);
 
     const handleQuickRequest = async (type: string, notes: string) => {
         if (!branding?.id || submittingType) return;
@@ -175,47 +90,30 @@ export default function GuestDashboard() {
         setSubmittingType(null);
 
         if (error) {
-            setToast({ message: `Error: ${error.message}`, type: "error", isVisible: true });
+            setFolioState({
+                open: true,
+                title: "Service Interrupted",
+                message: `The system encountered a resistance: ${error.message}`,
+            });
         } else {
-            const successWording = type === 'Towel' ? 'Fresh towels are on the way 🧺' : 
-                                  type === 'Water' ? 'Mineral water is on its way 💧' :
-                                  type === 'Cleaning' ? 'Housekeeping has been notified 🧹' :
-                                  type === 'Late Checkout' ? 'Late checkout request received ⏳' :
-                                  `${type} request placed successfully`;
-            setToast({ message: successWording, type: "success", isVisible: true });
+            setFolioState({
+                open: true,
+                title: "Request Dispatched",
+                message: `Your request for ${type.toLowerCase()} has been prioritized by our team.`,
+                details: "TRACKING_ACTIVE"
+            });
         }
-    };
-
-    if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-12 h-12 border-4 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0 }
     };
 
     const handleTileClick = (service: any) => {
         if (service.internalName === "Reception") {
-            if (receptionPhone) {
-                window.location.href = `tel:${receptionPhone}`;
+            if (branding?.receptionPhone) {
+                window.location.href = `tel:${branding.receptionPhone}`;
             } else {
-                setToast({
-                    message: "Reception number is not configured yet",
-                    type: "error",
-                    isVisible: true
+                setFolioState({
+                    open: true,
+                    title: "Access Restricted",
+                    message: "The direct line to Reception is currently being synchronized. Please use the Concierge chat.",
                 });
             }
             return;
@@ -233,511 +131,262 @@ export default function GuestDashboard() {
 
     const confirmQuantity = (qty: number) => {
         if (!activeServiceForQty) return;
-        
         const finalLabel = activeServiceForQty.selectedOption || activeServiceForQty.label;
-        
-        handleQuickRequest(
-            activeServiceForQty.internalName, 
-            `${finalLabel} (Qty: ${qty}) requested`
-        );
+        handleQuickRequest(activeServiceForQty.internalName, `${finalLabel} x ${qty}`);
         setActiveServiceForQty(null);
     };
 
-    const handleConciergeChat = () => {
-        const phoneSource = conciergeWhatsapp || receptionPhone;
-
-        if (!phoneSource) {
-            setToast({
-                message: "Concierge WhatsApp number is not configured yet",
-                type: "error",
-                isVisible: true
-            });
-            return;
-        }
-
-        const whatsappNumber = phoneSource.replace(/\D/g, "");
-
-        if (!whatsappNumber) {
-            setToast({
-                message: "Concierge WhatsApp number is invalid",
-                type: "error",
-                isVisible: true
-            });
-            return;
-        }
-
-        const guestName = branding?.name || "hotel";
-        const message = `Hi Concierge, I need assistance from Room ${roomNumber || "guest room"} at ${guestName}.`;
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
-    };
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFBF9]">
+            <RefreshCw className="w-8 h-8 text-[#CFA46A] animate-spin" />
+        </div>
+    );
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-[#FDFBF9] pb-20 font-sans text-[#1F1F1F] md:mx-auto md:max-w-[520px]">
-            {/* 1. Hero Hotel Card - "Halo Effect" */}
+        <div className="min-h-screen bg-[#FDFBF9] pb-32 font-sans text-[#1F1F1F]">
+            {/* 1. Cinematic Hero Canvas */}
             <motion.section 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="relative h-[260px] w-full overflow-hidden sm:h-[320px]"
+                className="relative h-[440px] w-full"
             >
-                {/* Full-bleed Hotel Image Background */}
-                <div className="absolute inset-0 z-0">
-                    <img 
-                        src={heroImage}
-                        className="w-full h-full object-cover" 
-                        alt="Hotel Exterior" 
-                    />
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            background: "linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.45))",
-                        }}
-                    />
+                <div className="absolute inset-0 overflow-hidden">
+                    <img src={heroImage} className="w-full h-full object-cover scale-110 blur-[1px]" alt="Background" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF9] via-[#FDFBF9]/40 to-black/30" />
                 </div>
 
-                {/* Glass Header */}
-                <div className="absolute inset-x-4 top-6 z-20 sm:inset-x-6">
-                    <div className="flex items-center justify-center rounded-[18px] border border-white/35 bg-white/35 px-5 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.08)] backdrop-blur-[18px]">
-                        <span className="text-[11px] font-black uppercase tracking-[0.28em] text-[#111111]">
-                            Guest Portal
-                        </span>
+                <div className="relative z-10 px-8 pt-20 flex flex-col items-center">
+                    <motion.div 
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="w-20 h-20 rounded-[28px] bg-white shadow-2xl flex items-center justify-center mb-8 border border-white/50 backdrop-blur-xl"
+                    >
+                        {branding?.logoImage ? (
+                            <img src={branding.logoImage} className="w-full h-full object-cover rounded-[28px]" />
+                        ) : (
+                            <span className="text-4xl font-serif font-black text-[#1F1F1F]">{branding?.logo || branding?.name?.charAt(0)}</span>
+                        )}
+                    </motion.div>
+                    
+                    <h1 className="text-4xl font-serif font-black text-center text-[#1F1F1F] tracking-tight leading-none mb-4 uppercase">
+                        {branding?.name}
+                    </h1>
+                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#CFA46A]">
+                        <span>Boutique Residency</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
+                        <span>{branding?.city || "Luxury Hub"}</span>
                     </div>
                 </div>
             </motion.section>
 
-            {/* 1.5 Floating Hotel Info Card */}
+            {/* 2. Personalized Access Card */}
             <motion.section
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="-mt-12 mb-6 px-4"
+                className="-mt-32 px-6 relative z-20"
             >
-                <div className="rounded-[24px] border border-white/30 bg-white/75 p-6 shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-[18px]">
-                    <div className="mb-5">
-                        <h1 className="mb-2 text-[28px] font-serif font-bold uppercase leading-[0.95] tracking-[0.01em] text-[#111111]">
-                            {branding?.name || "Mountain Lodge"}
-                        </h1>
-                        <div className="mb-3 text-[15px] tracking-[0.22em] text-[#C6A25A]">★★★★★</div>
-                        <div className="flex items-center text-slate-700/75">
-                            <MapPin className="mr-2 h-3.5 w-3.5" />
-                            <p className="text-[14px] font-semibold tracking-[0.08em]">
-                                {branding?.city || "Raipur, India"}
-                            </p>
-                        </div>
+                <div className="bg-[#1F1F1F] rounded-[48px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.25)] border border-white/10 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-1000">
+                        <Star className="w-40 h-40 text-[#CFA46A]" />
                     </div>
-
-                    <div className="border-t border-black/5 pt-5">
-                        <div className="flex items-center gap-2">
-                            <div className="flex flex-col">
-                                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-800/40">Checkout</p>
-                                <p className="text-[16px] font-black tracking-[0.04em] text-[#C6A25A]">
-                                    {displayCheckoutDate} <span className="px-2 text-[#B9A388]">·</span> {displayCheckoutTime}
-                                </p>
+                    
+                    <div className="relative z-10">
+                        <div className="flex justify-between items-start mb-12">
+                            <div>
+                                <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Welcome Back</p>
+                                <h2 className="text-3xl font-serif font-black text-white leading-none">Guest of Folio</h2>
                             </div>
-                            <div className="ml-auto flex items-center gap-1 rounded-[9px] bg-[#111111] px-2 py-1 text-white shadow-[0_0_10px_rgba(0,0,0,0.2)]">
-                                <Check className="h-2.5 w-2.5 text-[#CFA46A]" />
-                                <span className="text-[8px] font-black uppercase tracking-[0.14em]">Verified Guest</span>
+                            <div className="px-6 py-3 bg-[#CFA46A] text-[#1F1F1F] rounded-[20px] font-serif font-black text-2xl shadow-lg">
+                                {roomNumber || "101"}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </motion.section>
 
-            {/* 2. Compact Info Tile (Info Strip) */}
-            <motion.section 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="relative z-10 mb-6 px-4"
-            >
-                <div className="flex h-[72px] items-center justify-between rounded-[16px] border border-white/20 bg-[#F3EAE1]/96 px-4 py-3 shadow-[0_8px_20px_rgba(0,0,0,0.06)]">
-                    {/* Room Section */}
-                    <div className="flex-1 flex flex-col items-center">
-                        <span className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-70">Room</span>
-                        <div className="flex items-center gap-1.5">
-                            <Bed className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
-                            <span className="text-[14px] font-black text-[#1F1F1F] leading-none tracking-tight">{roomNumber || "101"}</span>
+                        <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
+                            <div>
+                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Stay Duration</p>
+                                <p className="text-sm font-black text-white">{displayCheckoutDate}</p>
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Departure</p>
+                                <p className="text-sm font-black text-white">{displayCheckoutTime}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="mx-4 h-8 w-px self-center bg-black/5"></div>
-
-                    {/* Guests Section */}
-                    <div className="flex-1 flex flex-col items-center">
-                        <span className="mb-1 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 opacity-70">Staying</span>
-                        <div className="flex items-center gap-1.5">
-                            <Users className="w-3.5 h-3.5 text-[#CFA46A] stroke-[2.5]" />
-                            <span className="text-[14px] font-black text-[#1F1F1F] leading-none tracking-tight">{guestCountLabel}</span>
-                        </div>
-                    </div>
-
-                    <div className="mx-4 h-8 w-px self-center bg-black/5"></div>
-
-                    {/* Late Checkout Section (Premium 3D Red Button - Simplified) */}
-                    <div className="flex-1 flex flex-col items-center">
-                        <motion.button 
-                            whileTap={{ scale: 0.96 }}
-                            whileHover={{ scale: 1.03 }}
-                            onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
-                            className="flex min-h-[48px] w-full items-center justify-center rounded-[16px] border border-[#C53030]/30 bg-[#C62828] px-[18px] py-3 shadow-[0_4px_0_0_#751B1B] transition-all hover:shadow-[0_6px_0_0_#751B1B] active:translate-y-[4px] active:shadow-none"
-                        >
-                            <span className="text-[10px] font-black text-white uppercase tracking-wider leading-none text-center">
-                                Late Checkout
-                            </span>
-                        </motion.button>
-                    </div>
-                </div>
-            </motion.section>
-
-            {/* 2.5. Luxury Priority Services Section (Wi-Fi, Dining, etc.) */}
-            <motion.section 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                className="mb-8 px-4"
-            >
-                <div className="grid grid-cols-4 gap-x-3 gap-y-4">
-                    {[
-                        { label: "Wi-Fi Info", icon: <Wifi strokeWidth={1.7} />, path: "wifi" },
-                        { label: "Room Service", icon: <Utensils strokeWidth={1.7} />, path: "restaurant" },
-                        { label: "Taxi", icon: <Car strokeWidth={1.7} />, path: "services/taxi" },
-                        { label: "Maintenance", icon: <Wrench strokeWidth={1.7} />, path: "services/maintenance" },
-                        { label: "Laundry", icon: <WashingMachine strokeWidth={1.7} />, path: "services/laundry" },
-                        { label: "Luggage", icon: <Briefcase strokeWidth={1.7} />, path: "services/luggage" },
-                        { label: "Cleaning", icon: <Bath strokeWidth={1.7} />, path: "services/cleaning" },
-                        { label: showMoreServices ? "Less" : "More", icon: <MoreHorizontal strokeWidth={1.7} />, action: () => setShowMoreServices((prev) => !prev) }
-                    ].map((s, i) => (
-                        <div key={i} className="px-1 text-center">
-                            <motion.button
-                                whileTap={{ scale: 0.96 }}
-                                whileHover={{ y: -2 }}
-                                onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                                className="flex w-full flex-col items-center justify-center px-1 py-1 transition-all duration-200"
+                        <div className="mt-8 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Users className="w-4 h-4 text-[#CFA46A]" />
+                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">{numGuests || 1} Registered</span>
+                            </div>
+                            <button 
+                                onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
+                                className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[9px] font-black text-white uppercase tracking-[0.2em] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all"
                             >
-                                <div className="flex items-center justify-center" style={{ color: serviceIconColor }}>
-                                    {renderIcon(s.icon, "h-9 w-9")}
-                                </div>
-                            </motion.button>
-                            <h3 className="mt-1.5 text-[10px] font-medium leading-tight text-[#2b2b2b] font-serif">{s.label}</h3>
+                                Extend Stay
+                            </button>
                         </div>
+                    </div>
+                </div>
+            </motion.section>
+
+            {/* 3. Boutique Service Grid */}
+            <section className="mt-16 px-6">
+                <div className="mb-10 flex items-center justify-between px-2">
+                    <div>
+                        <h3 className="text-xl font-serif font-black text-[#1F1F1F]">Curated Folio</h3>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Operational Signals</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center">
+                        <ConciergeBell className="w-4 h-4 text-[#CFA46A]" />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4">
+                    {[
+                        { label: "Wi-Fi", icon: <Wifi />, path: "wifi" },
+                        { label: "Dining", icon: <Utensils />, path: "restaurant" },
+                        { label: "Transport", icon: <Car />, path: "services/taxi" },
+                        { label: "Laundry", icon: <WashingMachine />, path: "services/laundry" },
+                        { label: "Baggage", icon: <Briefcase />, path: "services/luggage" },
+                        { label: "Spa", icon: <Waves />, path: "services/spa" },
+                        { label: "Cleaning", icon: <Brush />, path: "services/cleaning" },
+                        { label: showMoreServices ? "Collapse" : "More", icon: <MoreHorizontal />, action: () => setShowMoreServices(!showMoreServices) }
+                    ].map((s, i) => (
+                        <motion.button
+                            key={i}
+                            whileTap={{ scale: 0.94 }}
+                            onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
+                            className="flex flex-col items-center gap-3 p-4 rounded-[28px] bg-white border border-black/[0.02] shadow-[0_10px_30px_rgba(0,0,0,0.02)]"
+                        >
+                            <div className="text-[#CFA46A]" style={{ color: serviceIconColor }}>
+                                {renderIcon(s.icon, "w-8 h-8")}
+                            </div>
+                            <span className="text-[9px] font-black text-[#1F1F1F] uppercase tracking-tighter text-center leading-none">{s.label}</span>
+                        </motion.button>
                     ))}
                 </div>
-                {showMoreServices && (
-                    <div className="mt-4 grid grid-cols-4 gap-x-3 gap-y-4">
-                        {[
-                            { label: "Wake Call", icon: <Clock strokeWidth={1.7} />, path: "services/wake-call" },
-                            { label: "Mini Bar", icon: <Wine strokeWidth={1.7} />, path: "services/mini-bar" },
-                            { label: "Airport", icon: <Compass strokeWidth={1.7} />, path: "services/airport-transfer" },
-                            { label: "Spa", icon: <Waves strokeWidth={1.7} />, path: "services/spa" }
-                        ].map((s, i) => (
-                            <div key={i} className="px-1 text-center">
-                                <motion.button
-                                    whileTap={{ scale: 0.96 }}
-                                    whileHover={{ y: -2 }}
-                                    onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
-                                    className="flex w-full flex-col items-center justify-center px-1 py-1 transition-all duration-200"
-                                >
-                                    <div className="flex items-center justify-center" style={{ color: serviceIconColor }}>
-                                        {renderIcon(s.icon, "h-9 w-9")}
-                                    </div>
-                                </motion.button>
-                                <h3 className="mt-1.5 text-[10px] font-medium leading-tight text-[#2b2b2b] font-serif">{s.label}</h3>
+            </section>
+
+            {/* 4. Promotional Highlights */}
+            {activeOffers.length > 0 && (
+                <section className="mt-20 px-6">
+                    <div className="bg-[#F6F3EE] rounded-[48px] p-10 border border-[#E8DCCB]/30 relative overflow-hidden group">
+                        <div className="flex justify-between items-end mb-10">
+                            <div>
+                                <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Exclusives</p>
+                                <h3 className="text-3xl font-serif font-black text-[#1F1F1F]">Boutique Treats</h3>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </motion.section>
-
-            {/* 3. Special Offers */}
-            <motion.section
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.58 }}
-                className="mb-8 px-4"
-            >
-                <div className="rounded-[24px] border border-[#EADBC7] bg-[#FBF6EF] p-4 shadow-[0_16px_34px_rgba(0,0,0,0.06)]">
-                    <div className="mb-4 flex items-center justify-between">
-                        <div>
-                            <p className="mb-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#C6A25A]">
-                                Special Offers
-                            </p>
-                            <h3 className="text-[20px] font-serif font-bold text-[#1F1F1F]">
-                                Curated for your stay
-                            </h3>
-                        </div>
-
-                        {activeOffers.length > 1 && (
-                            <div className="flex items-center gap-2">
-                                <motion.button
-                                    whileTap={{ scale: 0.94 }}
-                                    onClick={() =>
-                                        setCurrentOfferIndex((previous) =>
-                                            previous === 0 ? activeOffers.length - 1 : previous - 1,
-                                        )
-                                    }
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E8DCCB] bg-white text-[#1F1F1F] shadow-sm"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                </motion.button>
-                                <motion.button
-                                    whileTap={{ scale: 0.94 }}
-                                    onClick={() =>
-                                        setCurrentOfferIndex((previous) =>
-                                            previous === activeOffers.length - 1 ? 0 : previous + 1,
-                                        )
-                                    }
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E8DCCB] bg-white text-[#1F1F1F] shadow-sm"
-                                >
-                                    <ChevronRight className="h-4 w-4" />
-                                </motion.button>
-                            </div>
-                        )}
-                    </div>
-
-                    {loadingOffers ? (
-                        <div className="flex h-[210px] items-center justify-center rounded-[20px] border border-dashed border-[#E8DCCB] bg-white/60 text-[#8D7B68]">
-                            <div className="flex items-center gap-3 text-sm font-semibold">
-                                <div className="h-5 w-5 rounded-full border-2 border-[#CFA46A] border-t-transparent animate-spin" />
-                                Loading offers...
+                            <div className="flex gap-2">
+                                <button className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center bg-white"><ChevronLeft className="w-4 h-4" /></button>
+                                <button className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center bg-white"><ChevronRight className="w-4 h-4" /></button>
                             </div>
                         </div>
-                    ) : activeOffers.length ? (
-                        <div className="overflow-hidden rounded-[22px] border border-white/70 bg-white shadow-[0_12px_28px_rgba(0,0,0,0.08)]">
-                            <div className="overflow-hidden">
-                                <motion.div
-                                    animate={{ x: `-${currentOfferIndex * 100}%` }}
-                                    transition={{ type: "spring", stiffness: 140, damping: 24 }}
-                                    className="flex"
-                                >
-                                    {activeOffers.map((offer) => (
-                                        <div key={offer.id} className="min-w-full">
-                                            <div className="relative h-[190px] w-full overflow-hidden">
-                                                {offer.image_url ? (
-                                                    <img
-                                                        src={offer.image_url}
-                                                        alt={offer.title}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#E8D9C3] to-[#D8B78A]">
-                                                        <Star className="h-10 w-10 text-white/80" />
-                                                    </div>
-                                                )}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#1F1F1F]/80 via-[#1F1F1F]/20 to-transparent" />
-                                                <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                                                    <p className="mb-2 text-[9px] font-black uppercase tracking-[0.24em] text-white/70">
-                                                        Exclusive
-                                                    </p>
-                                                    <h4 className="text-[24px] font-serif font-bold leading-tight">
-                                                        {offer.title}
-                                                    </h4>
-                                                </div>
-                                            </div>
 
-                                            <div className="flex items-end justify-between gap-4 p-5">
-                                                <div>
-                                                    <p className="text-[13px] font-medium leading-6 text-[#5F5A54]">
-                                                        {offer.description || "Ask our team for details on this experience."}
-                                                    </p>
-                                                </div>
-
-                                                <motion.button
-                                                    whileTap={{ scale: 0.96 }}
-                                                    onClick={() => router.push(`/${hotelSlug}/guest/services`)}
-                                                    className="flex h-11 items-center gap-2 rounded-full bg-[#CFA46A] px-4 text-[10px] font-black uppercase tracking-[0.18em] text-white shadow-[0_10px_20px_rgba(207,164,106,0.25)]"
-                                                >
-                                                    Explore
-                                                    <ArrowRight className="h-3.5 w-3.5" />
-                                                </motion.button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </motion.div>
-                            </div>
-
-                            {activeOffers.length > 1 && (
-                                <div className="mt-3 flex items-center gap-1.5 px-5 pb-5">
-                                    {activeOffers.map((offer, index) => (
-                                        <button
-                                            key={offer.id}
-                                            onClick={() => setCurrentOfferIndex(index)}
-                                            className={`h-1.5 rounded-full transition-all ${
-                                                index === currentOfferIndex
-                                                    ? "w-6 bg-[#CFA46A]"
-                                                    : "w-1.5 bg-[#D9CFC3]"
-                                            }`}
-                                            aria-label={`View offer ${index + 1}`}
-                                        />
-                                    ))}
+                        <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl relative">
+                            <div className="h-64 relative bg-slate-100">
+                                {activeOffers[0].image_url && <img src={activeOffers[0].image_url} className="w-full h-full object-cover" />}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <div className="absolute bottom-6 left-6 text-white">
+                                    <h4 className="text-2xl font-serif font-black leading-tight mb-1">{activeOffers[0].title}</h4>
+                                    <p className="text-xs font-medium text-white/70 italic">{activeOffers[0].description}</p>
                                 </div>
-                            )}
+                            </div>
                         </div>
-                    ) : (
-                        <div className="rounded-[20px] border border-dashed border-[#E8DCCB] bg-white/60 px-5 py-8 text-center">
-                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C6A25A] mb-2">
-                                Offers coming soon
-                            </p>
-                            <p className="text-sm font-medium text-[#6C6358]">
-                                The hotel has not published any active promotions yet.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </motion.section>
+                    </div>
+                </section>
+            )}
 
-            {/* 3. Refined Quick Services Section v3 (Exact Blueprint) */}
-            <motion.section 
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="mb-8 mt-8 px-5"
-            >
-                <div className="relative overflow-hidden rounded-[24px] border border-white/10 p-6 shadow-[0_30px_60px_rgba(0,0,0,0.35)]">
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            background: "radial-gradient(circle at top, #0f172a, #020617)",
-                        }}
-                    />
-
-                    {/* 2. Foreground Layer (Header & Tiles) */}
-                    <div className="relative z-10">
-                        <div className="mb-[18px]">
-                            <h2 className="mb-1.5 font-serif text-[24px] font-semibold leading-tight text-[#F8FAFC]">Quick Services</h2>
-                            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#CBD5E1]/85">Personalized for your stay</p>
+            {/* 5. Active Signal Stream */}
+            <AnimatePresence>
+                {activeRequests.length > 0 && (
+                    <motion.section 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="mt-20 px-6"
+                    >
+                        <div className="flex items-center justify-between mb-8 px-2">
+                            <h3 className="text-xl font-serif font-black text-[#1F1F1F]">Signal Stream</h3>
+                            <div className="flex items-center gap-2 px-4 py-1.5 bg-[#CFA46A]/10 rounded-full">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
+                                <span className="text-[9px] font-black text-[#CFA46A] uppercase tracking-widest">{activeRequests.length} Active</span>
+                            </div>
                         </div>
-                        
-                        <div className="mt-[18px] grid grid-cols-2 gap-4">
-                            {[
-                                { 
-                                    label: "Reception", 
-                                    internalName: "Reception",
-                                    icon: <Phone className="h-5 w-5" />, 
-                                    color: "#FFB86B",
-                                },
-                                { 
-                                    label: "Tea/Coffee", 
-                                    internalName: "Tea / Coffee",
-                                    icon: <Coffee className="h-5 w-5" />, 
-                                    color: "#E8A86D",
-                                    hasOptions: true
-                                },
-                                { 
-                                    label: "Mineral Water", 
-                                    internalName: "Mineral Water",
-                                    icon: <Droplets className="h-5 w-5" />, 
-                                    color: "#6FD3FF"
-                                },
-                                { 
-                                    label: "Fresh Towels", 
-                                    internalName: "Towels",
-                                    icon: <Layers className="h-5 w-5" />, 
-                                    color: "#8AD4C1"
-                                }
-                            ].map((service, i) => (
-                                <motion.button
-                                    key={i}
-                                    whileHover={{ y: -4, boxShadow: "0 18px 40px rgba(0,0,0,0.15)" }}
-                                    whileTap={{ scale: 0.96 }}
-                                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                    onClick={() => handleTileClick(service)}
-                                    className="group/tile relative flex h-24 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-[20px] border border-white/8 bg-white/5 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-[18px] transition-all duration-200"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-500 group-hover/tile:opacity-100" />
-                                    <div
-                                        style={{ color: service.color }}
-                                        className="relative z-10 flex h-10 w-10 items-center justify-center rounded-[12px] bg-white/8 transition-transform duration-300 group-hover/tile:scale-110"
-                                    >
-                                        {service.icon}
+
+                        <div className="space-y-4">
+                            {activeRequests.map((req, i) => (
+                                <div key={i} className="bg-white p-6 rounded-[32px] border border-black/[0.03] shadow-sm flex items-center justify-between">
+                                    <div className="flex items-center gap-5">
+                                        <div className="w-12 h-12 rounded-2xl bg-[#FDFBF9] flex items-center justify-center text-[#CFA46A]">
+                                            <Zap className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-black text-[#1F1F1F] uppercase tracking-tight">{req.type}</h4>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{req.status}</p>
+                                        </div>
                                     </div>
-                                    <span className="relative z-10 text-center font-sans text-[13px] font-medium leading-tight tracking-[0.2px] text-[#EAEAEA]">
-                                        {service.label}
-                                    </span>
-                                </motion.button>
+                                    <div className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.2em] italic">Propagating...</div>
+                                </div>
                             ))}
                         </div>
+                    </motion.section>
+                )}
+            </AnimatePresence>
 
-                        {/* Unified Selection Overlay (Compact & Consistent) */}
-                        <AnimatePresence>
-                            {activeServiceForQty && (
-                                <motion.div 
-                                    initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                                    animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
-                                    exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                                    className="absolute inset-0 z-50 bg-[#E8DCCB]/60 flex items-center justify-center p-6"
-                                >
-                                    <motion.div 
-                                        initial={{ scale: 0.9, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        exit={{ scale: 0.9, opacity: 0 }}
-                                        className="bg-[#F6F3EE] rounded-[32px] p-6 pb-8 w-full max-w-[290px] min-h-fit shadow-[0_30px_60px_rgba(0,0,0,0.18)] border border-white flex flex-col items-center"
-                                    >
-                                        <div className="flex flex-col items-center w-full">
-                                            <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-sm text-[#B88952] mb-5">
-                                                {activeServiceForQty.step === 'type' ? (
-                                                    <div className="flex gap-1.5">
-                                                        <Coffee className="w-5 h-5" />
-                                                        <div className="w-[1px] h-5 bg-[#B88952]/20 mx-0.5" />
-                                                        <Wind className="w-5 h-5 scale-x-[-1]" />
-                                                    </div>
-                                                ) : activeServiceForQty.icon}
-                                            </div>
-                                            
-                                            <h3 className="text-[20px] font-serif font-black text-[#1F1F1F] mb-1.5 text-center leading-tight">
-                                                {activeServiceForQty.selectedOption || activeServiceForQty.label}
-                                            </h3>
-                                            <p className="text-[10px] font-black text-[#1F1F1F]/40 uppercase tracking-[0.2em] mb-8">
-                                                {activeServiceForQty.step === 'type' ? "Selection Required" : "Select Quantity"}
-                                            </p>
-                                            
-                                            {activeServiceForQty.step === 'type' ? (
-                                                <div className="flex flex-col gap-3 w-full">
-                                                    {["Hot Tea", "Coffee"].map((option) => (
-                                                        <motion.button
-                                                            key={option}
-                                                            whileTap={{ scale: 0.98 }}
-                                                            onClick={() => setActiveServiceForQty({
-                                                                ...activeServiceForQty,
-                                                                selectedOption: option,
-                                                                step: 'quantity'
-                                                            })}
-                                                            className="flex items-center gap-4 bg-white border border-[#E8DCCB]/30 h-14 px-5 rounded-xl shadow-sm hover:border-[#B88952]/70 transition-colors group"
-                                                        >
-                                                            <div className="text-[#B88952]/60 group-hover:text-[#B88952]">
-                                                                {option === "Coffee" ? <Coffee className="w-4 h-4" /> : <Wind className="w-4 h-4" />}
-                                                            </div>
-                                                            <span className="text-[15px] font-bold text-[#1F1F1F]">{option}</span>
-                                                        </motion.button>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="flex gap-3 w-full">
-                                                    {[1, 2].map((num) => (
-                                                        <motion.button
-                                                            key={num}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => confirmQuantity(num)}
-                                                            className="flex-1 bg-white border border-[#E8DCCB]/30 h-16 rounded-xl flex items-center justify-center text-[22px] font-serif font-black text-[#1F1F1F] shadow-sm hover:border-[#B88952]/70 transition-colors"
-                                                        >
-                                                            {num}
-                                                        </motion.button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <button 
-                                            onClick={() => setActiveServiceForQty(null)}
-                                            className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#1F1F1F]/40 hover:text-[#1F1F1F] transition-colors"
+            {/* Selection Overlay */}
+            <AnimatePresence>
+                {activeServiceForQty && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-[#1F1F1F]/40 backdrop-blur-3xl flex items-center justify-center p-8"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            className="bg-[#FDFBF9] rounded-[48px] p-10 w-full max-w-sm shadow-[0_40px_120px_rgba(0,0,0,0.3)] border border-white"
+                        >
+                            <div className="flex flex-col items-center">
+                                <div className="w-20 h-20 rounded-[32px] bg-white flex items-center justify-center text-[#CFA46A] shadow-xl mb-8 border border-black/[0.02]">
+                                    {renderIcon(activeServiceForQty.icon, "w-8 h-8")}
+                                </div>
+                                <h3 className="text-2xl font-serif font-black text-[#1F1F1F] mb-1">{activeServiceForQty.label}</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10 text-center">Protocol Selection</p>
+                                
+                                <div className="flex gap-4 w-full">
+                                    {[1, 2, 3].map((num) => (
+                                        <button
+                                            key={num}
+                                            onClick={() => confirmQuantity(num)}
+                                            className="flex-1 h-20 rounded-[24px] bg-white border border-black/[0.03] text-2xl font-serif font-black text-[#1F1F1F] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all shadow-sm"
                                         >
-                                            Cancel
+                                            {num}
                                         </button>
-                                    </motion.div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-            </motion.section>
+                                    ))}
+                                </div>
+
+                                <button 
+                                    onClick={() => setActiveServiceForQty(null)}
+                                    className="mt-10 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-[#1F1F1F] transition-colors"
+                                >
+                                    Dismiss Request
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <SuccessFolio 
+                isOpen={folioState.open}
+                onClose={() => setFolioState({...folioState, open: false})}
+                title={folioState.title}
+                message={folioState.message}
+                details={folioState.details}
+            />
+        </div>
+    );
+}
+    </motion.section>
   
 
             {/* 4. Active Requests Section */}

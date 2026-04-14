@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Copy, CheckCircle2, Wifi, Compass, Sparkles, QrCode } from "lucide-react";
+import { ArrowLeft, Copy, CheckCircle2, Wifi, Compass, Sparkles, QrCode, RefreshCw } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useHotelBranding } from "@/utils/store";
 import { motion } from "framer-motion";
 import QRCode from "qrcode";
+import { SuccessFolio } from "@/components/SuccessFolio";
 
 export default function WifiPage() {
     const router = useRouter();
@@ -13,26 +14,25 @@ export default function WifiPage() {
     const hotelSlug = params?.hotel_slug as string;
     const { branding } = useHotelBranding(hotelSlug);
 
-    const [copied, setCopied] = useState(false);
-    const [copiedNetwork, setCopiedNetwork] = useState(false);
     const [qrDataUrl, setQrDataUrl] = useState<string>("");
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string }>({
+        open: false, title: "", message: ""
+    });
 
     const wifiNetwork = branding?.wifiName || (branding?.name ? `${branding.name.replace(/\s+/g, '')}_Guest` : "Hotel_Guest");
     const wifiPassword = branding?.wifiPassword || "RelaxAndUnwind";
 
-    // Generate WiFi QR Code Data URL
     useEffect(() => {
         const generateWifiQR = async () => {
             if (!wifiNetwork) return;
             try {
-                // WiFi QR Format: WIFI:S:<SSID>;T:<WPA|WEP|blank>;P:<PASSWORD>;;
                 const wifiString = `WIFI:S:${wifiNetwork};T:WPA;P:${wifiPassword};;`;
                 const url = await QRCode.toDataURL(wifiString, {
-                    width: 300,
-                    margin: 2,
+                    width: 400,
+                    margin: 1,
                     color: {
-                        dark: "#0f172a", // slate-900
-                        light: "#ffffff",
+                        dark: "#1F1F1F",
+                        light: "#FFFFFF",
                     },
                 });
                 setQrDataUrl(url);
@@ -40,129 +40,118 @@ export default function WifiPage() {
                 console.error("Failed to generate WiFi QR:", err);
             }
         };
-
         generateWifiQR();
     }, [wifiNetwork, wifiPassword]);
 
-    const handleCopy = () => {
-        if (!wifiPassword) return;
-        navigator.clipboard.writeText(wifiPassword);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    const handleCopyNetwork = () => {
-        if (!wifiNetwork) return;
-        navigator.clipboard.writeText(wifiNetwork);
-        setCopiedNetwork(true);
-        setTimeout(() => setCopiedNetwork(false), 2000);
+    const handleCopy = (text: string, label: string) => {
+        navigator.clipboard.writeText(text);
+        setFolioState({
+            open: true,
+            title: "Registry Captured",
+            message: `The ${label} has been synchronized to your clipboard successfully.`
+        });
     };
 
     return (
-        <div className="pb-40 px-5 pt-10 min-h-screen bg-slate-50/50 text-slate-900 max-w-[520px] mx-auto">
-            <button onClick={() => router.back()} className="mb-10 flex items-center text-slate-400 hover:text-slate-600 font-bold transition-all group">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3 shadow-sm group-hover:shadow-md transition-all border border-slate-100">
-                    <ArrowLeft className="w-5 h-5" />
+        <div className="pb-40 px-6 pt-12 min-h-screen bg-[#FDFBF9] text-[#1F1F1F]">
+            {/* Header Navigation */}
+            <div className="flex items-center justify-between mb-12">
+                <button onClick={() => router.back()} className="w-12 h-12 rounded-2xl bg-white border border-black/[0.03] flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+                    <ArrowLeft className="w-5 h-5 text-[#1F1F1F]" />
+                </button>
+                <div className="text-center">
+                    <h1 className="text-sm font-black text-[#1F1F1F] uppercase tracking-[0.2em]">Access Folio</h1>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operational Signals</p>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest leading-none">Back to Dashboard</span>
-            </button>
+                <div className="w-12" />
+            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-12"
+                className="mb-16 text-center"
             >
-                <div className="flex items-center space-x-2 mb-4">
-                    <div className="w-8 h-[1px] bg-amber-500/50"></div>
-                    <p className="text-amber-600 font-black uppercase tracking-[0.25em] text-[10px]">Digital Concierge</p>
+                <div className="flex items-center justify-center space-x-3 mb-6">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
+                    <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em]">Digital Connectivity</span>
                 </div>
-                <h1 className="text-4xl font-serif text-slate-900 leading-tight tracking-tight italic">Digital<br />Connectivity</h1>
+                <h2 className="text-5xl font-serif font-black tracking-tight leading-none uppercase">
+                    Connectivity<br />Protocol
+                </h2>
             </motion.div>
 
-            {/* QR Connection Card */}
+            {/* Cinematic QR Registry */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] border border-slate-100 mb-8 relative overflow-hidden"
+                className="bg-white rounded-[48px] p-10 shadow-[0_30px_80px_rgba(0,0,0,0.04)] border border-black/[0.02] mb-12 relative overflow-hidden group"
             >
-                <div className="absolute top-0 right-0 p-4 opacity-[0.05] pointer-events-none">
-                    <Sparkles className="w-20 h-20 text-amber-500" />
+                <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none text-[#CFA46A]">
+                    <Sparkles className="w-40 h-40" />
                 </div>
 
-                <div className="text-center mb-8 relative z-10">
-                    <div className="inline-flex items-center px-3 py-1 bg-amber-50 border border-amber-100 rounded-full mb-6">
-                        <QrCode className="w-3 h-3 text-amber-600 mr-2" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-600">Scan to auto-connect</span>
+                <div className="text-center mb-12 relative z-10">
+                    <div className="inline-flex items-center px-6 py-2 bg-[#FDFBF9] border border-[#E8DCCB]/30 rounded-full mb-10">
+                        <QrCode className="w-3.5 h-3.5 text-[#CFA46A] mr-3" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#CFA46A]">Touchless Synchronization</span>
                     </div>
 
-                    <div className="flex justify-center mb-6">
-                        <div className="p-4 bg-slate-50 rounded-[2rem] border-4 border-slate-900/5 shadow-inner">
+                    <div className="flex justify-center mb-10">
+                        <div className="p-8 bg-white rounded-[40px] shadow-2xl border border-black/[0.03] ring-1 ring-black/[0.01]">
                             {qrDataUrl ? (
                                 <motion.img
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     src={qrDataUrl}
                                     alt="WiFi QR Code"
-                                    className="w-48 h-48 rounded-2xl mix-blend-multiply"
+                                    className="w-56 h-56 rounded-2xl grayscale hover:grayscale-0 transition-all duration-700"
                                 />
                             ) : (
-                                <div className="w-48 h-48 bg-slate-100 animate-pulse rounded-2xl flex items-center justify-center">
-                                    <Wifi className="w-8 h-8 text-slate-300" />
+                                <div className="w-56 h-56 bg-[#FDFBF9] animate-pulse rounded-2xl flex items-center justify-center">
+                                    <Wifi className="w-8 h-8 text-slate-200" />
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <h3 className="text-xl font-serif text-slate-900 tracking-tight mb-2 italic">One-Click Join</h3>
-                    <p className="text-xs text-slate-400 font-medium px-4">Open your phone camera and scan the code to join the <span className="text-slate-900 font-black">{wifiNetwork}</span> network instantly.</p>
+                    <h3 className="text-2xl font-serif font-black text-[#1F1F1F] mb-3">Instant Join</h3>
+                    <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest px-8 leading-relaxed">
+                        Hover your device over the registry below to propagate credentials.
+                    </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-6 pt-10 border-t border-black/[0.03]">
                     {/* Network Name */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2 px-1">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Network Name</p>
-                            {copiedNetwork && (
-                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 flex items-center">
-                                    <CheckCircle2 className="w-3 h-3 mr-1" /> Copied
-                                </span>
-                            )}
-                        </div>
-                        <div className="flex items-center justify-between bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 group hover:border-amber-200 transition-colors">
-                            <span className="font-bold text-slate-900 truncate">
+                    <div className="flex items-center justify-between p-6 bg-[#FDFBF9] rounded-[32px] border border-black/[0.01] group hover:border-[#CFA46A]/20 transition-all">
+                        <div className="flex-1">
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Network Identity</p>
+                            <span className="font-serif font-black text-[#1F1F1F] text-lg">
                                 {wifiNetwork}
                             </span>
-                            <button
-                                onClick={handleCopyNetwork}
-                                className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center hover:bg-slate-800 transition-colors"
-                            >
-                                <Copy className="w-4 h-4 text-amber-500" />
-                            </button>
                         </div>
+                        <button
+                            onClick={() => handleCopy(wifiNetwork, "Network Name")}
+                            className="w-14 h-14 rounded-2xl bg-[#1F1F1F] text-white flex items-center justify-center hover:bg-[#CFA46A] transition-colors shadow-lg active:scale-95"
+                        >
+                            <Copy className="w-5 h-5 text-[#CFA46A]" />
+                        </button>
                     </div>
 
                     {/* Password */}
-                    <div>
-                        <div className="flex items-center justify-between mb-2 px-1">
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Security Key</p>
-                            {copied && (
-                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 flex items-center">
-                                    <CheckCircle2 className="w-3 h-3 mr-1" /> Copied
-                                </span>
-                            )}
-                        </div>
-                        <div className="flex items-center justify-between bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 group hover:border-amber-200 transition-colors">
-                            <span className="font-black italic text-slate-900 truncate pr-4">
+                    <div className="flex items-center justify-between p-6 bg-[#FDFBF9] rounded-[32px] border border-black/[0.01] group hover:border-[#CFA46A]/20 transition-all">
+                        <div className="flex-1">
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1.5">Security Key</p>
+                            <span className="font-serif font-black italic text-[#1F1F1F] text-lg tracking-tighter">
                                 {wifiPassword}
                             </span>
-                            <button
-                                onClick={handleCopy}
-                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${copied ? 'bg-emerald-500' : 'bg-slate-900'} text-white shadow-sm`}
-                            >
-                                {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4 text-amber-500" />}
-                            </button>
                         </div>
+                        <button
+                            onClick={() => handleCopy(wifiPassword, "Security Key")}
+                            className="w-14 h-14 rounded-2xl bg-[#1F1F1F] text-white flex items-center justify-center hover:bg-[#CFA46A] transition-colors shadow-lg active:scale-95"
+                        >
+                            <Copy className="w-5 h-5 text-[#CFA46A]" />
+                        </button>
                     </div>
                 </div>
             </motion.div>
@@ -171,20 +160,25 @@ export default function WifiPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-amber-50/50 backdrop-blur-sm p-6 rounded-[2rem] border border-amber-100/50 shadow-sm relative overflow-hidden"
+                className="bg-[#F6F3EE] p-8 rounded-[40px] border border-[#E8DCCB]/30 relative overflow-hidden"
             >
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/20" />
-
                 <div className="relative z-10">
-                    <div className="flex items-center mb-3">
-                        <Compass className="w-3 h-3 text-amber-600 mr-2" />
-                        <p className="font-black uppercase tracking-widest text-amber-600/60 text-[9px]">Connectivity Protocol</p>
+                    <div className="flex items-center mb-4">
+                        <Compass className="w-4 h-4 text-[#CFA46A] mr-3" />
+                        <p className="font-black uppercase tracking-[0.2em] text-[#CFA46A] text-[10px]">Registry Protocol</p>
                     </div>
-                    <p className="text-[11px] leading-relaxed text-slate-500 font-medium italic">
-                        The QR code above uses the <span className="text-slate-900 font-black">WIFI:S</span> protocol for secure, touchless connection. If your device doesn't support QR joining, please use the copy buttons above to join manually.
+                    <p className="text-[12px] leading-relaxed text-slate-500 font-medium italic">
+                        Credentials are distributed via the <span className="text-[#1F1F1F] font-black">WIFI:S</span> protocol for encrypted, touchless connection. 
                     </p>
                 </div>
             </motion.div>
+
+            <SuccessFolio 
+                isOpen={folioState.open}
+                onClose={() => setFolioState({...folioState, open: false})}
+                title={folioState.title}
+                message={folioState.message}
+            />
         </div>
     );
 }

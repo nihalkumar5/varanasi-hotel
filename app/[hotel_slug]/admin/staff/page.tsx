@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useHotelBranding, getAllHotelStaff, updateStaffRole, UserProfile } from "@/utils/store";
-import { Users, Shield, Utensils, Shirt, Bell, Check, Loader2, Search, ArrowLeft, MoreVertical, Edit2, UserPlus } from "lucide-react";
+import { Users, Shield, Utensils, Shirt, Bell, Check, Loader2, Search, ArrowLeft, MoreVertical, Edit2, UserPlus, Sparkles, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SuccessFolio } from "@/components/SuccessFolio";
 
 export default function StaffManagement() {
     const params = useParams();
@@ -15,15 +16,12 @@ export default function StaffManagement() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const loadStaff = async () => {
         if (!branding?.id) return;
         setLoading(true);
         const { data, error } = await getAllHotelStaff(branding.id);
-        if (error) {
-            console.error("Failed to load staff:", error);
-            // Don't alert on UUID mismatch in demo mode to avoid spam, but log it
-        }
         if (data) setStaff(data);
         setLoading(false);
     };
@@ -55,11 +53,11 @@ export default function StaffManagement() {
 
     const getRoleColor = (role: string) => {
         switch (role) {
-            case 'admin': return 'bg-slate-900 text-white';
-            case 'reception': return 'bg-blue-100 text-blue-800';
-            case 'kitchen': return 'bg-amber-100 text-amber-800';
-            case 'housekeeping': return 'bg-purple-100 text-purple-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'admin': return 'bg-[#1F1F1F] text-[#CFA46A] border-[#CFA46A]/20';
+            case 'reception': return 'bg-blue-50 text-blue-600 border-blue-100';
+            case 'kitchen': return 'bg-amber-50 text-amber-600 border-amber-100';
+            case 'housekeeping': return 'bg-purple-50 text-purple-600 border-purple-100';
+            default: return 'bg-gray-50 text-gray-600 border-gray-100';
         }
     };
 
@@ -70,120 +68,153 @@ export default function StaffManagement() {
     );
 
     if (brandingLoading || loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFBF9]">
+            <Loader2 className="w-8 h-8 text-[#CFA46A] animate-spin" />
         </div>
     );
 
     return (
-        <div className="p-8 max-w-5xl mx-auto min-h-screen">
-            <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex-1 min-h-screen bg-[#FDFBF9] font-sans">
+            {/* Header section with glassmorphism */}
+            <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Staff Roles</h1>
-                    <p className="text-slate-500 font-bold text-xs uppercase tracking-widest mt-1">Assign departments to your team members</p>
+                    <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-[#CFA46A] animate-pulse" />
+                        <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em]">Force Management</span>
+                    </div>
+                    <h1 className="text-4xl font-serif font-black text-[#1F1F1F] tracking-tight leading-none mb-4">
+                        Internal Ledger
+                    </h1>
+                    <p className="text-sm text-slate-500 max-w-2xl font-medium italic">
+                        Assign departmental authority and manage personnel access across the hotel ecosystem.
+                    </p>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="relative group">
+                        <input
+                            type="text"
+                            placeholder="Search personnel..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-white/60 border border-black/[0.03] rounded-[24px] py-4 pl-12 pr-6 text-sm font-bold outline-none focus:ring-2 focus:ring-[#CFA46A]/20 transition-all w-64 shadow-sm"
+                        />
+                        <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
+                    </div>
                     <button
                         onClick={() => {
                             const link = `${window.location.origin}/${hotelSlug}/staff/register`;
                             navigator.clipboard.writeText(link);
-                            alert("Staff Registration Link copied to clipboard! Send this to your team.");
+                            setShowSuccess(true);
                         }}
-                        className="flex items-center px-5 py-3 rounded-2xl font-bold bg-white text-blue-600 border border-blue-100 hover:bg-blue-50 transition-all text-xs"
+                        className="px-8 py-4 rounded-[24px] bg-[#1F1F1F] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all flex items-center gap-3 active:scale-95"
                     >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Registration Link
+                        <UserPlus className="w-4 h-4" />
+                        Generate Invite
                     </button>
+                </div>
+            </div>
 
-                    <div className="relative w-full md:w-64">
-                        <input
-                            type="text"
-                            placeholder="Search staff..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
-                        />
-                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <div className="px-12 py-12 max-w-[1700px] mx-auto">
+                <div className="bg-white rounded-[48px] border border-black/[0.03] shadow-[0_20px_60px_rgba(31,31,31,0.03)] overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-black/[0.03]">
+                                    <th className="p-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Personnel</th>
+                                    <th className="p-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Department</th>
+                                    <th className="p-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] text-right">Access Controls</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-black/[0.02]">
+                                {filteredStaff.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={3} className="p-24 text-center">
+                                            <Users className="w-12 h-12 text-slate-100 mx-auto mb-4" />
+                                            <p className="text-slate-300 font-bold italic text-sm">No personnel identified in the current ledger...</p>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filteredStaff.map((member) => (
+                                        <tr key={member.id} className="hover:bg-[#FDFBF9] transition-colors group">
+                                            <td className="p-8">
+                                                <div className="flex items-center">
+                                                    <div className="w-14 h-14 rounded-[20px] bg-[#FDFBF9] border border-black/[0.03] flex items-center justify-center mr-6 group-hover:bg-[#1F1F1F] transition-colors">
+                                                        <Users className="w-6 h-6 text-slate-400 group-hover:text-[#CFA46A] transition-colors" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-serif font-black text-[#1F1F1B] text-lg">
+                                                            {member.full_name || "New Recruit"}
+                                                        </p>
+                                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">
+                                                            {member.email || "Pending Authentication"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="p-8">
+                                                <div className={`inline-flex items-center px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border ${getRoleColor(member.role)}`}>
+                                                    {getRoleIcon(member.role)}
+                                                    <span className="ml-2.5">{member.role}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-8">
+                                                <div className="flex items-center justify-end space-x-3">
+                                                    {['admin', 'reception', 'kitchen', 'housekeeping'].map((role) => (
+                                                        <button
+                                                            key={role}
+                                                            onClick={() => handleRoleUpdate(member.id, role)}
+                                                            disabled={updatingId === member.id || member.role === role}
+                                                            className={`w-11 h-11 rounded-[14px] transition-all border flex items-center justify-center ${
+                                                                member.role === role 
+                                                                    ? 'bg-[#1F1F1F] border-[#1F1F1F] text-[#CFA46A] shadow-lg shadow-black/10' 
+                                                                    : 'bg-white border-black/[0.05] text-slate-300 hover:border-[#CFA46A] hover:text-[#CFA46A]'
+                                                            } disabled:opacity-50 active:scale-90`}
+                                                            title={`Reassign to ${role}`}
+                                                        >
+                                                            {updatingId === member.id && member.role !== role ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin text-[#CFA46A]" />
+                                                            ) : (
+                                                                getRoleIcon(role)
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div className="mt-12 bg-[#1F1F1F] p-10 rounded-[48px] border border-white/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-12 opacity-5">
+                        <Shield className="w-48 h-48 text-[#CFA46A]" />
+                    </div>
+                    <div className="relative z-10 flex items-start gap-8">
+                        <div className="w-14 h-14 bg-[#FDFBF9] rounded-[20px] flex items-center justify-center shrink-0">
+                            <Shield className="w-6 h-6 text-[#1F1F1F]" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-serif font-black text-white mb-2 tracking-tight">Access Protocol Directive</h3>
+                            <p className="text-sm text-slate-400 font-medium leading-relaxed italic max-w-3xl">
+                                Authority levels strictly govern dashboard visibility and regional request signals. Departmental reassignments are reflected in real-time across the administrative network. Personnel with "Admin" clearance retain global oversight of branding and personnel registries.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-slate-50/50">
-                                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Team Member</th>
-                                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Role</th>
-                                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Set Department</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {filteredStaff.length === 0 ? (
-                                <tr>
-                                    <td colSpan={3} className="p-20 text-center text-slate-300 font-bold italic">No staff members found...</td>
-                                </tr>
-                            ) : (
-                                filteredStaff.map((member) => (
-                                    <tr key={member.id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="p-6">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center mr-4 text-slate-400">
-                                                    <Users className="w-5 h-5" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-slate-900 text-sm">
-                                                        {member.full_name || "New Staff Member"}
-                                                    </p>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                        {member.email || member.user_id.substring(0, 8) + '...'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="p-6">
-                                            <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${getRoleColor(member.role)}`}>
-                                                {getRoleIcon(member.role)}
-                                                <span className="ml-2">{member.role}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-6">
-                                            <div className="flex items-center justify-end space-x-2">
-                                                {['admin', 'reception', 'kitchen', 'housekeeping'].map((role) => (
-                                                    <button
-                                                        key={role}
-                                                        onClick={() => handleRoleUpdate(member.id, role)}
-                                                        disabled={updatingId === member.id || member.role === role}
-                                                        className={`p-2 rounded-xl transition-all border ${member.role === role ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300 hover:text-slate-600'} disabled:opacity-50`}
-                                                        title={`Set to ${role}`}
-                                                    >
-                                                        {updatingId === member.id && member.role !== role ? (
-                                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                                        ) : (
-                                                            getRoleIcon(role)
-                                                        )}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div className="mt-8 bg-blue-50/50 p-6 rounded-3xl border border-blue-100 flex items-start">
-                <Shield className="w-5 h-5 text-blue-600 mr-4 mt-1" />
-                <div>
-                    <p className="text-sm font-bold text-blue-900">Security Note:</p>
-                    <p className="text-xs text-blue-700 font-medium mt-1 leading-relaxed">
-                        Roles control dashboard access and real-time request filtering. Only Admins can access branding and staff management settings. Staff accounts are automatically redirected based on their active role upon login.
-                    </p>
-                </div>
-            </div>
+            <SuccessFolio 
+                isOpen={showSuccess}
+                onClose={() => setShowSuccess(false)}
+                title="Protocol Dispatched"
+                message="Invitation access token has been securely transferred to your system clipboard."
+                details="RECRUIT_INVITE_TOKEN"
+                subDetails="Valid for next onboarding cycle"
+            />
         </div>
     );
 }

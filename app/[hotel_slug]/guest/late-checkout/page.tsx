@@ -8,7 +8,9 @@ import {
     Phone,
     Info,
     CheckCircle2,
-    Calendar
+    Calendar,
+    Star,
+    Sparkles
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -39,23 +41,24 @@ export default function LateCheckoutPage() {
         {
             time: "Until 2:00 PM",
             price: branding?.lateCheckoutCharge1 || "Complimentary",
-            note: "Subject to availability"
+            note: "Synchronized with next arrival"
         },
         {
             time: "2:00 PM - 6:00 PM",
             price: branding?.lateCheckoutCharge2 || "₹1,500",
-            note: "Flat rate extension"
+            note: "Standard afternoon extension"
         },
         {
             time: "After 6:00 PM",
             price: branding?.lateCheckoutCharge3 || "Full Day Rate",
-            note: "Additional night charge"
+            note: "Extended residency charge"
         },
     ];
 
     const handleWhatsApp = () => {
-        const phone = branding?.lateCheckoutPhone || branding?.receptionPhone || "+919999999999";
-        const messageText = `Hi ${branding?.name || 'Reception'}, I am in Room ${roomNumber || '[Room]'} and I would like to request a Late Checkout. Please let me know the availability.`;
+        const phone = branding?.lateCheckoutPhone || branding?.receptionPhone || "";
+        if (!phone) return;
+        const messageText = `Hi Concierge, I am in Room ${roomNumber || '[Room]'} at ${branding?.name}. I would like to request a stay extension.`;
         const message = encodeURIComponent(messageText);
         window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
     };
@@ -63,89 +66,101 @@ export default function LateCheckoutPage() {
     const handleCall = () => {
         const phone = branding?.lateCheckoutPhone || branding?.receptionPhone;
         if (phone) {
-            const sanitizedPhone = phone.replace(/[^0-9+]/g, '');
-            window.location.href = `tel:${sanitizedPhone}`;
+            window.location.href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#fafaf9] pb-24 font-sans text-slate-900">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div className="min-h-screen bg-[#FDFBF9] pb-32 font-sans text-[#1F1F1F]">
+            {/* Cinematic Header */}
+            <header className="px-6 py-12 flex flex-col items-center">
                 <button
                     onClick={() => router.back()}
-                    className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-slate-50 transition-colors"
+                    className="w-12 h-12 rounded-2xl bg-white border border-black/[0.03] flex items-center justify-center shadow-sm mb-10 active:scale-95 transition-transform"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 className="text-lg font-serif font-medium">Late Checkout</h1>
-                <div className="w-10" /> {/* Spacer */}
+                <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
+                    <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em]">Extended Residency</span>
+                </div>
+                <h1 className="text-4xl font-serif font-black text-center tracking-tight leading-none uppercase">
+                    Late Checkout
+                </h1>
             </header>
 
             <motion.main
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="px-6 pt-8 max-w-lg mx-auto"
+                className="px-6 max-w-lg mx-auto"
             >
-                {/* Hero Section */}
-                <motion.div variants={item} className="mb-10 text-center">
-                    <div className="w-20 h-20 bg-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm shadow-purple-100">
-                        <Clock className="w-10 h-10 text-purple-600" />
+                {/* Hero Briefing */}
+                <motion.div variants={item} className="mb-16 text-center">
+                    <div className="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-black/[0.02] relative">
+                        <Clock className="w-10 h-10 text-[#CFA46A]" />
+                        <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[#1F1F1F] text-white flex items-center justify-center">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
                     </div>
-                    <h2 className="text-3xl font-serif mb-4">Extend Your Stay</h2>
-                    <p className="text-slate-500 leading-relaxed">
-                        Enjoy the luxury of our amenities for a few more hours. We offer flexible checkout options to fit your travel schedule.
+                    <p className="text-sm font-medium text-slate-500 leading-relaxed italic">
+                        Experience our amenities for a few more hours. Transitions are handled with the utmost discretion and care.
                     </p>
                 </motion.div>
 
-                {/* Charges Card */}
-                <motion.div variants={item} className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 mb-8">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Info className="w-5 h-5 text-purple-500" />
-                        <h3 className="font-serif text-xl">Pricing & Policy</h3>
+                {/* Boutique Pricing Tiers */}
+                <motion.div variants={item} className="bg-white rounded-[48px] p-10 shadow-[0_30px_60px_rgba(0,0,0,0.03)] border border-black/[0.02] mb-12 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 text-[#CFA46A]">
+                        <Star className="w-40 h-40" />
                     </div>
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-10">
+                            <Info className="w-5 h-5 text-[#CFA46A]" />
+                            <h3 className="text-xl font-serif font-black">Pricing Folio</h3>
+                        </div>
 
-                    <div className="space-y-6">
-                        {charges.map((charge, idx) => (
-                            <div key={idx} className="flex items-start justify-between group">
-                                <div>
-                                    <p className="font-semibold text-slate-800">{charge.time}</p>
-                                    <p className="text-sm text-slate-400">{charge.note}</p>
+                        <div className="space-y-10">
+                            {charges.map((charge, idx) => (
+                                <div key={idx} className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <p className="text-sm font-black text-[#1F1F1F] uppercase tracking-tight">{charge.time}</p>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">{charge.note}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-lg font-serif font-black text-[#CFA46A]">{charge.price}</div>
+                                    </div>
                                 </div>
-                                <div className="text-right text-purple-600 font-bold">
-                                    {charge.price}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-50 flex items-center gap-3 text-sm text-slate-400 italic">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        <span>All requests are processed manually by our guest relations team.</span>
+                        <div className="mt-12 pt-8 border-t border-black/[0.03] flex items-center gap-4 text-[10px] text-slate-400 font-medium italic">
+                            <CheckCircle2 className="w-4 h-4 text-[#CFA46A] shrink-0" />
+                            <span>Availability is prioritized for our registered guests.</span>
+                        </div>
                     </div>
                 </motion.div>
 
-                {/* Contact Options */}
-                <motion.div variants={item} className="space-y-4">
+                {/* Communication Layer */}
+                <motion.div variants={item} className="space-y-5">
                     <button
                         onClick={handleWhatsApp}
-                        className="w-full bg-[#25D366] hover:bg-[#20bd5c] text-white rounded-2xl py-5 px-6 flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] shadow-lg shadow-emerald-100"
+                        className="w-full bg-[#1F1F1F] text-white rounded-[32px] py-6 px-10 flex items-center justify-center gap-4 font-black text-[11px] uppercase tracking-[0.3em] shadow-2xl active:scale-[0.98] transition-all"
                     >
-                        <MessageCircle className="w-6 h-6" />
-                        Chat on WhatsApp
+                        <MessageCircle className="w-5 h-5 text-[#CFA46A]" />
+                        Concierge Chat
                     </button>
 
                     <button
                         onClick={handleCall}
-                        className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-2xl py-5 px-6 flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] shadow-lg shadow-slate-200"
+                        className="w-full bg-white border border-black/[0.05] text-[#1F1F1F] rounded-[32px] py-6 px-10 flex items-center justify-center gap-4 font-black text-[11px] uppercase tracking-[0.3em] active:scale-[0.98] transition-all shadow-sm"
                     >
-                        <Phone className="w-6 h-6" />
-                        Call Reception
+                        <Phone className="w-5 h-5 text-[#CFA46A]" />
+                        Direct Line
                     </button>
 
-                    <p className="text-center text-xs text-slate-400 mt-6 px-4">
-                        Standard checkout time is 11:00 AM. Late checkout is strictly subject to room availability for the next guest.
+                    <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-10 px-8 leading-relaxed opacity-60">
+                        Standard departure is 11:00 AM. Extensions are subject to the operational pulse of the residency.
                     </p>
                 </motion.div>
             </motion.main>

@@ -384,318 +384,314 @@ export default function AnalyticsPage() {
 
     const metricCards = [
         {
-            label: "Money Collected",
+            label: "Revenue Collected",
             value: formatCurrency(analytics.collectedRevenue),
             note: "Paid service amount",
             icon: IndianRupee,
+            color: "text-[#CFA46A] bg-[#CFA46A]/5"
         },
         {
-            label: "Money Pending",
+            label: "Revenue Pending",
             value: formatCurrency(analytics.outstandingRevenue),
             note: "Still to collect",
             icon: AlertTriangle,
+            color: "text-red-500 bg-red-500/5"
         },
         {
-            label: "Rooms Occupied",
+            label: "Units Occupied",
             value: analytics.totalRooms
                 ? `${analytics.occupiedRoomCount}/${analytics.totalRooms}`
                 : analytics.occupiedRoomCount.toString(),
-            note: analytics.totalRooms ? `${formatPercent(analytics.occupancyRate)} occupied` : "No rooms added yet",
+            note: analytics.totalRooms ? `${formatPercent(analytics.occupancyRate)} occupancy rate` : "Configuration pending",
             icon: BedDouble,
+            color: "text-[#3F7C6D] bg-[#3F7C6D]/5"
         },
         {
-            label: "Open Requests",
+            label: "Active Requests",
             value: analytics.activeRequestCount.toString(),
-            note: `${analytics.completedRequestCount} completed in this period`,
+            note: `${analytics.completedRequestCount} finalized recently`,
             icon: ClipboardList,
+            color: "text-slate-500 bg-slate-500/5"
         },
     ];
 
     return (
-        <div className="p-8 max-w-[1280px] mx-auto pb-32 space-y-8">
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <div className="flex-1 min-h-screen bg-[#FDFBF9] font-sans">
+            {/* Header section with glassmorphism */}
+            <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div>
-                    <div
-                        className="inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.22em] border mb-4"
-                        style={{
-                            color: branding?.primaryColor || "#0f172a",
-                            backgroundColor: `${branding?.primaryColor || "#0f172a"}12`,
-                            borderColor: `${branding?.primaryColor || "#0f172a"}20`,
-                        }}
-                    >
-                        Owner Snapshot
+                    <div className="flex items-center space-x-3 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-[#CFA46A] animate-pulse shadow-[0_0_10px_#CFA46A]" />
+                        <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em]">Strategic Intelligence</span>
                     </div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-950 mb-3">
-                        Easy daily view for {branding?.name || "your hotel"}
+                    <h1 className="text-4xl font-serif font-black text-[#1F1F1F] tracking-tight leading-none mb-4">
+                        Owner's Folio: {branding?.name?.split(' ')[0] || "Portfolio"}
                     </h1>
-                    <p className="text-base text-slate-500 max-w-3xl">
-                        Simple numbers only: money, occupied rooms, open guest issues, and where you may need to follow up.
+                    <p className="text-sm text-slate-500 max-w-2xl font-medium italic">
+                        Real-time operational health and financial performance briefing for the current period.
                     </p>
                 </div>
 
-                <div className="flex flex-wrap gap-4">
-                    <div className="px-5 py-4 bg-white border border-slate-200 rounded-[1.5rem] shadow-sm">
-                        <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-1">
-                            Showing
-                        </div>
-                        <div className="text-sm font-black text-slate-900 flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            {analytics.hasThirtyDayData ? "Last 30 days" : "All available data"}
+                <div className="flex flex-wrap items-center gap-4">
+                    <div className="px-6 py-4 bg-white/60 border border-black/[0.03] rounded-[24px] shadow-sm backdrop-blur-xl">
+                        <div className="flex items-center space-x-4">
+                            <Calendar className="w-5 h-5 text-[#CFA46A]" />
+                            <div>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Observation Window</p>
+                                <p className="text-sm font-black text-[#1F1F1F] leading-none">
+                                    {analytics.hasThirtyDayData ? "Last 30 Cycles" : "Initial Foundation"}
+                                </p>
+                            </div>
                         </div>
                     </div>
+                    
                     <button
                         onClick={exportToCSV}
-                        className="px-5 py-4 rounded-[1.5rem] text-white font-black text-sm shadow-lg transition-transform active:scale-95 flex items-center gap-3"
-                        style={{
-                            backgroundImage: `linear-gradient(135deg, ${branding?.primaryColor || "#0f172a"}, ${branding?.accentColor || "#3b82f6"})`,
-                        }}
+                        className="px-8 py-4 rounded-[24px] bg-[#1F1F1F] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all flex items-center gap-3 group active:scale-95"
                     >
-                        <Download className="w-5 h-5" />
-                        Download CSV
+                        <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                        Extract CSV
                     </button>
                 </div>
             </div>
 
-            {(roomsLoading || guestsLoading) && (
-                <div className="px-5 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-sm text-slate-500 flex items-center gap-3">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Refreshing live hotel data...
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                {metricCards.map((card) => {
-                    const Icon = card.icon;
-                    return (
-                        <div
-                            key={card.label}
-                            className="bg-white rounded-[1.75rem] border border-slate-200 p-6 shadow-[0_12px_30px_rgba(15,23,42,0.05)]"
-                        >
-                            <div className="flex items-center justify-between mb-5">
-                                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
-                                    {card.label}
-                                </div>
-                                <div
-                                    className="w-10 h-10 rounded-2xl flex items-center justify-center"
-                                    style={{
-                                        backgroundColor: `${branding?.primaryColor || "#0f172a"}10`,
-                                        color: branding?.primaryColor || "#0f172a",
-                                    }}
-                                >
-                                    <Icon className="w-5 h-5" />
-                                </div>
-                            </div>
-                            <div className="text-3xl font-black text-slate-950 tracking-tight mb-2">{card.value}</div>
-                            <div className="text-sm text-slate-500">{card.note}</div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-                <div className="mb-5">
-                    <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2">
-                        Focus Today
-                    </div>
-                    <h2 className="text-2xl font-black text-slate-950 mb-1">What needs your attention</h2>
-                    <p className="text-sm text-slate-500">
-                        These are the clearest action items based on current room and service data.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    {analytics.focusItems.map((item) => (
-                        <div
-                            key={item.title}
-                            className={`rounded-[1.5rem] border p-5 ${focusToneStyles[item.tone]}`}
-                        >
-                            <div className="text-lg font-black mb-2">{item.title}</div>
-                            <div className="text-sm leading-6 opacity-80">{item.detail}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-                    <div className="mb-5">
-                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2">
-                            Team Load
-                        </div>
-                        <h2 className="text-2xl font-black text-slate-950 mb-1">Which team is busiest</h2>
-                        <p className="text-sm text-slate-500">
-                            Simple request counts so you can see where most guest demand is landing.
-                        </p>
-                    </div>
-
-                    {analytics.departmentStats.length ? (
-                        <div className="space-y-3">
-                            {analytics.departmentStats.map((stat) => {
-                                const Icon = stat.icon;
-                                return (
-                                    <div
-                                        key={stat.key}
-                                        className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 flex items-center justify-between gap-4"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                                                <Icon className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <div className="font-black text-slate-950">{stat.label}</div>
-                                                <div className="text-sm text-slate-500">
-                                                    {pluralize(stat.count, "request")} total
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="text-sm font-black text-slate-950">{stat.liveCount} open</div>
-                                            <div className="text-xs text-slate-500">{formatCurrency(stat.revenue)} collected</div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="rounded-[1.5rem] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-                            No guest requests yet, so there is no team load to show.
-                        </div>
-                    )}
-                </div>
-
-                <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-                    <div className="mb-5">
-                        <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2">
-                            Room Follow-up
-                        </div>
-                        <h2 className="text-2xl font-black text-slate-950 mb-1">Which rooms need attention</h2>
-                        <p className="text-sm text-slate-500">
-                            Rooms with unpaid services or live requests should usually be checked first.
-                        </p>
-                    </div>
-
-                    {analytics.followUpRooms.length ? (
-                        <div className="space-y-3">
-                            {analytics.followUpRooms.map((room) => (
-                                <div
-                                    key={room.room}
-                                    className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 flex items-center justify-between gap-4"
-                                >
-                                    <div>
-                                        <div className="font-black text-slate-950">Room {room.room}</div>
-                                        <div className="text-sm text-slate-500">
-                                            {room.liveCount} open · {room.requestCount} total requests
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-sm font-black text-rose-600">
-                                            {room.outstanding ? formatCurrency(room.outstanding) : "No pending bill"}
-                                        </div>
-                                        <div className="text-xs text-slate-500">
-                                            Collected {formatCurrency(room.collected)}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="rounded-[1.5rem] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-                            No rooms currently need follow-up.
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-                <div className="mb-5">
-                    <div className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mb-2">
-                        Quick Summary
-                    </div>
-                    <h2 className="text-2xl font-black text-slate-950 mb-1">Simple hotel health</h2>
-                    <p className="text-sm text-slate-500">
-                        The most useful daily context for an owner without needing to read charts.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {[
-                        {
-                            label: "Guests in house",
-                            value: analytics.activeGuestCount.toString(),
-                            note: "Based on active guests and occupied rooms",
-                            icon: Users,
-                        },
-                        {
-                            label: "Checkouts today",
-                            value: analytics.checkoutTodayCount.toString(),
-                            note: "Useful for front desk and housekeeping planning",
-                            icon: Calendar,
-                        },
-                        {
-                            label: "Completion rate",
-                            value: formatPercent(analytics.completionRate),
-                            note: "Share of requests already closed",
-                            icon: CheckCircle2,
-                        },
-                    ].map((item) => {
-                        const Icon = item.icon;
+            <div className="px-12 py-12 space-y-12 max-w-[1600px] mx-auto">
+                {/* 1️⃣ Core Metrics (Luxury Cards) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+                    {metricCards.map((card, i) => {
+                        const Icon = card.icon;
                         return (
-                            <div key={item.label} className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-9 h-9 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                                        <Icon className="w-4 h-4" />
-                                    </div>
-                                    <div className="text-sm font-black text-slate-950">{item.label}</div>
+                            <motion.div
+                                key={card.label}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white rounded-[40px] border border-black/[0.03] p-8 shadow-[0_20px_50px_rgba(31,31,31,0.04)] group hover:border-[#CFA46A]/20 transition-all relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Icon className="w-16 h-16" />
                                 </div>
-                                <div className="text-2xl font-black text-slate-950 mb-1">{item.value}</div>
-                                <div className="text-xs text-slate-500">{item.note}</div>
-                            </div>
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${card.color}`}>
+                                        <Icon className="w-6 h-6" />
+                                    </div>
+                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{card.label}</span>
+                                </div>
+                                <div className="text-4xl font-serif font-black text-[#1F1F1F] tracking-tight mb-3">
+                                    {card.value}
+                                </div>
+                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">{card.note}</div>
+                            </motion.div>
                         );
                     })}
                 </div>
 
-                <div>
-                    <div className="text-sm font-black text-slate-950 mb-3">Latest guest activity</div>
-                    {analytics.recentRequests.length ? (
-                        <div className="space-y-3">
-                            {analytics.recentRequests.map((request) => (
-                                <div
-                                    key={request.id}
-                                    className="rounded-[1.25rem] border border-slate-200 bg-slate-50 px-4 py-4 flex items-center justify-between gap-4"
-                                >
-                                    <div>
-                                        <div className="font-black text-slate-950">
-                                            Room {request.room} · {request.type}
-                                        </div>
-                                        <div className="text-sm text-slate-500">
-                                            {formatRequestTime(request)}
-                                            {request.notes ? ` · ${request.notes}` : ""}
-                                        </div>
-                                    </div>
-                                    <div className="text-right min-w-fit">
+                {/* 2️⃣ Strategic Focus (Briefing Panel) */}
+                <div className="bg-[#1F1F1F] rounded-[48px] p-10 shadow-2xl relative noise overflow-hidden">
+                    <div className="absolute top-0 right-0 p-12 opacity-15">
+                        <Sparkles className="w-32 h-32 text-[#CFA46A]" />
+                    </div>
+                    
+                    <div className="relative z-10 mb-10">
+                        <div className="flex items-center space-x-3 mb-4">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A]" />
+                            <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em]">Critical Insights</span>
+                        </div>
+                        <h2 className="text-3xl font-serif font-black text-white">What Needs Your Attention</h2>
+                        <p className="text-slate-400 mt-2 text-sm font-medium italic">Operational priorities identified from current guest and service data.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                        {analytics.focusItems.map((item, i) => (
+                            <div
+                                key={i}
+                                className={`rounded-[32px] border p-8 backdrop-blur-xl transition-all hover:scale-[1.02] ${
+                                    item.tone === 'rose' ? 'bg-red-500/10 border-red-500/20 text-red-100' :
+                                    item.tone === 'amber' ? 'bg-amber-500/10 border-amber-500/20 text-amber-100' :
+                                    'bg-white/5 border-white/5 text-slate-100'
+                                }`}
+                            >
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className={`text-[9px] font-black uppercase tracking-[0.3em] px-3 py-1 bg-black/40 rounded-full ${
+                                        item.tone === 'rose' ? 'text-red-400' : 
+                                        item.tone === 'amber' ? 'text-amber-400' : 
+                                        'text-[#CFA46A]'
+                                    }`}>
+                                        Priority {i + 1}
+                                    </span>
+                                </div>
+                                <div className="text-xl font-serif font-black mb-3">{item.title}</div>
+                                <div className="text-sm leading-relaxed opacity-70 italic font-medium">{item.detail}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* 3️⃣ Secondary Intelligence Grid */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                    {/* Team Analysis */}
+                    <div className="bg-white rounded-[40px] border border-black/[0.03] p-10 shadow-[0_20px_50px_rgba(31,31,31,0.03)] focus-within:ring-2 ring-[#CFA46A]/10">
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2 block">Resource Allocation</span>
+                                <h2 className="text-2xl font-serif font-black text-[#1F1F1F]">Team Optimization</h2>
+                            </div>
+                            <BarChart3 className="w-8 h-8 text-slate-200" />
+                        </div>
+
+                        {analytics.departmentStats.length ? (
+                            <div className="space-y-4">
+                                {analytics.departmentStats.map((stat) => {
+                                    const Icon = stat.icon;
+                                    return (
                                         <div
-                                            className={`text-xs font-black uppercase tracking-[0.18em] ${
-                                                ACTIVE_STATUSES.has(request.status)
-                                                    ? "text-amber-600"
-                                                    : request.status === "Completed"
-                                                        ? "text-emerald-600"
-                                                        : "text-slate-500"
-                                            }`}
+                                            key={stat.key}
+                                            className="rounded-[24px] border border-black/[0.02] bg-[#FDFBF9] px-6 py-6 flex items-center justify-between group hover:border-[#CFA46A]/20 transition-all"
                                         >
-                                            {request.status}
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-12 h-12 rounded-[18px] bg-white border border-black/[0.03] flex items-center justify-center text-[#1F1F1F] shadow-sm group-hover:text-[#CFA46A]">
+                                                    <Icon className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-black text-[#1F1F1F] uppercase tracking-widest">{stat.label}</div>
+                                                    <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                                        {stat.count} Total Folios
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-sm font-black text-[#CFA46A]">{stat.liveCount} Open</div>
+                                                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                                    {formatCurrency(stat.revenue)} Yield
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="text-xs text-slate-500">
-                                            {getRequestAmount(request) ? formatCurrency(getRequestAmount(request)) : "No charge"}
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="rounded-[32px] border border-dashed border-slate-200 p-12 text-center">
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No pulse detected from teams</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Unit Intelligence */}
+                    <div className="bg-white rounded-[40px] border border-black/[0.03] p-10 shadow-[0_20px_50px_rgba(31,31,31,0.03)]">
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2 block">Unit Management</span>
+                                <h2 className="text-2xl font-serif font-black text-[#1F1F1F]">High Intensity Units</h2>
+                            </div>
+                            <MapPin className="w-8 h-8 text-slate-200" />
+                        </div>
+
+                        {analytics.followUpRooms.length ? (
+                            <div className="space-y-4">
+                                {analytics.followUpRooms.map((room) => (
+                                    <div
+                                        key={room.room}
+                                        className="rounded-[24px] border border-black/[0.02] bg-[#FDFBF9] px-6 py-6 flex items-center justify-between group hover:border-[#CFA46A]/20 transition-all"
+                                    >
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-12 h-12 rounded-[18px] bg-[#1F1F1F] flex items-center justify-center text-white shadow-lg">
+                                                <span className="text-xs font-black">{room.room}</span>
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-black text-red-500 uppercase tracking-widest italic truncate max-w-[120px]">Attention Required</div>
+                                                <div className="text-[11px] text-slate-400 font-bold uppercase tracking-wider mt-1">
+                                                    {room.liveCount} Active Signals
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-sm font-serif font-black text-[#1F1F1F]">
+                                                {room.outstanding ? formatCurrency(room.outstanding) : "Balanced"}
+                                            </div>
+                                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                                Outstanding Folio
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-[32px] border border-dashed border-slate-200 p-12 text-center">
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">All units currently balanced</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* 4️⃣ Health Snapshot Summary */}
+                <div className="bg-white rounded-[48px] border border-black/[0.03] p-12 shadow-[0_30px_60px_rgba(31,31,31,0.02)]">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+                        <div>
+                            <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2 block">Synthesis Report</span>
+                            <h2 className="text-3xl font-serif font-black text-[#1F1F1F]">Holistic Portfolio Health</h2>
+                            <p className="text-sm text-slate-400 mt-2 font-medium italic">Key synthesized datapoints for institutional-grade reporting.</p>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            {[
+                                { label: "Pulse Rate", value: formatPercent(analytics.completionRate), icon: CheckCircle2 },
+                                { label: "Checkouts", value: analytics.checkoutTodayCount, icon: Calendar },
+                                { label: "Guests", value: analytics.activeGuestCount, icon: Users }
+                            ].map((item, i) => (
+                                <div key={i} className="text-right">
+                                    <div className="flex items-center justify-end space-x-2 text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">
+                                        <span>{item.label}</span>
+                                        <item.icon className="w-3 h-3" />
+                                    </div>
+                                    <div className="text-2xl font-serif font-black text-[#1F1F1F]">{item.value}</div>
                                 </div>
                             ))}
                         </div>
-                    ) : (
-                        <div className="rounded-[1.5rem] border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-                            No guest activity yet.
-                        </div>
-                    )}
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Recent Signal Stream</div>
+                        {analytics.recentRequests.length ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {analytics.recentRequests.map((request) => (
+                                    <div
+                                        key={request.id}
+                                        className="rounded-[24px] border border-black/[0.02] bg-[#FDFBF9] px-6 py-5 flex items-center justify-between group hover:bg-white hover:border-[#CFA46A]/20 transition-all"
+                                    >
+                                        <div>
+                                            <div className="flex items-center space-x-3 mb-1">
+                                                <span className="w-8 h-8 rounded-lg bg-[#1F1F1F] text-white flex items-center justify-center font-black text-[10px]">{request.room}</span>
+                                                <span className="text-sm font-black text-[#1F1F1F] tracking-tight truncate max-w-[150px]">{request.type}</span>
+                                            </div>
+                                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-11">
+                                                {formatRequestTime(request)}
+                                                {request.notes ? ` · "${request.notes}"` : ""}
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div
+                                                className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1 ${
+                                                    ACTIVE_STATUSES.has(request.status)
+                                                        ? "text-amber-500"
+                                                        : request.status === "Completed"
+                                                            ? "text-[#3F7C6D]"
+                                                            : "text-slate-400"
+                                                }`}
+                                            >
+                                                {request.status}
+                                            </div>
+                                            <div className="text-[10px] text-[#CFA46A] font-black uppercase tracking-widest">
+                                                {getRequestAmount(request) ? formatCurrency(getRequestAmount(request)) : "Comp"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-[40px] border border-dashed border-slate-200 p-12 text-center text-slate-400 italic text-sm">
+                                Signal stream currently dormant
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

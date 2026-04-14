@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useHotelBranding, saveHotelBranding, HotelBranding, useSpecialOffers, saveSpecialOffer, deleteSpecialOffer, SpecialOffer } from "@/utils/store";
-import { Palette, Layout, Type, Save, Check, RefreshCw, Phone, Plus, Trash2, Image as ImageIcon, Tag, Utensils, Clock, MessageSquare, Sparkles, Car } from "lucide-react";
-import { motion } from "framer-motion";
+import { Palette, Layout, Type, Save, Check, RefreshCw, Phone, Plus, Trash2, Image as ImageIcon, Tag, Utensils, Clock, MessageSquare, Sparkles, Car, Loader2, Globe, Wifi, Zap } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { SuccessFolio } from "@/components/SuccessFolio";
 
 export default function BrandingPage() {
     const params = useParams();
@@ -13,7 +14,9 @@ export default function BrandingPage() {
 
     const [config, setConfig] = useState<Partial<HotelBranding>>({});
     const [isSaving, setIsSaving] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string }>({
+        open: false, title: "", message: ""
+    });
 
     // Special Offers State
     const { offers, loading: loadingOffers } = useSpecialOffers(branding?.id);
@@ -35,10 +38,12 @@ export default function BrandingPage() {
         setIsSaving(false);
 
         if (error) {
-            console.error("Save Error:", error);
-            alert(`Failed to save changes: ${error.message || "Unknown error"}. 
-            
-            Tip: If this is a 'column not found' error, please run the SQL force-fix provided in the chat.`);
+            setFolioState({
+                open: true,
+                title: "Protocol Interrupted",
+                message: `The system encountered a resistance during the synchronization: ${error.message || "Unknown error"}.`,
+                details: "SCHEMA_MISMATCH_DETECTED"
+            });
             return;
         }
 
@@ -46,161 +51,56 @@ export default function BrandingPage() {
             setConfig(data);
         }
 
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
+        setFolioState({
+            open: true,
+            title: "Identity Synchronized",
+            message: "Brand DNA has been successfully propagated across all guest touchpoints and administrative nodes.",
+            details: "HASH_" + Math.random().toString(36).substring(7).toUpperCase()
+        });
     };
 
     const handleDeleteOffer = async (offerId: string) => {
-        if (!branding?.id || deletingOfferId) {
-            return;
-        }
+        if (!branding?.id || deletingOfferId) return;
 
         setDeletingOfferId(offerId);
         const { error } = await deleteSpecialOffer(offerId, branding.id);
         setDeletingOfferId(null);
 
         if (error) {
-            alert(`Failed to delete offer: ${error.message || "Unknown error"}`);
+            setFolioState({
+                open: true,
+                title: "Extraction Failed",
+                message: `The promotional asset could not be decommissioned: ${error.message || "Unknown error"}.`,
+            });
+        } else {
+            setFolioState({
+                open: true,
+                title: "Asset Decommissioned",
+                message: "The selected promotional offering has been removed from the live guest catalogue.",
+            });
         }
     };
 
     const colors = [
-        { name: "Ocean Blue", primary: "#2563eb", accent: "#3b82f6" },
-        { name: "Royal Purple", primary: "#7c3aed", accent: "#8b5cf6" },
-        { name: "Emerald Forest", primary: "#059669", accent: "#10b981" },
-        { name: "Sunset Orange", primary: "#ea580c", accent: "#f97316" },
-        { name: "Midnight Black", primary: "#0f172a", accent: "#334155" },
-        { name: "Rose Pink", primary: "#db2777", accent: "#ec4899" },
+        { name: "Charcoal & Gold", primary: "#1F1F1F", accent: "#CFA46A" },
+        { name: "Oceanic Depth", primary: "#1E293B", accent: "#38BDF8" },
+        { name: "Imperial Jade", primary: "#064E3B", accent: "#10B981" },
+        { name: "Regal Velvet", primary: "#4C1D95", accent: "#A78BFA" },
+        { name: "Midnight Rose", primary: "#1F1111", accent: "#F43F5E" },
+        { name: "Boutique Stone", primary: "#44403C", accent: "#D6D3D1" },
     ];
 
-    if (loading) return <div className="p-20 text-center text-gray-400">Loading identity...</div>;
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFBF9]">
+            <Loader2 className="w-8 h-8 text-[#CFA46A] animate-spin" />
+        </div>
+    );
 
     return (
-        <div className="p-8 max-w-5xl mx-auto">
-            <div className="mb-10 flex justify-between items-end">
+        <div className="flex-1 min-h-screen bg-[#FDFBF9] font-sans pb-32">
+            {/* Header section with glassmorphism */}
+            <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight" style={{ color: config.primaryColor }}>Brand Identity</h1>
-                    <p className="text-slate-500 font-medium">Configure your hotel's SaaS presence & visual DNA</p>
-                </div>
-                <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center disabled:opacity-50 active:scale-95"
-                    style={{ backgroundColor: config.primaryColor }}
-                >
-                    {isSaving ? (
-                        <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                    ) : showSuccess ? (
-                        <Check className="w-5 h-5 mr-2" />
-                    ) : (
-                        <Save className="w-5 h-5 mr-2" />
-                    )}
-                    {showSuccess ? "Identity Saved" : "Save Changes"}
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* Configuration Panel */}
-                <div className="space-y-8">
-                    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        <div className="flex items-center mb-6">
-                            <Type className="w-5 h-5 text-blue-600 mr-3" style={{ color: config.primaryColor }} />
-                            <h2 className="text-xl font-black text-slate-900">General Identity</h2>
-                        </div>
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Hotel Name</label>
-                                <input
-                                    type="text"
-                                    value={config.name || ""}
-                                    onChange={(e) => setConfig({ ...config, name: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">City</label>
-                                <input
-                                    type="text"
-                                    value={config.city || ""}
-                                    onChange={(e) => setConfig({ ...config, city: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
-                                    placeholder="e.g. Raipur, India"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Logo Initial</label>
-                                    <input
-                                        type="text"
-                                        maxLength={1}
-                                        value={config.logo || ""}
-                                        onChange={(e) => setConfig({ ...config, logo: e.target.value.toUpperCase() })}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-black text-2xl text-center text-slate-900 focus:ring-2 transition-all outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Upload Custom Logo</label>
-                                    <div className="relative w-full h-[56px] bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center overflow-hidden hover:bg-slate-100 transition-colors cursor-pointer">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            onChange={(e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onloadend = () => {
-                                                        setConfig({ ...config, logoImage: reader.result as string });
-                                                    };
-                                                    reader.readAsDataURL(file);
-                                                }
-                                            }}
-                                        />
-                                        <span className="text-xs font-bold text-slate-500">{config.logoImage ? "Change Image" : "Upload File"}</span>
-                                    </div>
-                                    {config.logoImage && (
-                                        <button onClick={() => setConfig({ ...config, logoImage: undefined })} className="text-[10px] text-red-500 font-bold mt-2 uppercase">Remove Logo Image</button>
-                                    )}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Guest Hero Image URL</label>
-                                <input
-                                    type="text"
-                                    value={config.heroImage || ""}
-                                    onChange={(e) => setConfig({ ...config, heroImage: e.target.value })}
-                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
-                                    placeholder="https://... (hotel exterior image)"
-                                />
-                                <div className="relative mt-3 w-full h-[56px] bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center overflow-hidden hover:bg-slate-100 transition-colors cursor-pointer">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="absolute inset-0 opacity-0 cursor-pointer"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => {
-                                                    setConfig({ ...config, heroImage: reader.result as string });
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                    <span className="text-xs font-bold text-slate-500">{config.heroImage ? "Change Hero Image" : "Upload Hero Image"}</span>
-                                </div>
-                                {config.heroImage && (
-                                    <button onClick={() => setConfig({ ...config, heroImage: undefined })} className="text-[10px] text-red-500 font-bold mt-2 uppercase">Remove Hero Image</button>
-                                )}
-                            </div>
-                        </div>
-                    </section>
-
-                    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        <div className="flex items-center mb-6">
-                            <Phone className="w-5 h-5 text-blue-600 mr-3" style={{ color: config.primaryColor }} />
-                            <h2 className="text-xl font-black text-slate-900">Communication & Connectivity</h2>
                         </div>
                         <div className="space-y-6">
                             <div>

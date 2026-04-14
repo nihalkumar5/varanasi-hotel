@@ -29,13 +29,11 @@ export default function GuestLayout({
 
     return (
         <GuestAuthWrapper>
-            <div className="flex min-h-screen flex-col overflow-x-hidden bg-slate-50 pb-24 text-slate-900 antialiased">
-                {/* Ambient Background Gradient (only shown when authenticated) */}
-                <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from),_transparent_50%)] from-blue-50/50 to-transparent"></div>
+            <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#FDFBF9] pb-24 text-[#1F1F1F] antialiased">
+                {/* Ambient Background Gradient (Gold/Beige Aura) */}
+                <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_#CFA46A15,_transparent_60%)]"></div>
 
-                <main
-                    className="relative flex-1 w-full"
-                >
+                <main className="relative flex-1 w-full">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={pathname}
