@@ -235,19 +235,10 @@ export default function AdminCheckoutPage() {
                                 className="bg-white rounded-[40px] border border-black/[0.03] shadow-[0_30px_80px_rgba(0,0,0,0.04)] overflow-hidden"
                             >
                                 {/* Invoice Header */}
-                                <div className="p-8 border-b border-black/[0.03] flex items-start justify-between">
-                                    <div>
-                                        <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Tax Invoice</p>
-                                        <h2 className="text-3xl font-serif font-black text-[#1F1F1F]">{branding?.name || "Hotel"}</h2>
-                                        <p className="text-sm text-slate-400 font-medium mt-1">{branding?.city || "Boutique Property"}</p>
-                                    </div>
-                                    <button
-                                        onClick={handlePrint}
-                                        className="flex items-center gap-2 px-5 py-3 bg-[#FDFBF9] border border-black/[0.04] text-[#1F1F1F] font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-[#1F1F1F] hover:text-white transition-all shadow-sm"
-                                    >
-                                        <Printer className="w-4 h-4" />
-                                        Print Invoice
-                                    </button>
+                                <div className="p-8 border-b border-black/[0.03]">
+                                    <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Tax Invoice</p>
+                                    <h2 className="text-3xl font-serif font-black text-[#1F1F1F]">{branding?.name || "Hotel"}</h2>
+                                    <p className="text-sm text-slate-400 font-medium mt-1">{branding?.city || "Boutique Property"}</p>
                                 </div>
 
                                 {/* Room + Date Meta */}
