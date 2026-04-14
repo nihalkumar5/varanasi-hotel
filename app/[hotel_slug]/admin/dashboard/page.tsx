@@ -375,191 +375,187 @@ export default function AdminDashboard() {
                                 exit={{ height: 0, opacity: 0, y: -20 }}
                                 className="overflow-hidden"
                             >
-                                <div className="bg-[#1F1F1F] rounded-[40px] p-10 border border-white/5 shadow-3xl relative noise overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                                        <MapIcon className="w-32 h-32 text-white" />
-                                    </div>
-
-                                    <div className="flex items-center justify-between mb-10 relative z-10">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="w-2.5 h-2.5 bg-[#CFA46A] rounded-full animate-pulse shadow-[0_0_15px_#CFA46A]" />
-                                            <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">
-                                                {activeFloorGroup ? `Level ${String(activeFloorGroup.floor).padStart(2, "0")} Operations` : "Foundation Blueprint"}
+                                <div className="bg-[#1A1A1A] rounded-[40px] p-10 border border-white/[0.04] shadow-2xl relative overflow-hidden">
+                                    {/* Subtle grid texture */}
+                                    <div className="absolute inset-0 opacity-[0.025] pointer-events-none" style={{
+                                        backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 40px)"
+                                    }} />
+                                    {/* Header bar */}
+                                    <div className="relative z-10 flex items-center justify-between mb-8">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-[#CFA46A] rounded-full shadow-[0_0_12px_#CFA46A] animate-pulse" />
+                                            <span className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">
+                                                {activeFloorGroup ? `Floor ${String(activeFloorGroup.floor).padStart(2, "0")} · Live View` : "Blueprint"}
                                             </span>
                                         </div>
-                                        <div className="flex items-center space-x-6">
+                                        <div className="flex items-center gap-6">
                                             {[
-                                                { label: "Standard", color: "bg-slate-700" },
-                                                { label: "Occupied", color: "bg-[#3F7C6D]" },
-                                                { label: "Active Signal", color: "bg-red-500 animate-pulse" }
-                                            ].map((legend, i) => (
-                                                <div key={i} className="flex items-center space-x-2">
-                                                    <div className={`w-2 h-2 rounded-full ${legend.color}`} />
-                                                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-widest">{legend.label}</span>
+                                                { label: "Vacant", dot: "bg-white/10 border border-white/10" },
+                                                { label: "Occupied", dot: "bg-[#2D6A5E]" },
+                                                { label: "Signal", dot: "bg-red-500 animate-pulse" },
+                                            ].map((l, i) => (
+                                                <div key={i} className="flex items-center gap-2">
+                                                    <div className={`w-2 h-2 rounded-full ${l.dot}`} />
+                                                    <span className="text-[9px] font-black text-white/25 uppercase tracking-[0.2em]">{l.label}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2 mb-10 relative z-10">
+                                    {/* Floor tabs */}
+                                    <div className="relative z-10 flex flex-wrap gap-2 mb-8">
                                         {floorMap.map((floorGroup) => {
-                                            const floorPending = floorGroup.rooms.reduce(
-                                                (total, room) => total + getRoomSignalSummary(requests, room.room_number).pendingCount,
-                                                0,
+                                            const pendingOnFloor = floorGroup.rooms.reduce(
+                                                (t, r) => t + getRoomSignalSummary(requests, r.room_number).pendingCount, 0
                                             );
-
                                             return (
                                                 <button
                                                     key={floorGroup.floor}
                                                     onClick={() => setSelectedFloor(floorGroup.floor)}
-                                                    className={`px-6 py-3 rounded-2xl border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                                                    className={`relative px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
                                                         selectedFloor === floorGroup.floor
-                                                            ? "bg-[#CFA46A] text-[#1F1F1F] border-[#CFA46A] shadow-lg shadow-[#CFA46A]/20"
-                                                            : "bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:border-white/20"
+                                                            ? "bg-[#CFA46A] text-[#1A1A1A] shadow-lg shadow-[#CFA46A]/20"
+                                                            : "bg-white/5 text-white/35 border border-white/[0.06] hover:bg-white/10"
                                                     }`}
                                                 >
-                                                    Level {String(floorGroup.floor).padStart(2, "0")} {floorPending > 0 ? `• ${floorPending}` : ""}
+                                                    Floor {String(floorGroup.floor).padStart(2, "0")}
+                                                    {pendingOnFloor > 0 && (
+                                                        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center shadow-lg shadow-red-500/30">
+                                                            {pendingOnFloor}
+                                                        </span>
+                                                    )}
                                                 </button>
                                             );
                                         })}
                                     </div>
 
                                     {activeFloorGroup ? (
-                                        <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-10 relative z-10">
-                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                        <div className="relative z-10 grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8">
+                                            {/* Room grid */}
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                                 {activeFloorGroup.rooms.map((room) => {
-                                                    const roomSignals = getRoomSignalSummary(requests, room.room_number);
+                                                    const sig = getRoomSignalSummary(requests, room.room_number);
                                                     const isSelected = normalizeRoomLabel(room.room_number) === selectedMapRoom;
-
+                                                    const hasSignal = sig.pendingCount > 0;
                                                     return (
-                                                        <button
+                                                        <motion.button
                                                             key={room.id}
+                                                            whileTap={{ scale: 0.96 }}
                                                             onClick={() => setSelectedMapRoom(normalizeRoomLabel(room.room_number))}
-                                                            className={`min-h-[160px] rounded-[32px] border p-6 text-left transition-all ${
+                                                            className={`relative rounded-[20px] p-5 text-left transition-all border h-[148px] flex flex-col justify-between ${
                                                                 isSelected
-                                                                    ? "bg-white/10 border-[#CFA46A] shadow-[0_0_30px_rgba(207,164,106,0.15)]"
-                                                                    : "bg-white/[0.02] border-white/5 hover:border-white/20"
+                                                                    ? "bg-[#CFA46A]/[0.08] border-[#CFA46A]/40 shadow-[0_0_20px_rgba(207,164,106,0.1)]"
+                                                                    : room.is_occupied
+                                                                    ? "bg-[#1C2C29] border-[#2D6A5E]/40 hover:border-[#2D6A5E]/70"
+                                                                    : "bg-white/[0.025] border-white/[0.05] hover:border-white/15"
                                                             }`}
                                                         >
-                                                            <div className="flex items-start justify-between mb-6">
-                                                                <div>
-                                                                    <p className={`text-2xl font-serif font-black ${isSelected ? "text-white" : "text-slate-200"}`}>
-                                                                        {room.room_number}
+                                                            {/* Door accent line */}
+                                                            <div className={`absolute top-0 left-5 right-5 h-[2px] rounded-b-full ${
+                                                                isSelected ? "bg-[#CFA46A]" : room.is_occupied ? "bg-[#3F7C6D]" : "bg-white/[0.07]"
+                                                            }`} />
+                                                            {/* Signal badge */}
+                                                            {hasSignal && (
+                                                                <span className="absolute top-3 right-3 w-5 h-5 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center shadow-lg shadow-red-500/40 animate-pulse">
+                                                                    {sig.pendingCount}
+                                                                </span>
+                                                            )}
+                                                            <div>
+                                                                <p className={`text-2xl font-serif font-black leading-none ${isSelected ? "text-[#CFA46A]" : "text-white/75"}`}>
+                                                                    {room.room_number}
+                                                                </p>
+                                                                <div className="flex items-center gap-1.5 mt-2">
+                                                                    <div className={`w-1.5 h-1.5 rounded-full ${room.is_occupied ? "bg-[#3F7C6D]" : "bg-white/10"}`} />
+                                                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/25">
+                                                                        {room.is_occupied ? "Occupied" : "Vacant"}
                                                                     </p>
-                                                                    <div className="mt-2 flex items-center space-x-2">
-                                                                        <div className={`w-1.5 h-1.5 rounded-full ${room.is_occupied ? 'bg-[#3F7C6D]' : 'bg-slate-700'}`} />
-                                                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">
-                                                                            {room.is_occupied ? "Occupied" : "Standby"}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex flex-col items-end space-y-1">
-                                                                    {roomSignals.pendingCount > 0 && (
-                                                                        <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center shadow-lg shadow-red-500/30 line-height-0 pt-0.5">
-                                                                            {roomSignals.pendingCount}
-                                                                        </span>
-                                                                    )}
                                                                 </div>
                                                             </div>
-
-                                                            <div className="space-y-2">
-                                                                {roomSignals.requests.slice(0, 1).map((request) => (
-                                                                    <div key={request.id} className="rounded-xl bg-white/5 px-3 py-2 border border-white/5">
-                                                                        <p className="text-[8px] font-black uppercase tracking-widest text-[#CFA46A]">
-                                                                            {getDepartmentLabel(request)}
-                                                                        </p>
-                                                                        <p className="mt-1 text-[11px] font-bold text-white/90 line-clamp-1 italic">"{request.type}"</p>
-                                                                    </div>
-                                                                ))}
-                                                                {roomSignals.requests.length === 0 && (
-                                                                    <p className="text-[10px] font-medium text-slate-600 uppercase tracking-widest">No signals</p>
-                                                                )}
-                                                            </div>
-                                                        </button>
+                                                            <p className={`text-[9px] font-black uppercase tracking-wider truncate ${
+                                                                sig.requests.length > 0 ? "text-[#CFA46A]" : "text-white/15"
+                                                            }`}>
+                                                                {sig.requests.length > 0 ? sig.requests[0].type : room.booking_pin ? `PIN ${room.booking_pin}` : "—"}
+                                                            </p>
+                                                        </motion.button>
                                                     );
                                                 })}
                                             </div>
 
-                                            <div className="rounded-[40px] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-xl">
+                                            {/* Detail panel */}
+                                            <div className="rounded-[28px] border border-white/[0.06] bg-white/[0.025] backdrop-blur-xl p-7 flex flex-col gap-5">
                                                 {selectedRoom && selectedRoomSignals ? (
-                                                    <div className="h-full flex flex-col">
-                                                        <div className="flex items-start justify-between gap-4 mb-8">
+                                                    <>
+                                                        <div className="flex items-start justify-between">
                                                             <div>
-                                                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#CFA46A]">Unit Inspection</p>
-                                                                <h3 className="mt-2 text-4xl font-serif font-black text-white">Room {selectedRoom.room_number}</h3>
+                                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#CFA46A] mb-1">Unit Inspection</p>
+                                                                <h3 className="text-3xl font-serif font-black text-white">Room {selectedRoom.room_number}</h3>
                                                             </div>
-                                                            <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest ${
+                                                            <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${
                                                                 selectedRoom.is_occupied
-                                                                    ? "bg-[#3F7C6D]/20 text-[#3F7C6D] border border-[#3F7C6D]/30"
-                                                                    : "bg-white/10 text-slate-400"
+                                                                    ? "bg-[#3F7C6D]/15 text-[#3F7C6D] border-[#3F7C6D]/25"
+                                                                    : "bg-white/5 text-white/25 border-white/[0.07]"
                                                             }`}>
                                                                 {selectedRoom.is_occupied ? "In Use" : "Vacant"}
-                                                            </div>
+                                                            </span>
                                                         </div>
-
-                                                        <div className="grid grid-cols-2 gap-4 mb-8">
-                                                            <div className="rounded-2xl bg-white/5 p-5 border border-white/5">
-                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Live Load</p>
-                                                                <p className="mt-2 text-3xl font-serif font-black text-white">
-                                                                    {selectedRoomSignals.pendingCount + selectedRoomSignals.activeCount}
+                                                        <div className="grid grid-cols-2 gap-2">
+                                                            <div className="rounded-2xl bg-white/5 border border-white/[0.05] p-4">
+                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/25 mb-2">Signals</p>
+                                                                <p className="text-2xl font-serif font-black text-white">{selectedRoomSignals.pendingCount + selectedRoomSignals.activeCount}</p>
+                                                            </div>
+                                                            <div className="rounded-2xl bg-white/5 border border-white/[0.05] p-4">
+                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/25 mb-2">Checkout</p>
+                                                                <p className="text-xs font-black text-white/75 leading-tight">
+                                                                    {selectedRoom.checkout_date
+                                                                        ? `${selectedRoom.checkout_date}${selectedRoom.checkout_time ? ` · ${selectedRoom.checkout_time}` : ""}`
+                                                                        : selectedRoom.checkout_time || "—"}
                                                                 </p>
                                                             </div>
-                                                            <div className="rounded-2xl bg-white/5 p-5 border border-white/5">
-                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Checkout</p>
-                                                                <p className="mt-2 text-[11px] font-black text-white/90">
-                                                                    {selectedRoom.checkout_time || selectedRoom.checkout_date || "—"}
-                                                                </p>
-                                                            </div>
                                                         </div>
-
-                                                        <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#CFA46A] mb-4">Signal Details</p>
-                                                            {selectedRoomSignals.requests.length > 0 ? (
-                                                                selectedRoomSignals.requests.map((request) => (
-                                                                    <button
-                                                                        key={request.id}
-                                                                        onClick={() => setSelectedRequest(request)}
-                                                                        className="w-full rounded-2xl border border-white/5 bg-white/[0.02] p-5 text-left hover:bg-white/5 hover:border-[#CFA46A]/40 transition-all group"
+                                                        {selectedRoom.booking_pin && (
+                                                            <div className="rounded-2xl bg-[#CFA46A]/[0.08] border border-[#CFA46A]/20 p-4 flex items-center justify-between">
+                                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#CFA46A]">Access PIN</p>
+                                                                <p className="font-serif font-black text-[#CFA46A] text-lg tracking-[0.15em]">{selectedRoom.booking_pin}</p>
+                                                            </div>
+                                                        )}
+                                                        <div className="flex-1 flex flex-col min-h-0">
+                                                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#CFA46A] mb-3">Signal Details</p>
+                                                            <div className="space-y-2 overflow-y-auto flex-1">
+                                                                {selectedRoomSignals.requests.length > 0 ? selectedRoomSignals.requests.map(req => (
+                                                                    <button key={req.id} onClick={() => setSelectedRequest(req)}
+                                                                        className="w-full rounded-2xl border border-white/[0.05] bg-white/[0.03] p-4 text-left hover:bg-white/5 hover:border-[#CFA46A]/30 transition-all group"
                                                                     >
-                                                                        <div className="flex items-center justify-between mb-2">
-                                                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 group-hover:text-[#CFA46A]">{getDepartmentLabel(request)}</span>
-                                                                            <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest ${
-                                                                                request.status === "Pending"
-                                                                                    ? "bg-red-500/20 text-red-500"
-                                                                                    : "bg-[#3F7C6D]/20 text-[#3F7C6D]"
-                                                                            }`}>
-                                                                                {request.status}
-                                                                            </span>
+                                                                        <div className="flex items-center justify-between mb-1">
+                                                                            <span className="text-[8px] font-black uppercase tracking-widest text-white/25 group-hover:text-[#CFA46A] transition-colors">{getDepartmentLabel(req)}</span>
+                                                                            <span className={`px-2 py-0.5 rounded-lg text-[7px] font-black uppercase ${req.status === "Pending" ? "bg-red-500/20 text-red-400" : "bg-[#3F7C6D]/20 text-[#3F7C6D]"}`}>{req.status}</span>
                                                                         </div>
-                                                                        <p className="text-sm font-black text-white/90 mb-1">{request.type}</p>
-                                                                        <p className="text-[10px] text-slate-500 font-medium">{request.time} • Registered</p>
+                                                                        <p className="text-sm font-black text-white/80">{req.type}</p>
+                                                                        <p className="text-[9px] text-white/20 mt-1">{req.time}</p>
                                                                     </button>
-                                                                ))
-                                                            ) : (
-                                                                <div className="h-40 rounded-[32px] border border-dashed border-white/10 flex items-center justify-center text-center p-8">
-                                                                    <p className="text-xs font-bold text-slate-600 uppercase tracking-widest leading-loose">No active signals<br/>for this unit</p>
-                                                                </div>
-                                                            )}
+                                                                )) : (
+                                                                    <div className="h-24 rounded-2xl border border-dashed border-white/[0.08] flex items-center justify-center">
+                                                                        <p className="text-[9px] font-black text-white/15 uppercase tracking-widest text-center">No active signals</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
-
-                                                        <button 
-                                                            onClick={() => setSearchQuery(normalizeRoomLabel(selectedRoom.room_number))}
-                                                            className="mt-6 w-full py-4 rounded-2xl bg-[#CFA46A] text-[#1F1F1F] text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-all shadow-xl shadow-[#CFA46A]/10"
+                                                        <button onClick={() => setSearchQuery(normalizeRoomLabel(selectedRoom.room_number))}
+                                                            className="w-full py-3.5 rounded-2xl bg-[#CFA46A] text-[#1A1A1A] text-[10px] font-black uppercase tracking-[0.25em] hover:brightness-110 transition-all shadow-lg shadow-[#CFA46A]/15"
                                                         >
-                                                            Locate in Signal Feed
+                                                            Find in Signal Feed
                                                         </button>
-                                                    </div>
+                                                    </>
                                                 ) : (
-                                                    <div className="h-full flex flex-col items-center justify-center text-center p-10">
-                                                        <Sparkles className="w-12 h-12 text-white/5 mb-6" />
-                                                        <p className="text-xs font-bold text-slate-600 uppercase tracking-[0.3em] leading-loose">Select unit from grid<br/>for localized mission tracking</p>
+                                                    <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-10">
+                                                        <MapIcon className="w-10 h-10 text-white/[0.07]" />
+                                                        <p className="text-[9px] font-black text-white/15 uppercase tracking-[0.3em] leading-loose">Select a unit<br/>to inspect</p>
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="rounded-[40px] border border-dashed border-white/10 p-20 text-center">
-                                            <p className="text-sm font-bold text-slate-600 uppercase tracking-[0.3em]">Operational units not detected</p>
+                                        <div className="relative z-10 rounded-[32px] border border-dashed border-white/[0.08] p-20 text-center">
+                                            <p className="text-sm font-bold text-white/15 uppercase tracking-[0.3em]">No rooms configured yet</p>
                                         </div>
                                     )}
                                 </div>
