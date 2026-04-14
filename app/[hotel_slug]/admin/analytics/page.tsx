@@ -19,6 +19,15 @@ import {
     Utensils,
     Wrench,
     Car,
+    MapPin,
+    TrendingUp,
+    TrendingDown,
+    Star,
+    Activity,
+    Clock,
+    ArrowRight,
+    ChevronRight,
+    Zap,
     type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
