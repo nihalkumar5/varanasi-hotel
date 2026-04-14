@@ -8,6 +8,7 @@ import { useHotelBranding, getHotelGuests, getHotelRooms, deleteGuest, Guest, Ro
 import { motion, AnimatePresence } from "framer-motion";
 import GuestEntryForm from "@/components/GuestEntryForm";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { QRPreviewModal } from "@/components/QRPreviewModal";
 import QRCode from "react-qr-code";
 import { buildGuestWelcomeMessage, buildWhatsAppUrl, formatWhatsAppPhone } from "@/lib/hotel/whatsapp";
 
@@ -83,6 +84,11 @@ export default function ReceptionPage() {
     // Confirm Modal State
     const [confirmModal, setConfirmModal] = useState<{ open: boolean, title: string, message: string, onConfirm: () => void }>({
         open: false, title: "", message: "", onConfirm: () => {}
+    });
+
+    // QR Preview State
+    const [qrPreview, setQrPreview] = useState<{ open: boolean, roomNumber: string, pin?: string | null }>({
+        open: false, roomNumber: ""
     });
 
     const loadData = async () => {
@@ -303,11 +309,14 @@ export default function ReceptionPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* QR Code */}
+                                                {/* QR Code — click to open preview */}
                                                 {(() => {
                                                     const guestUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/${hotelSlug}/guest/dashboard`;
                                                     return (
-                                                        <div className="mt-4 bg-[#FDFBF9] border border-black/[0.03] rounded-[24px] p-5 flex items-center gap-4">
+                                                        <button
+                                                            onClick={() => setQrPreview({ open: true, roomNumber: room.room_number, pin: room.booking_pin })}
+                                                            className="mt-4 w-full bg-[#FDFBF9] border border-black/[0.03] rounded-[24px] p-5 flex items-center gap-4 hover:border-[#CFA46A]/30 hover:bg-[#CFA46A]/5 transition-all group/qr cursor-pointer"
+                                                        >
                                                             <div className="bg-white p-2 rounded-2xl shadow-sm border border-black/[0.02]">
                                                                 <QRCode
                                                                     value={guestUrl}
@@ -316,22 +325,16 @@ export default function ReceptionPage() {
                                                                     bgColor="white"
                                                                 />
                                                             </div>
-                                                            <div>
+                                                            <div className="text-left">
                                                                 <p className="text-[9px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-1">Guest Portal</p>
                                                                 <p className="text-[10px] font-black text-[#1F1F1F] leading-tight">Scan to access<br/>digital folio</p>
+                                                                <p className="text-[9px] text-slate-300 mt-1 group-hover/qr:text-[#CFA46A] transition-colors">Click to preview & print →</p>
                                                             </div>
-                                                        </div>
+                                                        </button>
                                                     );
                                                 })()}
 
-                                                <div className="flex gap-4 mt-6">
-                                                    <button
-                                                        onClick={() => handlePrintQR(room.room_number)}
-                                                        className="w-14 h-14 bg-white border border-black/[0.05] text-[#1F1F1F] rounded-[20px] hover:bg-[#1F1F1F] hover:text-white transition-all flex items-center justify-center shadow-sm"
-                                                        title="Print Folio QR"
-                                                    >
-                                                        <Printer className="w-5 h-5" />
-                                                    </button>
+                                                <div className="flex gap-4 mt-4">
                                                     <button
                                                         onClick={() => handleCheckout(room)}
                                                         className="flex-1 h-14 bg-[#1F1F1F] text-white rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3"
@@ -410,6 +413,15 @@ export default function ReceptionPage() {
                 variant="danger"
                 onConfirm={confirmModal.onConfirm}
                 onCancel={() => setConfirmModal(prev => ({ ...prev, open: false }))}
+            />
+
+            <QRPreviewModal
+                isOpen={qrPreview.open}
+                onClose={() => setQrPreview(prev => ({ ...prev, open: false }))}
+                roomNumber={qrPreview.roomNumber}
+                hotelName={branding?.name}
+                guestUrl={`${typeof window !== 'undefined' ? window.location.origin : ''}/${hotelSlug}/guest/dashboard`}
+                pin={qrPreview.pin}
             />
         </div>
     );
