@@ -161,7 +161,7 @@ export default function RestaurantPage() {
                         <ArrowLeft className="w-6 h-6 text-white" />
                     </motion.button>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#4E8F7A]/60 leading-none mb-1.5">Marriott</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#4E8F7A]/60 leading-none mb-1.5">In-Room Dining</p>
                         <h1 className="text-base font-serif font-bold tracking-tight leading-none uppercase">
                             {branding?.name || "Culinary Collection"}
                         </h1>
