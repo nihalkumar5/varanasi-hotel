@@ -143,128 +143,125 @@ export default function GuestDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-[#FDFBF9] pb-32 font-sans text-[#1F1F1F]">
-            {/* 1. Cinematic Hero Canvas */}
-            <motion.section 
+        <div className="min-h-screen bg-[#F7F5F2] pb-32 font-sans text-[#1F1F1F]">
+            {/* 1. Hero with GUEST PORTAL pill */}
+            <motion.section
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="relative h-[440px] w-full"
+                className="relative h-[300px] w-full"
             >
-                <div className="absolute inset-0 overflow-hidden">
-                    <img src={heroImage} className="w-full h-full object-cover scale-110 blur-[1px]" alt="Background" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#FDFBF9] via-[#FDFBF9]/40 to-black/30" />
-                </div>
-
-                <div className="relative z-10 px-8 pt-20 flex flex-col items-center">
-                    <motion.div 
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="w-20 h-20 rounded-[28px] bg-white shadow-2xl flex items-center justify-center mb-8 border border-white/50 backdrop-blur-xl"
-                    >
-                        {branding?.logoImage ? (
-                            <img src={branding.logoImage} className="w-full h-full object-cover rounded-[28px]" />
-                        ) : (
-                            <span className="text-4xl font-serif font-black text-[#1F1F1F]">{branding?.logo || branding?.name?.charAt(0)}</span>
-                        )}
-                    </motion.div>
-                    
-                    <h1 className="text-4xl font-serif font-black text-center text-[#1F1F1F] tracking-tight leading-none mb-4 uppercase">
-                        {branding?.name}
-                    </h1>
-                    <div className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-[0.4em] text-[#CFA46A]">
-                        <span>Boutique Residency</span>
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
-                        <span>{branding?.city || "Luxury Hub"}</span>
+                <img src={heroImage} className="w-full h-full object-cover" alt="Hotel" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/10" />
+                <div className="absolute top-0 inset-x-0 flex justify-center pt-8 z-10">
+                    <div className="px-6 py-2.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
+                        <span className="text-[10px] font-black uppercase tracking-[0.35em] text-white">Guest Portal</span>
                     </div>
                 </div>
             </motion.section>
 
-            {/* 2. Personalized Access Card */}
+            {/* 2. Hotel Info Card (white, overlapping hero) */}
             <motion.section
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="-mt-32 px-6 relative z-20"
+                className="-mt-16 px-4 relative z-20"
             >
-                <div className="bg-[#1F1F1F] rounded-[48px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.25)] border border-white/10 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-1000">
-                        <Star className="w-40 h-40 text-[#CFA46A]" />
+                <div className="bg-white rounded-[28px] shadow-xl border border-black/[0.04] overflow-hidden">
+                    {/* Hotel name + stars + location */}
+                    <div className="px-6 pt-6 pb-5 border-b border-slate-100">
+                        <h1 className="text-2xl font-serif font-black text-[#1F1F1F] uppercase tracking-tight mb-2">
+                            {branding?.name || "Hotel"}
+                        </h1>
+                        <div className="flex items-center gap-1 mb-2">
+                            {[...Array(branding?.stars || 4)].map((_, i) => (
+                                <Star key={i} className="w-4 h-4 fill-[#CFA46A] text-[#CFA46A]" />
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                            <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
+                            <span className="text-xs font-medium">{branding?.city || "India"}</span>
+                        </div>
                     </div>
-                    
-                    <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-12">
-                            <div>
-                                <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Welcome Back</p>
-                                <h2 className="text-3xl font-serif font-black text-white leading-none">Guest of Folio</h2>
-                            </div>
-                            <div className="px-6 py-3 bg-[#CFA46A] text-[#1F1F1F] rounded-[20px] font-serif font-black text-2xl shadow-lg">
-                                {roomNumber || "101"}
-                            </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
-                            <div>
-                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Stay Duration</p>
-                                <p className="text-sm font-black text-white">{displayCheckoutDate}</p>
-                            </div>
-                            <div>
-                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Departure</p>
-                                <p className="text-sm font-black text-white">{displayCheckoutTime}</p>
-                            </div>
+                    {/* Checkout row */}
+                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1.5">Checkout</p>
+                            <p className="text-lg font-bold text-[#1F1F1F]">
+                                {displayCheckoutDate}
+                                {(checkoutDate && displayCheckoutTime) && (
+                                    <span className="text-[#CFA46A] font-black"> · {displayCheckoutTime}</span>
+                                )}
+                            </p>
                         </div>
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest">
+                            <Check className="w-3 h-3" />
+                            Verified Guest
+                        </span>
+                    </div>
 
-                        <div className="mt-8 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Users className="w-4 h-4 text-[#CFA46A]" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">{numGuests || 1} Registered</span>
+                    {/* Room + Guests + Late Checkout */}
+                    <div className="px-6 py-4 flex items-center gap-4">
+                        <div className="flex-1 flex items-center gap-2">
+                            <Bed className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                            <div>
+                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Room</p>
+                                <p className="text-sm font-black text-[#1F1F1F]">{roomNumber || "101"}</p>
                             </div>
-                            <button 
-                                onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
-                                className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-[9px] font-black text-white uppercase tracking-[0.2em] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all"
-                            >
-                                Extend Stay
-                            </button>
                         </div>
+                        <div className="flex-1 flex items-center gap-2">
+                            <Users className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                            <div>
+                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Staying</p>
+                                <p className="text-sm font-black text-[#1F1F1F]">{numGuests || 1} Guest{(numGuests || 1) > 1 ? "s" : ""}</p>
+                            </div>
+                        </div>
+                        <motion.button
+                            whileTap={{ scale: 0.96 }}
+                            onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
+                            className="px-5 py-3 bg-red-500 text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] leading-tight text-center shadow-md shadow-red-500/25"
+                        >
+                            Late<br/>Checkout
+                        </motion.button>
                     </div>
                 </div>
             </motion.section>
 
-            {/* 3. Boutique Service Grid */}
-            <section className="mt-16 px-6">
-                <div className="mb-10 flex items-center justify-between px-2">
+            {/* 3. Service Icon Grid */}
+            <section className="mt-8 px-4">
+                <div className="mb-6 flex items-center justify-between px-1">
                     <div>
-                        <h3 className="text-xl font-serif font-black text-[#1F1F1F]">Curated Folio</h3>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Operational Signals</p>
+                        <h3 className="text-lg font-serif font-black text-[#1F1F1F]">Curated Folio</h3>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-0.5">Operational Signals</p>
                     </div>
-                    <div className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center">
-                        <ConciergeBell className="w-4 h-4 text-[#CFA46A]" />
-                    </div>
+                    <ConciergeBell className="w-5 h-5 text-[#CFA46A]" />
                 </div>
 
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-4 gap-3">
                     {[
-                        { label: "Wi-Fi", icon: <Wifi />, path: "wifi" },
-                        { label: "Dining", icon: <Utensils />, path: "restaurant" },
-                        { label: "Transport", icon: <Car />, path: "services/taxi" },
+                        { label: "Wi-Fi Info", icon: <Wifi />, path: "wifi" },
+                        { label: "Room Service", icon: <Utensils />, path: "restaurant" },
+                        { label: "Taxi", icon: <Car />, path: "services/taxi" },
+                        { label: "Maintenance", icon: <Wrench />, path: "services/maintenance" },
                         { label: "Laundry", icon: <WashingMachine />, path: "services/laundry" },
                         { label: "Baggage", icon: <Briefcase />, path: "services/luggage" },
                         { label: "Spa", icon: <Waves />, path: "services/spa" },
-                        { label: "Cleaning", icon: <Brush />, path: "services/cleaning" },
                         { label: showMoreServices ? "Collapse" : "More", icon: <MoreHorizontal />, action: () => setShowMoreServices(!showMoreServices) }
                     ].map((s, i) => (
                         <motion.button
                             key={i}
-                            whileTap={{ scale: 0.94 }}
+                            whileTap={{ scale: 0.93 }}
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                            className="flex flex-col items-center gap-3 p-4 rounded-[28px] bg-white border border-black/[0.02] shadow-[0_10px_30px_rgba(0,0,0,0.02)]"
+                            className="flex flex-col items-center gap-2 py-4 px-2 rounded-[20px] bg-white border border-black/[0.04] shadow-sm"
                         >
-                            <div className="text-[#CFA46A]" style={{ color: serviceIconColor }}>
-                                {renderIcon(s.icon, "w-8 h-8")}
+                            <div style={{ color: serviceIconColor }}>
+                                {renderIcon(s.icon, "w-7 h-7")}
                             </div>
-                            <span className="text-[9px] font-black text-[#1F1F1F] uppercase tracking-tighter text-center leading-none">{s.label}</span>
+                            <span className="text-[8px] font-black text-[#1F1F1F] uppercase tracking-tighter text-center leading-tight">{s.label}</span>
                         </motion.button>
                     ))}
                 </div>
             </section>
+
 
             {/* 4. Promotional Highlights */}
             {activeOffers.length > 0 && (
