@@ -7,6 +7,7 @@ import { ConciergeBell, Users, LayoutGrid, List, Plus, MapPin, User, Phone, Chec
 import { useHotelBranding, getHotelGuests, getHotelRooms, deleteGuest, Guest, Room, supabase, checkInRoom, checkOutRoom } from "@/utils/store";
 import { motion, AnimatePresence } from "framer-motion";
 import GuestEntryForm from "@/components/GuestEntryForm";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import QRCode from "react-qr-code";
 import { buildGuestWelcomeMessage, buildWhatsAppUrl, formatWhatsAppPhone } from "@/lib/hotel/whatsapp";
 
@@ -79,6 +80,11 @@ export default function ReceptionPage() {
         open: false, title: "", message: ""
     });
 
+    // Confirm Modal State
+    const [confirmModal, setConfirmModal] = useState<{ open: boolean, title: string, message: string, onConfirm: () => void }>({
+        open: false, title: "", message: "", onConfirm: () => {}
+    });
+
     const loadData = async () => {
         if (!branding?.id) return;
         setLoading(true);
@@ -104,29 +110,33 @@ export default function ReceptionPage() {
 
     const handleCheckout = async (roomData: Room) => {
         if (!branding?.id) return;
-        
-        // Find guest by room_number
         const guest = guests.find(g => g.room_number === roomData.room_number);
-        
-        if (confirm(`Finalize checkout for Unit ${roomData.room_number}?`)) {
-            if (guest && guest.phone && (branding.checkoutMessage || branding.googleReviewLink)) {
-                let message = branding.checkoutMessage || "Thank you for staying with us! Hope you had a comfortable stay at {hotel_name}. Please share your feedback: ";
-                message = message.replace(/{name}/g, guest.name).replace(/{hotel_name}/g, branding.name).replace(/{room}/g, guest.room_number);
-                if (branding.googleReviewLink) message += `\n\nReview us on Google: ${branding.googleReviewLink}`;
-                window.open(`https://wa.me/${formatWhatsAppPhone(guest.phone)}?text=${encodeURIComponent(message)}`, '_blank');
-            }
 
-            // Using unified checkOutRoom store function
-            await checkOutRoom(roomData.id, branding.id);
-            loadData();
-            
-            setSuccessFolio({
-                open: true,
-                title: "Departure Finalized",
-                message: `Unit ${roomData.room_number} has been released and is now available for new arrivals.`,
-                roomNumber: roomData.room_number
-            });
-        }
+        setConfirmModal({
+            open: true,
+            title: `Finalize Unit ${roomData.room_number}`,
+            message: `This will complete the departure for Unit ${roomData.room_number} and release the room for new arrivals.`,
+            onConfirm: async () => {
+                setConfirmModal(prev => ({ ...prev, open: false }));
+
+                if (guest && guest.phone && (branding.checkoutMessage || branding.googleReviewLink)) {
+                    let message = branding.checkoutMessage || "Thank you for staying with us! Hope you had a comfortable stay at {hotel_name}. Please share your feedback: ";
+                    message = message.replace(/{name}/g, guest.name).replace(/{hotel_name}/g, branding.name).replace(/{room}/g, guest.room_number);
+                    if (branding.googleReviewLink) message += `\n\nReview us on Google: ${branding.googleReviewLink}`;
+                    window.open(`https://wa.me/${formatWhatsAppPhone(guest.phone)}?text=${encodeURIComponent(message)}`, '_blank');
+                }
+
+                await checkOutRoom(roomData.id, branding.id);
+                loadData();
+
+                setSuccessFolio({
+                    open: true,
+                    title: "Departure Finalized",
+                    message: `Unit ${roomData.room_number} has been released and is now available for new arrivals.`,
+                    roomNumber: roomData.room_number
+                });
+            }
+        });
     };
 
     const handlePrintQR = (roomNumber: string) => {
@@ -356,7 +366,6 @@ export default function ReceptionPage() {
                     branding={branding}
                     onSuccess={(data: any) => {
                         loadData();
-                        // If the entry form returns a PIN, show the success folio
                         if (data?.pin) {
                             setSuccessFolio({
                                 open: true,
@@ -370,6 +379,17 @@ export default function ReceptionPage() {
                     initialRoomNumber={selectedRoomNum || ""}
                 />
             )}
+
+            <ConfirmModal
+                isOpen={confirmModal.open}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                confirmLabel="Finalize Departure"
+                cancelLabel="Keep Resident"
+                variant="danger"
+                onConfirm={confirmModal.onConfirm}
+                onCancel={() => setConfirmModal(prev => ({ ...prev, open: false }))}
+            />
         </div>
     );
 }

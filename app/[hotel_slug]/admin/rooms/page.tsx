@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import QRCode from "react-qr-code";
 import { Printer, Key, DoorClosed, Plus, Trash2, Loader2, Hotel } from "lucide-react";
 import { useHotelBranding, useRooms, addRoom, checkInRoom, checkOutRoom, deleteRoom } from "@/utils/store";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function RoomsPage() {
     const params = useParams();
@@ -14,6 +15,9 @@ export default function RoomsPage() {
     const [roomsList, setRoomsList] = React.useState<any[]>([]);
     const [isAdding, setIsAdding] = useState(false);
     const [newRoomNumber, setNewRoomNumber] = useState("");
+    const [confirmModal, setConfirmModal] = useState<{ open: boolean, title: string, message: string, onConfirm: () => void }>({
+        open: false, title: "", message: "", onConfirm: () => {}
+    });
 
     React.useEffect(() => {
         if (initialRooms) {
@@ -62,19 +66,28 @@ export default function RoomsPage() {
 
     const handleCheckOut = async (roomId: string) => {
         if (!branding?.id) return;
-        if (confirm("Check out this room? The guest will immediately lose access to the digital menu.")) {
-            await checkOutRoom(roomId, branding.id);
-
-            // The hook (useRooms) will handle real-time updates
-        }
+        setConfirmModal({
+            open: true,
+            title: "Confirm Checkout",
+            message: "The guest will immediately lose access to the digital guest portal.",
+            onConfirm: async () => {
+                setConfirmModal(prev => ({ ...prev, open: false }));
+                await checkOutRoom(roomId, branding.id);
+            }
+        });
     };
 
     const handleDeleteRoom = async (roomId: string) => {
         if (!branding?.id) return;
-        if (confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
-            await deleteRoom(roomId, branding.id);
-            // Remove manual filter; useRooms hook handles it
-        }
+        setConfirmModal({
+            open: true,
+            title: "Decommission Unit",
+            message: "This room will be permanently removed. This action cannot be undone.",
+            onConfirm: async () => {
+                setConfirmModal(prev => ({ ...prev, open: false }));
+                await deleteRoom(roomId, branding.id);
+            }
+        });
     };
 
     const handlePrintQR = (roomNumber: string, qrUrl: string) => {
@@ -201,6 +214,17 @@ export default function RoomsPage() {
                     </div>
                 )}
             </div>
-        </div>
+
+        <ConfirmModal
+            isOpen={confirmModal.open}
+            title={confirmModal.title}
+            message={confirmModal.message}
+            confirmLabel="Confirm"
+            cancelLabel="Cancel"
+            variant="danger"
+            onConfirm={confirmModal.onConfirm}
+            onCancel={() => setConfirmModal(prev => ({ ...prev, open: false }))}
+        />
+    </div>
     );
 }
