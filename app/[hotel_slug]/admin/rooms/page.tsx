@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import QRCode from "react-qr-code";
-import { Printer, Key, DoorClosed, Plus, Trash2 } from "lucide-react";
+import { Printer, Key, DoorClosed, Plus, Trash2, Loader2, Hotel } from "lucide-react";
 import { useHotelBranding, useRooms, addRoom, checkInRoom, checkOutRoom, deleteRoom } from "@/utils/store";
 
 export default function RoomsPage() {
