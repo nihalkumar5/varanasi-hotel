@@ -10,7 +10,7 @@ interface GuestEntryFormProps {
     isOpen: boolean;
     onClose: () => void;
     branding: HotelBranding;
-    onSuccess?: () => void;
+    onSuccess?: (data?: { pin?: string; room_number?: string }) => void;
     initialRoomNumber?: string;
 }
 
@@ -77,7 +77,7 @@ export default function GuestEntryForm({ isOpen, onClose, branding, onSuccess, i
                     room_number: "",
                     check_in_date: new Date().toISOString().split('T')[0]
                 });
-                onSuccess?.();
+                onSuccess?.({ pin, room_number: formData.room_number });
                 onClose();
             }, 2000);
 
