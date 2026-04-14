@@ -101,54 +101,58 @@ export default function BrandingPage() {
             {/* Header section with glassmorphism */}
             <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div>
+                    <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
+                        <div className="flex items-center mb-8">
+                            <Phone className="w-5 h-5 text-[#CFA46A] mr-3" />
+                            <h2 className="text-xl font-serif font-black text-[#1F1F1F]">Communication Registry</h2>
                         </div>
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Reception Contact Number</label>
-                                <div className="flex items-center bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 focus-within:ring-2 transition-all">
-                                    <Phone className="w-4 h-4 text-slate-400 mr-3" />
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Reception Line</label>
+                                <div className="flex items-center bg-[#FDFBF9] border border-black/[0.03] rounded-2xl px-5 py-4 focus-within:ring-1 ring-[#CFA46A]/30 transition-all">
+                                    <Phone className="w-4 h-4 text-[#CFA46A]/50 mr-4" />
                                     <input
                                         type="text"
                                         placeholder="e.g. +91 98765 43210"
                                         value={config.receptionPhone || ""}
                                         onChange={(e) => setConfig({ ...config, receptionPhone: e.target.value })}
-                                        className="bg-transparent w-full font-bold text-slate-900 outline-none"
+                                        className="bg-transparent w-full font-bold text-[#1F1F1F] outline-none"
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Concierge WhatsApp Number</label>
-                                <div className="flex items-center bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 focus-within:ring-2 transition-all">
-                                    <Phone className="w-4 h-4 text-slate-400 mr-3" />
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Concierge Signal (WhatsApp)</label>
+                                <div className="flex items-center bg-[#FDFBF9] border border-black/[0.03] rounded-2xl px-5 py-4 focus-within:ring-1 ring-[#CFA46A]/30 transition-all">
+                                    <Phone className="w-4 h-4 text-[#CFA46A]/50 mr-4" />
                                     <input
                                         type="text"
                                         placeholder="e.g. +91 98765 43210"
                                         value={config.conciergeWhatsapp || ""}
                                         onChange={(e) => setConfig({ ...config, conciergeWhatsapp: e.target.value })}
-                                        className="bg-transparent w-full font-bold text-slate-900 outline-none"
+                                        className="bg-transparent w-full font-bold text-[#1F1F1F] outline-none"
                                     />
                                 </div>
-                                <p className="mt-2 text-[10px] text-slate-400 font-medium">Used by guest dashboard `Talk to Concierge` chat button.</p>
+                                <p className="mt-3 text-[10px] text-slate-400 font-medium italic">Synchronized with guest `Protocol Selection` chat.</p>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">WiFi Network Name</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">SSID Registry</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. Guest_WiFi"
                                         value={config.wifiName || ""}
                                         onChange={(e) => setConfig({ ...config, wifiName: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
+                                        className="w-full bg-[#FDFBF9] border border-black/[0.03] rounded-2xl py-4 px-5 font-bold text-[#1F1F1F] focus:ring-1 ring-[#CFA46A]/30 transition-all outline-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">WiFi Password</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Access Credential</label>
                                     <input
                                         type="text"
                                         placeholder="e.g. welcome123"
                                         value={config.wifiPassword || ""}
                                         onChange={(e) => setConfig({ ...config, wifiPassword: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 focus:ring-2 transition-all outline-none"
+                                        className="w-full bg-[#FDFBF9] border border-black/[0.03] rounded-2xl py-4 px-5 font-bold text-[#1F1F1F] focus:ring-1 ring-[#CFA46A]/30 transition-all outline-none"
                                     />
                                 </div>
                             </div>
