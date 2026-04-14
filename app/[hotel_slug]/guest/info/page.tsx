@@ -73,7 +73,7 @@ export default function InfoPage() {
                     <div>
                         <h3 className="font-serif text-2xl font-black text-[#1F1F1F] mb-3">Logistics</h3>
                         <p className="text-sm text-slate-500 font-medium leading-relaxed italic">
-                            {branding?.address || "123 Azure Coastal Ave."}
+                            {branding?.city || "Our Boutique Property"}
                         </p>
                         <div className="mt-4 flex items-center gap-2 px-4 py-1.5 bg-[#F6F3EE] rounded-full w-fit">
                             <Compass className="w-3 h-3 text-[#CFA46A]" />
