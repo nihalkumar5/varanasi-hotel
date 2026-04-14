@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Phone, Home, Calendar, Send, Loader2, CheckCircle2, MessageSquare } from "lucide-react";
-import { addGuest, HotelBranding } from "@/utils/store";
+import { addGuest, checkInRoom, HotelBranding } from "@/utils/store";
 import { buildGuestWelcomeMessage, buildWhatsAppUrl } from "@/lib/hotel/whatsapp";
 
 interface GuestEntryFormProps {
@@ -21,7 +21,9 @@ export default function GuestEntryForm({ isOpen, onClose, branding, onSuccess, i
         name: "",
         phone: "",
         room_number: initialRoomNumber || "",
-        check_in_date: new Date().toISOString().split('T')[0]
+        check_in_date: new Date().toISOString().split('T')[0],
+        checkout_date: "",
+        checkout_time: "11:00",
     });
 
     React.useEffect(() => {
@@ -61,6 +63,21 @@ export default function GuestEntryForm({ isOpen, onClose, branding, onSuccess, i
 
             if (error) throw error;
 
+            // Also persist checkout date/time on the room record
+            if (formData.checkout_date) {
+                // Find the room by number to get its ID
+                const { data: roomRows } = await (await import("@/utils/store")).supabase
+                    .from("rooms")
+                    .select("id")
+                    .eq("hotel_id", branding.id)
+                    .eq("room_number", formData.room_number)
+                    .limit(1);
+                const roomId = (roomRows as any)?.[0]?.id;
+                if (roomId) {
+                    await checkInRoom(roomId, branding.id, formData.checkout_date, formData.checkout_time, 1);
+                }
+            }
+
             setSuccess(true);
 
             // Trigger WhatsApp
@@ -75,7 +92,9 @@ export default function GuestEntryForm({ isOpen, onClose, branding, onSuccess, i
                     name: "",
                     phone: "",
                     room_number: "",
-                    check_in_date: new Date().toISOString().split('T')[0]
+                    check_in_date: new Date().toISOString().split('T')[0],
+                    checkout_date: "",
+                    checkout_time: "11:00",
                 });
                 onSuccess?.({ pin, room_number: formData.room_number });
                 onClose();
@@ -184,6 +203,32 @@ export default function GuestEntryForm({ isOpen, onClose, branding, onSuccess, i
                                                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
                                                     value={formData.check_in_date}
                                                     onChange={(e) => setFormData({ ...formData, check_in_date: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Checkout Date</label>
+                                            <div className="relative">
+                                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                                                <input
+                                                    type="date"
+                                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                                    value={formData.checkout_date}
+                                                    onChange={(e) => setFormData({ ...formData, checkout_date: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Checkout Time</label>
+                                            <div className="relative">
+                                                <Send className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                                                <input
+                                                    type="time"
+                                                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-12 pr-4 font-bold outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                                                    value={formData.checkout_time}
+                                                    onChange={(e) => setFormData({ ...formData, checkout_time: e.target.value })}
                                                 />
                                             </div>
                                         </div>
