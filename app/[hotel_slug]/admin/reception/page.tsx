@@ -125,10 +125,17 @@ export default function ReceptionPage() {
             onConfirm: async () => {
                 setConfirmModal(prev => ({ ...prev, open: false }));
 
-                if (guest && guest.phone && (branding.checkoutMessage || branding.googleReviewLink)) {
-                    let message = branding.checkoutMessage || "Thank you for staying with us! Hope you had a comfortable stay at {hotel_name}. Please share your feedback: ";
-                    message = message.replace(/{name}/g, guest.name).replace(/{hotel_name}/g, branding.name).replace(/{room}/g, guest.room_number);
-                    if (branding.googleReviewLink) message += `\n\nReview us on Google: ${branding.googleReviewLink}`;
+                if (guest?.phone) {
+                    const defaultMsg = `Thank you for staying with us at ${branding.name}, ${guest.name}! 🙏\n\nWe hope your stay was comfortable. It was a pleasure hosting you in Room ${guest.room_number}.\n\nWe'd love to hear your feedback and hope to welcome you back soon!`;
+                    let message = branding.checkoutMessage
+                        ? branding.checkoutMessage
+                            .replace(/{name}/g, guest.name)
+                            .replace(/{hotel_name}/g, branding.name)
+                            .replace(/{room}/g, guest.room_number)
+                        : defaultMsg;
+                    if (branding.googleReviewLink) {
+                        message += `\n\n⭐ Please leave us a review:\n${branding.googleReviewLink}`;
+                    }
                     window.open(`https://wa.me/${formatWhatsAppPhone(guest.phone)}?text=${encodeURIComponent(message)}`, '_blank');
                 }
 
