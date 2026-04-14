@@ -482,7 +482,7 @@ export default function AdminDashboard() {
                                             </div>
 
                                             {/* Detail panel */}
-                                            <div className="rounded-[28px] border border-white/[0.06] bg-white/[0.025] backdrop-blur-xl p-7 flex flex-col gap-5">
+                                            <div className="rounded-[28px] border border-white/[0.06] bg-white/[0.025] backdrop-blur-xl p-7 space-y-5">
                                                 {selectedRoom && selectedRoomSignals ? (
                                                     <>
                                                         <div className="flex items-start justify-between">
@@ -518,9 +518,9 @@ export default function AdminDashboard() {
                                                                 <p className="font-serif font-black text-[#CFA46A] text-lg tracking-[0.15em]">{selectedRoom.booking_pin}</p>
                                                             </div>
                                                         )}
-                                                        <div className="flex-1 flex flex-col min-h-0">
+                                                        <div>
                                                             <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#CFA46A] mb-3">Signal Details</p>
-                                                            <div className="space-y-2 overflow-y-auto flex-1">
+                                                            <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                                                                 {selectedRoomSignals.requests.length > 0 ? selectedRoomSignals.requests.map(req => (
                                                                     <button key={req.id} onClick={() => setSelectedRequest(req)}
                                                                         className="w-full rounded-2xl border border-white/[0.05] bg-white/[0.03] p-4 text-left hover:bg-white/5 hover:border-[#CFA46A]/30 transition-all group"
