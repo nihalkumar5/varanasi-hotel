@@ -49,6 +49,7 @@ export default function GuestDashboard() {
         icon: React.ReactNode;
         internalName: string;
         hasOptions?: boolean;
+        options?: string[];
         selectedOption?: string | null;
         step?: 'type' | 'quantity';
     } | null>(null);
