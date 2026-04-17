@@ -152,6 +152,7 @@ export const createStaffProfile = async (
         return { data: demoProfile, error: null };
     }
 
+    try {
         const normalizedEmail = email.toLowerCase();
         const { data, error } = await supabase
             .from("profiles")
