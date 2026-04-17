@@ -215,8 +215,8 @@ export default function StaffManagement() {
                 onClose={() => setShowSuccess(false)}
                 title="Invite Generated"
                 message="The secure registration link has been copied to your clipboard. You can now share it with your new staff member."
-                details="MEMBER_INVITE_ACTIVE"
-                subDetails="Ready for staff onboarding"
+                details="Secure Invitation Ready"
+                subDetails="Awaiting link dispatch"
                 actionLabel="Done"
             />
         </div>
