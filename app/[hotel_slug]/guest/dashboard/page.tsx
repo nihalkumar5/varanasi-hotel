@@ -167,76 +167,68 @@ export default function GuestDashboard() {
             >
                 <div className="bg-white rounded-[28px] shadow-xl border border-black/[0.04] overflow-hidden">
                     {/* Hotel name + stars + location */}
-                    <div className="px-6 pt-6 pb-5 border-b border-slate-100">
-                        <h1 className="text-2xl font-serif font-black text-[#1F1F1F] uppercase tracking-tight mb-2">
+                    <div className="px-6 pt-6 pb-4">
+                        <h1 className="text-2xl font-serif font-black text-[#1F1F1F] uppercase tracking-tight mb-1">
                             {branding?.name || "Hotel"}
                         </h1>
-                        <div className="flex items-center gap-1 mb-2">
-                            {[...Array(branding?.stars || 4)].map((_, i) => (
-                                <Star key={i} className="w-4 h-4 fill-[#CFA46A] text-[#CFA46A]" />
+                        <div className="flex items-center gap-0.5 mb-3">
+                            {[...Array(branding?.stars || 5)].map((_, i) => (
+                                <Star key={i} className="w-3.5 h-3.5 fill-[#1F1F1F] text-[#1F1F1F]" />
                             ))}
                         </div>
-                        <div className="flex items-center gap-1.5 text-slate-400">
+                        <div className="flex items-center gap-1.5 text-slate-400 pt-3 border-t border-slate-100">
                             <MapPin className="w-3.5 h-3.5" strokeWidth={1.5} />
-                            <span className="text-xs font-medium">{branding?.city || "India"}</span>
+                            <span className="text-xs font-medium">{branding?.city || "Varanasi India"}</span>
                         </div>
                     </div>
 
                     {/* Checkout row */}
-                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                    <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
                         <div>
                             <p className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1.5">Checkout</p>
-                            <p className="text-lg font-bold text-[#1F1F1F]">
+                            <p className="text-base font-bold text-[#C0392B]">
                                 {displayCheckoutDate}
                                 {(checkoutDate && displayCheckoutTime) && (
-                                    <span className="text-[#CFA46A] font-black"> · {displayCheckoutTime}</span>
+                                    <span className="font-black"> · {displayCheckoutTime}</span>
                                 )}
                             </p>
                         </div>
-                        <span className="flex items-center gap-1.5 px-3 py-1.5 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest">
+                        <span className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-[9px] font-black uppercase tracking-widest">
                             <Check className="w-3 h-3" />
                             Verified Guest
                         </span>
                     </div>
+                </div>
 
-                    {/* Room + Guests + Late Checkout */}
-                    <div className="px-6 py-4 flex items-center gap-4">
-                        <div className="flex-1 flex items-center gap-2">
-                            <Bed className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
-                            <div>
-                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Room</p>
-                                <p className="text-sm font-black text-[#1F1F1F]">{roomNumber || "101"}</p>
-                            </div>
+                {/* Room + Guests + Late Checkout — separate card below */}
+                <div className="mt-3 flex items-stretch gap-0">
+                    <div className="flex-1 flex items-center gap-2.5 px-4 py-3 bg-white rounded-l-2xl border border-black/[0.04] border-r-0">
+                        <Bed className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                        <div>
+                            <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Room</p>
+                            <p className="text-sm font-black text-[#1F1F1F]">{roomNumber || "101"}</p>
                         </div>
-                        <div className="flex-1 flex items-center gap-2">
-                            <Users className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
-                            <div>
-                                <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Staying</p>
-                                <p className="text-sm font-black text-[#1F1F1F]">{numGuests || 1} Guest{(numGuests || 1) > 1 ? "s" : ""}</p>
-                            </div>
-                        </div>
-                        <motion.button
-                            whileTap={{ scale: 0.96 }}
-                            onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
-                            className="px-5 py-3 bg-red-500 text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] leading-tight text-center shadow-md shadow-red-500/25"
-                        >
-                            Late<br/>Checkout
-                        </motion.button>
                     </div>
+                    <div className="flex-1 flex items-center gap-2.5 px-4 py-3 bg-white border border-black/[0.04] border-x-0">
+                        <Users className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                        <div>
+                            <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Staying</p>
+                            <p className="text-sm font-black text-[#1F1F1F]">{numGuests || 1} Guest{(numGuests || 1) > 1 ? "s" : ""}</p>
+                        </div>
+                    </div>
+                    <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
+                        className="px-5 py-3 bg-[#C0392B] text-white rounded-r-2xl text-[9px] font-black uppercase tracking-[0.15em] leading-tight text-center shadow-md shadow-red-500/20 min-w-[90px]"
+                    >
+                        Late<br/>Checkout
+                    </motion.button>
                 </div>
             </motion.section>
 
-            {/* 3. Service Icon Grid */}
-            <section className="mt-8 px-4">
-                <div className="mb-6 flex items-center justify-between px-1">
-                    <div>
-                        <h3 className="text-lg font-serif font-black text-[#1F1F1F]">Curated Folio</h3>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-0.5">Operational Signals</p>
-                    </div>
-                    <ConciergeBell className="w-5 h-5 text-[#CFA46A]" />
-                </div>
-
-                <div className="grid grid-cols-4 gap-3">
+            {/* 3. Service Icon Grid — compact, no header */}
+            <section className="mt-6 px-4">
+                <div className="grid grid-cols-4 gap-x-2 gap-y-4">
                     {[
                         { label: "Wi-Fi Info", icon: <Wifi />, path: "wifi" },
                         { label: "Room Service", icon: <Utensils />, path: "restaurant" },
@@ -251,12 +243,12 @@ export default function GuestDashboard() {
                             key={i}
                             whileTap={{ scale: 0.93 }}
                             onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
-                            className="flex flex-col items-center gap-2 py-4 px-2 rounded-[20px] bg-white border border-black/[0.04] shadow-sm"
+                            className="flex flex-col items-center gap-2 py-2"
                         >
                             <div style={{ color: serviceIconColor }}>
-                                {renderIcon(s.icon, "w-7 h-7")}
+                                {renderIcon(s.icon, "w-6 h-6")}
                             </div>
-                            <span className="text-[8px] font-black text-[#1F1F1F] uppercase tracking-tighter text-center leading-tight">{s.label}</span>
+                            <span className="text-[9px] font-semibold text-[#1F1F1F] text-center leading-tight">{s.label}</span>
                         </motion.button>
                     ))}
                 </div>
