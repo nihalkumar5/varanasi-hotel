@@ -124,6 +124,7 @@ export default function GuestDashboard() {
             icon: service.icon,
             internalName: service.internalName,
             hasOptions: service.hasOptions,
+            options: service.options,
             selectedOption: null,
             step: service.hasOptions ? 'type' : 'quantity'
         });
@@ -342,7 +343,7 @@ export default function GuestDashboard() {
                     <div className="grid grid-cols-2 gap-3">
                         {[
                             { label: "Reception", icon: <Phone />, internalName: "Reception" },
-                            { label: "Tea/Coffee", icon: <Coffee />, internalName: "Tea/Coffee" },
+                            { label: "Tea/Coffee", icon: <Coffee />, internalName: "Tea/Coffee", hasOptions: true, options: ["Tea", "Coffee"] },
                             { label: "Mineral Water", icon: <Droplets />, internalName: "Mineral Water" },
                             { label: "Fresh Towels", icon: <Sparkles />, internalName: "Fresh Towels" },
                         ].map((s, i) => (
@@ -431,19 +432,39 @@ export default function GuestDashboard() {
                                 <div className="w-20 h-20 rounded-[32px] bg-white flex items-center justify-center text-[#CFA46A] shadow-xl mb-8 border border-black/[0.02]">
                                     {renderIcon(activeServiceForQty.icon, "w-8 h-8")}
                                 </div>
-                                <h3 className="text-2xl font-serif font-black text-[#1F1F1F] mb-1">{activeServiceForQty.label}</h3>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10 text-center">Protocol Selection</p>
+                                <h3 className="text-2xl font-serif font-black text-[#1F1F1F] mb-1">
+                                    {activeServiceForQty.step === 'type' ? activeServiceForQty.label : activeServiceForQty.selectedOption}
+                                </h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-10 text-center">
+                                    {activeServiceForQty.step === 'type' ? "Option Selection" : "Protocol Selection"}
+                                </p>
                                 
-                                <div className="flex gap-4 w-full">
-                                    {[1, 2, 3].map((num) => (
-                                        <button
-                                            key={num}
-                                            onClick={() => confirmQuantity(num)}
-                                            className="flex-1 h-20 rounded-[24px] bg-white border border-black/[0.03] text-2xl font-serif font-black text-[#1F1F1F] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all shadow-sm"
-                                        >
-                                            {num}
-                                        </button>
-                                    ))}
+                                <div className="w-full flex flex-col gap-4">
+                                    {activeServiceForQty.step === 'type' ? (
+                                        <div className="flex flex-col gap-3 w-full">
+                                            {activeServiceForQty.options?.map((opt) => (
+                                                <button
+                                                    key={opt}
+                                                    onClick={() => setActiveServiceForQty({ ...activeServiceForQty, selectedOption: opt, step: 'quantity' })}
+                                                    className="w-full h-16 rounded-[24px] bg-white border border-black/[0.03] text-lg font-serif font-black text-[#1F1F1F] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all shadow-sm"
+                                                >
+                                                    {opt}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-4 w-full">
+                                            {[1, 2, 3].map((num) => (
+                                                <button
+                                                    key={num}
+                                                    onClick={() => confirmQuantity(num)}
+                                                    className="flex-1 h-20 rounded-[24px] bg-white border border-black/[0.03] text-2xl font-serif font-black text-[#1F1F1F] hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all shadow-sm"
+                                                >
+                                                    {num}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button 
