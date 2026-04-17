@@ -304,70 +304,114 @@ export default function GuestDashboard() {
             </section>
 
 
-            {/* 4. Promotional Highlights */}
+            {/* 4. Special Offers */}
             {activeOffers.length > 0 && (
-                <section className="mt-20 px-6">
-                    <div className="bg-[#F6F3EE] rounded-[48px] p-10 border border-[#E8DCCB]/30 relative overflow-hidden group">
-                        <div className="flex justify-between items-end mb-10">
-                            <div>
-                                <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] mb-2">Exclusives</p>
-                                <h3 className="text-3xl font-serif font-black text-[#1F1F1F]">Boutique Treats</h3>
+                <section className="mt-6 px-4">
+                    <div className="bg-white rounded-[20px] border border-black/[0.04] shadow-sm overflow-hidden p-5">
+                        <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.25em] mb-1">Special Offers</p>
+                        <h3 className="text-lg font-serif font-black text-[#1F1F1F] mb-4">Curated for your stay</h3>
+                        <div className="rounded-2xl overflow-hidden relative h-32 bg-gradient-to-br from-[#CFA46A]/30 to-[#CFA46A]/10">
+                            {activeOffers[0].image_url && <img src={activeOffers[0].image_url} className="w-full h-full object-cover" />}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-4 left-4 text-white">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-white/70 mb-0.5">Exclusive</p>
+                                <h4 className="text-base font-serif font-black leading-tight">{activeOffers[0].title}</h4>
                             </div>
-                            <div className="flex gap-2">
-                                <button className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center bg-white"><ChevronLeft className="w-4 h-4" /></button>
-                                <button className="w-10 h-10 rounded-full border border-black/5 flex items-center justify-center bg-white"><ChevronRight className="w-4 h-4" /></button>
+                            <div className="absolute top-4 right-4">
+                                <Star className="w-8 h-8 text-white/30" strokeWidth={1} />
                             </div>
                         </div>
-
-                        <div className="bg-white rounded-[32px] overflow-hidden shadow-2xl relative">
-                            <div className="h-64 relative bg-slate-100">
-                                {activeOffers[0].image_url && <img src={activeOffers[0].image_url} className="w-full h-full object-cover" />}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-6 left-6 text-white">
-                                    <h4 className="text-2xl font-serif font-black leading-tight mb-1">{activeOffers[0].title}</h4>
-                                    <p className="text-xs font-medium text-white/70 italic">{activeOffers[0].description}</p>
-                                </div>
-                            </div>
+                        <div className="flex items-center justify-between mt-4">
+                            <p className="text-xs text-slate-400">{activeOffers[0].description || "Ask our team for details on this experience."}</p>
+                            <motion.button
+                                whileTap={{ scale: 0.96 }}
+                                className="px-4 py-2 bg-[#CFA46A] text-white rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 whitespace-nowrap"
+                            >
+                                Explore <ArrowRight className="w-3 h-3" />
+                            </motion.button>
                         </div>
                     </div>
                 </section>
             )}
 
-            {/* 5. Active Signal Stream */}
-            <AnimatePresence>
-                {activeRequests.length > 0 && (
-                    <motion.section 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="mt-20 px-6"
-                    >
-                        <div className="flex items-center justify-between mb-8 px-2">
-                            <h3 className="text-xl font-serif font-black text-[#1F1F1F]">Signal Stream</h3>
-                            <div className="flex items-center gap-2 px-4 py-1.5 bg-[#CFA46A]/10 rounded-full">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#CFA46A] animate-pulse" />
-                                <span className="text-[9px] font-black text-[#CFA46A] uppercase tracking-widest">{activeRequests.length} Active</span>
-                            </div>
-                        </div>
+            {/* 5. Quick Services (dark card) */}
+            <section className="mt-6 px-4">
+                <div className="bg-[#2D2A26] rounded-[20px] p-5 shadow-lg">
+                    <h3 className="text-base font-serif font-black text-white mb-0.5">Quick Services</h3>
+                    <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] mb-4">Personalized for your stay</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        {[
+                            { label: "Reception", icon: <Phone />, internalName: "Reception" },
+                            { label: "Tea/Coffee", icon: <Coffee />, internalName: "Tea/Coffee" },
+                            { label: "Mineral Water", icon: <Droplets />, internalName: "Mineral Water" },
+                            { label: "Fresh Towels", icon: <Sparkles />, internalName: "Fresh Towels" },
+                        ].map((s, i) => (
+                            <motion.button
+                                key={i}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={() => handleTileClick(s)}
+                                className="flex flex-col items-center gap-2 py-4 rounded-2xl bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.1] transition-colors"
+                            >
+                                <div className="text-[#CFA46A]">
+                                    {renderIcon(s.icon, "w-5 h-5")}
+                                </div>
+                                <span className="text-[9px] font-semibold text-white/80 text-center">{s.label}</span>
+                            </motion.button>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-                        <div className="space-y-4">
+            {/* 6. Active Requests */}
+            <section className="mt-6 px-4">
+                <div className="bg-white rounded-[20px] border border-black/[0.04] shadow-sm p-5">
+                    <h3 className="text-base font-serif font-black text-[#1F1F1F] mb-4">Active Requests</h3>
+                    {activeRequests.length > 0 ? (
+                        <div className="space-y-3">
                             {activeRequests.map((req, i) => (
-                                <div key={i} className="bg-white p-6 rounded-[32px] border border-black/[0.03] shadow-sm flex items-center justify-between">
-                                    <div className="flex items-center gap-5">
-                                        <div className="w-12 h-12 rounded-2xl bg-[#FDFBF9] flex items-center justify-center text-[#CFA46A]">
-                                            <Zap className="w-5 h-5" />
+                                <div key={i} className="bg-[#F7F5F2] p-4 rounded-2xl flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#CFA46A]">
+                                            <Zap className="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-black text-[#1F1F1F] uppercase tracking-tight">{req.type}</h4>
-                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{req.status}</p>
+                                            <h4 className="text-xs font-black text-[#1F1F1F] uppercase tracking-tight">{req.type}</h4>
+                                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{req.status}</p>
                                         </div>
                                     </div>
-                                    <div className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.2em] italic">Propagating...</div>
+                                    <div className="w-2 h-2 rounded-full bg-[#CFA46A] animate-pulse" />
                                 </div>
                             ))}
                         </div>
-                    </motion.section>
-                )}
-            </AnimatePresence>
+                    ) : (
+                        <div className="bg-[#F7F5F2] rounded-2xl py-6 text-center">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Our team is standing by</p>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* 7. Concierge CTA */}
+            <section className="mt-6 px-4 mb-6">
+                <div className="bg-[#F6F3EE] rounded-[20px] px-5 py-4 flex items-center justify-between border border-[#E8DCCB]/30">
+                    <div>
+                        <p className="text-[9px] font-black text-[#CFA46A] uppercase tracking-[0.2em] mb-0.5">Need Anything?</p>
+                        <h3 className="text-sm font-serif font-black text-[#1F1F1F]">Talk to Concierge</h3>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Available 24/7 for you</p>
+                    </div>
+                    <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => {
+                            if (branding?.conciergeWhatsapp) {
+                                window.open(`https://wa.me/${branding.conciergeWhatsapp}`, '_blank');
+                            }
+                        }}
+                        className="px-5 py-2.5 bg-[#CFA46A] text-white rounded-full text-[9px] font-black uppercase tracking-widest"
+                    >
+                        Start Chat
+                    </motion.button>
+                </div>
+            </section>
 
             {/* Selection Overlay */}
             <AnimatePresence>
