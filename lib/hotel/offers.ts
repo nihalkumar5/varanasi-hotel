@@ -61,7 +61,8 @@ export function useSpecialOffers(hotelId?: string) {
 
             if (isActive) {
                 const results = (data as SpecialOffer[]) ?? [];
-                setOffers(results.length > 0 ? results : DEFAULT_OFFERS(hotelId));
+                // Merge database results with curated luxury defaults
+                setOffers([...results, ...DEFAULT_OFFERS(hotelId)]);
                 setLoading(false);
             }
         };

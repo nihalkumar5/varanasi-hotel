@@ -104,7 +104,8 @@ export function useSupabaseMenuItems(hotelId?: string) {
 
             if (isActive) {
                 const results = (data as MenuItem[]) ?? [];
-                setMenuItems(results.length > 0 ? results : DEFAULT_MENU_ITEMS(hotelId));
+                // Merge database results with curated defaults to ensure a 'Full' experience
+                setMenuItems([...results, ...DEFAULT_MENU_ITEMS(hotelId)]);
                 setLoading(false);
             }
         };
