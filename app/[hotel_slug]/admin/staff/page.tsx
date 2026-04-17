@@ -76,20 +76,15 @@ export default function StaffManagement() {
         if (!branding?.id || !newStaffName.trim()) return;
         
         setLoading(true);
-        try {
-            // Generate a personalized link with pre-filled data
-            const baseUrl = window.location.origin;
-            const inviteLink = `${baseUrl}/${hotelSlug}/staff/register?name=${encodeURIComponent(newStaffName)}&role=${encodeURIComponent(newStaffRole)}`;
-            
-            // Copy to clipboard
-            await navigator.clipboard.writeText(inviteLink);
-            
+        const { error } = await createStaffProfile(branding.id, newStaffName, newStaffRole);
+        
+        if (error) {
+            console.error("Direct Add Error:", error);
+            setError("Failed to create profile. Ensure you've run the SQL migration script in Supabase.");
+        } else {
             setNewStaffName("");
             setIsAddModalOpen(false);
-            setShowSuccess(true);
-        } catch (err) {
-            console.error("Invite Generation Error:", err);
-            setError("Failed to generate secure link. Please try the global invite button.");
+            await loadStaff();
         }
         setLoading(false);
     };
@@ -317,8 +312,8 @@ export default function StaffManagement() {
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="relative bg-[#FDFBF9] rounded-[48px] p-12 max-w-lg w-full shadow-2xl border border-white"
                         >
-                            <h2 className="text-3xl font-serif font-black text-[#1F1F1F] mb-2 tracking-tight">Personnel Invitation</h2>
-                            <p className="text-sm text-slate-500 font-medium mb-10 italic">Generate a secure, pre-filled onboarding link for your new team member.</p>
+                            <h2 className="text-3xl font-serif font-black text-[#1F1F1F] mb-2 tracking-tight">Direct Enrollment</h2>
+                            <p className="text-sm text-slate-500 font-medium mb-10 italic">Manually seed the personnel registry without an invite link.</p>
 
                             <div className="space-y-8 mb-12">
                                 <div className="space-y-3">
@@ -362,7 +357,7 @@ export default function StaffManagement() {
                                     disabled={!newStaffName.trim() || loading}
                                     className="flex-[2] py-5 bg-[#1F1F1F] text-[#CFA46A] rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all disabled:opacity-50"
                                 >
-                                    {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Generate & Copy Link"}
+                                    {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Complete Enrollment"}
                                 </button>
                             </div>
                         </motion.div>
