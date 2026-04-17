@@ -415,21 +415,21 @@ export default function GuestDashboard() {
                             subtitle: "Premium Scooty Rent",
                             details: "Explore at your own pace",
                             price: "Starting ₹800/day",
-                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/scooty_rent_varanasi_1776454889916_1776457760695.png"
+                            image: "/images/explore/scooty.png"
                         },
                         {
                             title: "Spiritual Twilight",
                             subtitle: "Private Ganga Aarti",
                             details: "Exclusive boat boarding",
                             price: "Guided Experience",
-                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/ganga_aarti_varanasi_1776454872875_1776457745174.png"
+                            image: "/images/explore/aarti.png"
                         },
                         {
                             title: "Ancient Pathways",
                             subtitle: "Heritage Alley Tour",
                             details: "Discover hidden temples",
                             price: "Walking Tour",
-                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/heritage_tour_varanasi_1776454955778_1776457814214.png"
+                            image: "/images/explore/heritage.png"
                         }
                     ].map((exp, i) => (
                         <motion.div
