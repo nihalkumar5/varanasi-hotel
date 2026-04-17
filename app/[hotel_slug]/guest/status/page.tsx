@@ -266,16 +266,46 @@ export default function StatusPage() {
                             </div>
                         </div>
 
-                        <div className="mt-10 relative">
-                            <div className="h-0.5 w-full bg-white/10 rounded-full" />
-                            <motion.div 
-                                animate={{ left: trackerProgress }}
-                                transition={{ type: "spring", damping: 20 }}
-                                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#CFA46A] rounded-full shadow-[0_0_20px_#CFA46A]"
-                            />
-                            <div className="flex justify-between mt-4 text-[9px] font-black uppercase tracking-[0.3em] text-slate-500">
-                                <span>Deployment</span>
-                                <span>Arrival</span>
+                        <div className="mt-12 relative px-2">
+                            {/* High Fidelity SVG Tracker */}
+                            <svg className="w-full h-8 overflow-visible">
+                                {/* Track Path */}
+                                <line 
+                                    x1="0%" y1="50%" x2="100%" y2="50%" 
+                                    className="stroke-white/10 stroke-[2px] stroke-linecap-round"
+                                />
+                                {/* Progress Gradient Path */}
+                                <motion.line 
+                                    x1="0%" y1="50%" x2={trackerProgress} y2="50%" 
+                                    className="stroke-[#CFA46A] stroke-[2px] stroke-linecap-round shadow-[0_0_15px_rgba(207,164,106,0.5)]"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{ duration: 1.5, ease: "easeOut" }}
+                                />
+                                
+                                {/* Orbital Node Glow */}
+                                <motion.g
+                                    animate={{ x: trackerProgress }}
+                                    style={{ x: trackerProgress }}
+                                    className="relative"
+                                >
+                                    <circle r="12" cy="50%" className="fill-[#CFA46A]/20 animate-service-pulse" />
+                                    <circle r="6" cy="50%" className="fill-[#CFA46A] shadow-[0_0_20px_#CFA46A]" />
+                                    
+                                    {/* Orbital Ring */}
+                                    <circle r="16" cy="50%" className="fill-none stroke-[#CFA46A]/10 stroke-[1px] animate-orbital-glow" />
+                                </motion.g>
+                            </svg>
+
+                            <div className="flex justify-between mt-6 text-[9px] font-black uppercase tracking-[0.4em] text-slate-500 font-sans">
+                                <span className="flex items-center gap-2">
+                                    <div className="w-1 h-1 bg-[#CFA46A] rounded-full" />
+                                    Deployment
+                                </span>
+                                <span className="flex items-center gap-2">
+                                    Arrival
+                                    <div className="w-1 h-1 bg-white/20 rounded-full" />
+                                </span>
                             </div>
                         </div>
                     </div>
