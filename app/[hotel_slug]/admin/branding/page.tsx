@@ -14,7 +14,7 @@ export default function BrandingPage() {
 
     const [config, setConfig] = useState<Partial<HotelBranding>>({});
     const [isSaving, setIsSaving] = useState(false);
-    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string }>({
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string, actionLabel?: string }>({
         open: false, title: "", message: ""
     });
 

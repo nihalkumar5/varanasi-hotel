@@ -58,7 +58,7 @@ export default function GuestDashboard() {
     const [scrolled, setScrolled] = useState(false);
     const [showMoreServices, setShowMoreServices] = useState(false);
     const [submittingType, setSubmittingType] = React.useState<string | null>(null);
-    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string }>({
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string, actionLabel?: string }>({
         open: false, title: "", message: ""
     });
 

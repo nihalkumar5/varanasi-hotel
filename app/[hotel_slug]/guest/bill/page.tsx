@@ -17,7 +17,7 @@ export default function BillPage() {
     const requests = useSupabaseRequests(branding?.id, roomNumber, checkedInAt);
 
     const [isCheckingOut, setIsCheckingOut] = useState(false);
-    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string }>({
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, details?: string, actionLabel?: string }>({
         open: false, title: "", message: ""
     });
 

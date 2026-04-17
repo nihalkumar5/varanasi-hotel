@@ -15,7 +15,7 @@ export default function WifiPage() {
     const { branding } = useHotelBranding(hotelSlug);
 
     const [qrDataUrl, setQrDataUrl] = useState<string>("");
-    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string }>({
+    const [folioState, setFolioState] = useState<{ open: boolean, title: string, message: string, actionLabel?: string }>({
         open: false, title: "", message: ""
     });
 
