@@ -29,8 +29,8 @@ export default function GuestLayout({
 
     return (
         <GuestAuthWrapper>
-            <div className="min-h-screen bg-[#E8E2DA] flex justify-center">
-                <div className="w-full max-w-[480px] min-h-screen flex flex-col overflow-x-hidden bg-[#F7F5F2] pb-24 text-[#1F1F1F] antialiased shadow-[0_0_60px_rgba(0,0,0,0.08)] border-x border-black/[0.03]">
+            <div className="min-h-screen bg-[#DED9D2] flex justify-center">
+                <div className="w-full max-w-[480px] min-h-screen flex flex-col overflow-x-hidden bg-[#FDFBF9] pb-24 text-[#1F1F1F] antialiased shadow-[0_0_60px_rgba(0,0,0,0.08)] border-x border-black/[0.03]">
                     <main className="relative flex-1 w-full">
                         <AnimatePresence mode="wait">
                             <motion.div

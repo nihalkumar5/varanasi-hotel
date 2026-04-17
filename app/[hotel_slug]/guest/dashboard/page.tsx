@@ -145,7 +145,7 @@ export default function GuestDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-[#F7F5F2] pb-32 font-sans text-[#1F1F1F]">
+        <div className="min-h-screen bg-[#FDFBF9] pb-32 font-sans text-[#1F1F1F]">
             {/* 1. Hero with GUEST PORTAL pill */}
             <motion.section
                 initial={{ opacity: 0 }}
@@ -188,7 +188,7 @@ export default function GuestDashboard() {
                     <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
                         <div>
                             <p className="text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1.5">Checkout</p>
-                            <p className="text-base font-bold text-[#C0392B]">
+                            <p className="text-base font-bold text-[#1F1F1F]">
                                 {displayCheckoutDate}
                                 {(checkoutDate && displayCheckoutTime) && (
                                     <span className="font-black"> · {displayCheckoutTime}</span>
@@ -221,7 +221,7 @@ export default function GuestDashboard() {
                     <motion.button
                         whileTap={{ scale: 0.96 }}
                         onClick={() => router.push(`/${hotelSlug}/guest/services/late-checkout`)}
-                        className="px-5 py-3 bg-[#C0392B] text-white rounded-r-2xl text-[9px] font-black uppercase tracking-[0.15em] leading-tight text-center shadow-md shadow-red-500/20 min-w-[90px]"
+                        className="px-5 py-3 bg-[#1F1F1F] text-[#CFA46A] rounded-r-2xl text-[9px] font-black uppercase tracking-[0.15em] leading-tight text-center shadow-md shadow-black/20 min-w-[90px]"
                     >
                         Late<br/>Checkout
                     </motion.button>
