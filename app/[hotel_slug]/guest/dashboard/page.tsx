@@ -169,13 +169,13 @@ export default function GuestDashboard() {
             >
                 <div className="bg-white rounded-[28px] shadow-xl border border-black/[0.04] overflow-hidden">
                     {/* Hotel name + stars + location */}
-                    <div className="px-6 pt-6 pb-4">
-                        <h1 className="text-2xl font-serif font-black text-[#1F1F1F] uppercase tracking-tight mb-1">
+                    <div className="px-6 pt-8 pb-4">
+                        <h1 className="text-3xl font-serif font-black text-[#1F1F1F] uppercase tracking-[0.05em] mb-2 leading-tight">
                             {branding?.name || "Hotel"}
                         </h1>
-                        <div className="flex items-center gap-0.5 mb-3">
+                        <div className="flex items-center gap-1 mb-4">
                             {[...Array(branding?.stars || 5)].map((_, i) => (
-                                <Star key={i} className="w-3.5 h-3.5 fill-[#1F1F1F] text-[#1F1F1F]" />
+                                <Star key={i} className="w-4 h-4 fill-[#CFA46A] text-[#CFA46A]" />
                             ))}
                         </div>
                         <div className="flex items-center gap-1.5 text-slate-400 pt-3 border-t border-slate-100">
