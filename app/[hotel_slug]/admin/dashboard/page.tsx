@@ -303,9 +303,22 @@ export default function AdminDashboard() {
                                 <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-widest">Live Orbit</span>
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short' })}</span>
                             </div>
-                            <button onClick={() => signOut()} className="w-12 h-12 rounded-2xl bg-white border border-black/5 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all shadow-sm">
-                                <LogOut className="w-5 h-5" />
-                            </button>
+                            <div className="flex items-center space-x-2">
+                                <button 
+                                    onClick={toggleAudio} 
+                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm border ${
+                                        audioEnabled 
+                                            ? "bg-[#CFA46A]/10 border-[#CFA46A]/20 text-[#CFA46A] hover:bg-[#CFA46A]/20" 
+                                            : "bg-white border-black/5 text-slate-400 hover:bg-slate-50"
+                                    }`}
+                                    title={audioEnabled ? "Silence Alerts" : "Enable Alerts"}
+                                >
+                                    {audioEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                                </button>
+                                <button onClick={() => signOut()} className="w-12 h-12 rounded-2xl bg-white border border-black/5 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all shadow-sm">
+                                    <LogOut className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </header>
