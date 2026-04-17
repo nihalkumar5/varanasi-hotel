@@ -229,20 +229,69 @@ export default function GuestDashboard() {
             {/* 3. Service Icon Grid — compact, no header */}
             <section className="mt-6 px-4">
                 <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+                    {/* Row 1 — always visible */}
                     {[
                         { label: "Wi-Fi Info", icon: <Wifi />, path: "wifi" },
                         { label: "Room Service", icon: <Utensils />, path: "restaurant" },
                         { label: "Taxi", icon: <Car />, path: "services/taxi" },
                         { label: "Maintenance", icon: <Wrench />, path: "services/maintenance" },
-                        { label: "Laundry", icon: <WashingMachine />, path: "services/laundry" },
-                        { label: "Baggage", icon: <Briefcase />, path: "services/luggage" },
-                        { label: "Spa", icon: <Waves />, path: "services/spa" },
-                        { label: showMoreServices ? "Collapse" : "More", icon: <MoreHorizontal />, action: () => setShowMoreServices(!showMoreServices) }
                     ].map((s, i) => (
                         <motion.button
-                            key={i}
+                            key={`r1-${i}`}
                             whileTap={{ scale: 0.93 }}
-                            onClick={() => s.path ? router.push(`/${hotelSlug}/guest/${s.path}`) : s.action?.()}
+                            onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
+                            className="flex flex-col items-center gap-2 py-2"
+                        >
+                            <div style={{ color: serviceIconColor }}>
+                                {renderIcon(s.icon, "w-6 h-6")}
+                            </div>
+                            <span className="text-[9px] font-semibold text-[#1F1F1F] text-center leading-tight">{s.label}</span>
+                        </motion.button>
+                    ))}
+
+                    {/* Row 2 — always visible */}
+                    {[
+                        { label: "Laundry", icon: <WashingMachine />, path: "services/laundry" },
+                        { label: "Luggage", icon: <Briefcase />, path: "services/luggage" },
+                        { label: "Cleaning", icon: <Brush />, path: "services/cleaning" },
+                    ].map((s, i) => (
+                        <motion.button
+                            key={`r2-${i}`}
+                            whileTap={{ scale: 0.93 }}
+                            onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
+                            className="flex flex-col items-center gap-2 py-2"
+                        >
+                            <div style={{ color: serviceIconColor }}>
+                                {renderIcon(s.icon, "w-6 h-6")}
+                            </div>
+                            <span className="text-[9px] font-semibold text-[#1F1F1F] text-center leading-tight">{s.label}</span>
+                        </motion.button>
+                    ))}
+                    <motion.button
+                        whileTap={{ scale: 0.93 }}
+                        onClick={() => setShowMoreServices(!showMoreServices)}
+                        className="flex flex-col items-center gap-2 py-2"
+                    >
+                        <div style={{ color: serviceIconColor }}>
+                            <MoreHorizontal className="w-6 h-6" />
+                        </div>
+                        <span className="text-[9px] font-semibold text-[#1F1F1F] text-center leading-tight">{showMoreServices ? "Less" : "More"}</span>
+                    </motion.button>
+
+                    {/* Row 3 — expanded */}
+                    {showMoreServices && [
+                        { label: "Wake Call", icon: <Clock />, path: "services/wake-call" },
+                        { label: "Mini Bar", icon: <Wine />, path: "services/minibar" },
+                        { label: "Airport", icon: <Compass />, path: "services/airport" },
+                        { label: "Spa", icon: <Waves />, path: "services/spa" },
+                    ].map((s, i) => (
+                        <motion.button
+                            key={`r3-${i}`}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            whileTap={{ scale: 0.93 }}
+                            onClick={() => router.push(`/${hotelSlug}/guest/${s.path}`)}
                             className="flex flex-col items-center gap-2 py-2"
                         >
                             <div style={{ color: serviceIconColor }}>
