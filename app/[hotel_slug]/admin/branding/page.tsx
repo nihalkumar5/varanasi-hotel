@@ -159,63 +159,71 @@ export default function BrandingPage() {
                         </div>
                     </section>
 
-                    <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        <div className="flex items-center mb-6">
-                            <Palette className="w-5 h-5 text-blue-600 mr-3" style={{ color: config.primaryColor }} />
-                            <h2 className="text-xl font-black text-slate-900">Color Palette</h2>
+                    <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
+                        <div className="flex items-center mb-8">
+                            <Palette className="w-5 h-5 text-[#CFA46A] mr-3" />
+                            <h2 className="text-xl font-serif font-black text-[#1F1F1F]">Brand DNA Palette</h2>
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            {colors.map((color) => (
-                                <button
-                                    key={color.name}
-                                    onClick={() => setConfig({ ...config, primaryColor: color.primary, accentColor: color.accent })}
-                                    className={`p-4 rounded-3xl border-2 transition-all group ${config.primaryColor === color.primary ? 'border-slate-900 bg-slate-50' : 'border-transparent hover:bg-slate-50'}`}
-                                >
-                                    <div
-                                        className="w-full aspect-square rounded-2xl shadow-lg transition-transform group-hover:scale-110"
-                                        style={{ backgroundColor: color.primary }}
-                                    ></div>
-                                    <p className="text-[9px] font-black text-slate-400 mt-3 uppercase tracking-tighter text-center">{color.name}</p>
-                                </button>
-                            ))}
-                        </div>
-                        <div className="mt-8 grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Primary HEX</label>
-                                <input
-                                    type="color"
-                                    value={config.primaryColor || "#3b82f6"}
-                                    onChange={(e) => setConfig({ ...config, primaryColor: e.target.value })}
-                                    className="w-full h-12 rounded-xl cursor-pointer"
-                                />
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Primary Identity</label>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="color"
+                                            value={config.primaryColor || "#1F1F1F"}
+                                            onChange={(e) => setConfig({ ...config, primaryColor: e.target.value })}
+                                            className="w-16 h-16 rounded-2xl cursor-pointer border-none p-0 overflow-hidden shadow-lg bg-transparent"
+                                        />
+                                        <div className="flex-1">
+                                            <input
+                                                type="text"
+                                                value={config.primaryColor || "#1F1F1F"}
+                                                onChange={(e) => setConfig({ ...config, primaryColor: e.target.value })}
+                                                className="w-full bg-[#FDFBF9] border border-black/[0.03] rounded-xl px-4 py-3 font-bold text-[#1F1F1F] text-sm uppercase outline-none focus:ring-1 ring-[#CFA46A]/30 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Accent Signature</label>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="color"
+                                            value={config.accentColor || "#CFA46A"}
+                                            onChange={(e) => setConfig({ ...config, accentColor: e.target.value })}
+                                            className="w-16 h-16 rounded-2xl cursor-pointer border-none p-0 overflow-hidden shadow-lg bg-transparent"
+                                        />
+                                        <div className="flex-1">
+                                            <input
+                                                type="text"
+                                                value={config.accentColor || "#CFA46A"}
+                                                onChange={(e) => setConfig({ ...config, accentColor: e.target.value })}
+                                                className="w-full bg-[#FDFBF9] border border-black/[0.03] rounded-xl px-4 py-3 font-bold text-[#1F1F1F] text-sm uppercase outline-none focus:ring-1 ring-[#000000]/10 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Accent HEX</label>
-                                <input
-                                    type="color"
-                                    value={config.accentColor || "#60a5fa"}
-                                    onChange={(e) => setConfig({ ...config, accentColor: e.target.value })}
-                                    className="w-full h-12 rounded-xl cursor-pointer"
-                                />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Service Icon Color</label>
-                                <div className="flex items-center gap-3">
+
+                            <div className="pt-8 border-t border-black/[0.03]">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Service Module Icons</label>
+                                <div className="flex items-center gap-4 max-w-sm">
                                     <input
                                         type="color"
-                                        value={config.serviceIconColor || "#2f2f2f"}
+                                        value={config.serviceIconColor || "#CFA46A"}
                                         onChange={(e) => setConfig({ ...config, serviceIconColor: e.target.value })}
-                                        className="h-12 w-16 rounded-xl cursor-pointer"
+                                        className="h-16 w-16 rounded-2xl cursor-pointer border-none p-0 overflow-hidden shadow-lg bg-transparent"
                                     />
                                     <input
                                         type="text"
-                                        value={config.serviceIconColor || "#2f2f2f"}
+                                        value={config.serviceIconColor || "#CFA46A"}
                                         onChange={(e) => setConfig({ ...config, serviceIconColor: e.target.value })}
-                                        className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl py-3 px-4 font-bold text-slate-900 outline-none focus:ring-2 transition-all"
-                                        placeholder="#2f2f2f"
+                                        className="flex-1 bg-[#FDFBF9] border border-black/[0.03] rounded-xl py-3 px-4 font-bold text-[#1F1F1F] text-sm uppercase outline-none focus:ring-1 ring-[#000000]/10 transition-all"
+                                        placeholder="#CFA46A"
                                     />
                                 </div>
-                                <p className="mt-2 text-[10px] text-slate-400 font-medium">Applied on guest dashboard service icons.</p>
+                                <p className="mt-4 text-[10px] text-slate-400 font-medium italic">Synchronized across guest portal grid and quick-action nodes.</p>
                             </div>
                         </div>
                     </section>
