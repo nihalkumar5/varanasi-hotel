@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useHotelBranding, getAllHotelStaff, updateStaffRole, UserProfile } from "@/utils/store";
-import { Users, Shield, Utensils, Shirt, Bell, Check, Loader2, Search, ArrowLeft, MoreVertical, Edit2, UserPlus, Sparkles, Filter } from "lucide-react";
+import { useHotelBranding, getAllHotelStaff, updateStaffRole, createStaffProfile, UserProfile } from "@/utils/store";
+import { Users, Shield, Utensils, Shirt, Bell, Check, Loader2, Search, ArrowLeft, MoreVertical, Edit2, UserPlus, Sparkles, Filter, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SuccessFolio } from "@/components/SuccessFolio";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function StaffManagement() {
     const params = useParams();
@@ -17,19 +18,49 @@ export default function StaffManagement() {
     const [searchQuery, setSearchQuery] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newStaffName, setNewStaffName] = useState("");
+    const [newStaffRole, setNewStaffRole] = useState("staff");
+    const [error, setError] = useState<string | null>(null);
 
     const loadStaff = async () => {
         if (!branding?.id) return;
         setLoading(true);
+        setError(null);
         const { data, error } = await getAllHotelStaff(branding.id);
+        if (error) {
+            console.error("Staff Loading Error:", error);
+            setError("Unable to sync personnel ledger. Please check your administrative permissions.");
+        }
         if (data) setStaff(data);
         setLoading(false);
     };
 
     useEffect(() => {
-        if (branding?.id) {
-            loadStaff();
-        }
+        if (!branding?.id) return;
+        
+        loadStaff();
+
+        // Real-time listener for new staff/profiles
+        const channel = supabase
+            .channel(`staff_changes_${branding.id}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "profiles",
+                    filter: `hotel_id=eq.${branding.id}`,
+                },
+                () => {
+                    loadStaff();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [branding?.id]);
 
     const handleRoleUpdate = async (profileId: string, newRole: string) => {
@@ -39,6 +70,23 @@ export default function StaffManagement() {
             await loadStaff();
         }
         setUpdatingId(null);
+    };
+
+    const handleDirectAdd = async () => {
+        if (!branding?.id || !newStaffName.trim()) return;
+        
+        setLoading(true);
+        const { error } = await createStaffProfile(branding.id, newStaffName, newStaffRole);
+        
+        if (error) {
+            console.error("Direct Add Error:", error);
+            setError("Failed to create profile. Ensure your database schema supports manual entries.");
+        } else {
+            setNewStaffName("");
+            setIsAddModalOpen(false);
+            await loadStaff();
+        }
+        setLoading(false);
     };
 
     const getRoleIcon = (role: string) => {
@@ -105,20 +153,47 @@ export default function StaffManagement() {
                         <Search className="w-4 h-4 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2" />
                     </div>
                     <button
+                        onClick={loadStaff}
+                        className="p-4 rounded-[20px] bg-white border border-black/[0.03] text-slate-400 hover:text-[#CFA46A] hover:bg-white shadow-sm transition-all active:scale-90"
+                        title="Refresh Ledger"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    </button>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="px-8 py-4 rounded-[24px] bg-white border border-black/[0.03] text-[#1F1F1F] font-black text-[11px] uppercase tracking-[0.2em] shadow-sm hover:border-[#CFA46A]/40 transition-all flex items-center gap-3 active:scale-95"
+                    >
+                        <UserPlus className="w-4 h-4 text-[#CFA46A]" />
+                        Add Personnel
+                    </button>
+                    <button
                         onClick={() => {
                             const link = `${window.location.origin}/${hotelSlug}/staff/register`;
                             navigator.clipboard.writeText(link);
                             setShowSuccess(true);
                         }}
-                        className="px-8 py-4 rounded-[24px] bg-[#1F1F1F] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all flex items-center gap-3 active:scale-95"
+                        className="px-8 py-4 rounded-[24px] bg-[#1F1F1F] text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-[#CFA46A]/20 transition-all flex items-center gap-3 active:scale-95 border border-white/5"
                     >
-                        <UserPlus className="w-4 h-4" />
+                        <Sparkles className="w-4 h-4 text-[#CFA46A]" />
                         Generate Invite
                     </button>
                 </div>
             </div>
 
             <div className="px-12 py-12 max-w-[1700px] mx-auto">
+                <AnimatePresence>
+                    {error && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mb-8 p-6 bg-red-50 border border-red-100 rounded-[32px] flex items-center gap-4 text-red-600 shadow-sm"
+                        >
+                            <Shield className="w-5 h-5" />
+                            <p className="text-xs font-black uppercase tracking-widest">{error}</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
                 <div className="bg-white rounded-[48px] border border-black/[0.03] shadow-[0_20px_60px_rgba(31,31,31,0.03)] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
@@ -219,6 +294,76 @@ export default function StaffManagement() {
                 subDetails="Awaiting link dispatch"
                 actionLabel="Done"
             />
+
+            {/* Direct Add Modal */}
+            <AnimatePresence>
+                {isAddModalOpen && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsAddModalOpen(false)}
+                            className="absolute inset-0 bg-[#1F1F1F]/20 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative bg-[#FDFBF9] rounded-[48px] p-12 max-w-lg w-full shadow-2xl border border-white"
+                        >
+                            <h2 className="text-3xl font-serif font-black text-[#1F1F1F] mb-2 tracking-tight">Direct Enrollment</h2>
+                            <p className="text-sm text-slate-500 font-medium mb-10 italic">Manually seed the personnel registry without an invite link.</p>
+
+                            <div className="space-y-8 mb-12">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em] ml-2">Full Name</label>
+                                    <input 
+                                        type="text"
+                                        placeholder="Personnel Name"
+                                        value={newStaffName}
+                                        onChange={(e) => setNewStaffName(e.target.value)}
+                                        className="w-full bg-white border border-black/[0.03] rounded-[24px] py-5 px-8 font-bold text-[#1F1F1F] outline-none focus:ring-2 focus:ring-[#CFA46A]/20 transition-all shadow-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em] ml-2">Assigned Role</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {['staff', 'reception', 'kitchen', 'housekeeping'].map((role) => (
+                                            <button
+                                                key={role}
+                                                onClick={() => setNewStaffRole(role)}
+                                                className={`py-4 rounded-[20px] text-[10px] font-black uppercase tracking-widest transition-all border ${
+                                                    newStaffRole === role 
+                                                    ? 'bg-[#1F1F1F] text-[#CFA46A] border-[#CFA46A]/20 shadow-lg' 
+                                                    : 'bg-white text-slate-400 border-black/[0.03] hover:border-slate-200'
+                                                }`}
+                                            >
+                                                {role}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setIsAddModalOpen(false)}
+                                    className="flex-1 py-5 rounded-[24px] text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-colors"
+                                > Cancel </button>
+                                <button
+                                    onClick={handleDirectAdd}
+                                    disabled={!newStaffName.trim() || loading}
+                                    className="flex-[2] py-5 bg-[#1F1F1F] text-[#CFA46A] rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all disabled:opacity-50"
+                                >
+                                    {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Complete Enrollment"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

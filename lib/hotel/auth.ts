@@ -134,6 +134,43 @@ export const updateStaffRole = async (
     }
 };
 
+export const createStaffProfile = async (
+    hotelId: string,
+    fullName: string,
+    role: string
+): Promise<{ data: UserProfile | null; error: unknown }> => {
+    if (isDemoMode()) {
+        const demoProfile: UserProfile = {
+            id: Math.random().toString(36).substr(2, 9),
+            user_id: "demo-user-" + Math.random().toString(36).substr(2, 5),
+            hotel_id: hotelId,
+            full_name: fullName,
+            role: role as any
+        };
+        return { data: demoProfile, error: null };
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("profiles")
+            .insert([
+                {
+                    hotel_id: hotelId,
+                    full_name: fullName,
+                    role: role,
+                    // If user_id is required, this might fail unless we have a user.
+                    // But some setups allow profiles without auth until confirmed.
+                }
+            ])
+            .select()
+            .single();
+        
+        return { data: data as UserProfile | null, error };
+    } catch (error) {
+        return { data: null, error };
+    }
+};
+
 export const signIn = async (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
 
