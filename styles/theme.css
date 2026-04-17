@@ -1,0 +1,37 @@
+:root {
+  --primary: #CFA46A;
+  /* Luxury Gold */
+  --primary-accent: #3F7C6D;
+  /* Hotel Green */
+  --primary-color: var(--primary);
+  --secondary-color: #EFE7DD;
+  /* Warm Oyster/Beige */
+  --accent-color: var(--primary-accent);
+  --background: #EFE7DD;
+  /* Warm Oyster/Beige */
+  --foreground: #1F1F1F;
+  /* Deep Charcoal */
+  
+  /* Premium Variables */
+  --premium-gold: #CFA46A;
+  --premium-green: #3F7C6D;
+  --premium-beige: #EFE7DD;
+  --premium-text: #1F1F1F;
+  --premium-white: #FFFFFF;
+  
+  /* Shadow */
+  --premium-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  --premium-shadow-deep: 0 20px 50px rgba(0,0,0,0.12);
+}
+
+.noise-bg {
+  background-color: var(--background);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+}
+
+body {
+  background-color: var(--background);
+  background-image: var(--bg-pattern);
+}
+
+/* For multi-tenant, these will be overridden via inline styles from DB */
