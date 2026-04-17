@@ -283,17 +283,24 @@ export default function StatusPage() {
                                     transition={{ duration: 1.5, ease: "easeOut" }}
                                 />
                                 
-                                {/* Orbital Node Glow */}
+                                {/* Service Node (Animated Icon) */}
                                 <motion.g
                                     animate={{ x: trackerProgress }}
                                     style={{ x: trackerProgress }}
                                     className="relative"
                                 >
-                                    <circle r="12" cy="50%" className="fill-[#CFA46A]/20 animate-service-pulse" />
-                                    <circle r="6" cy="50%" className="fill-[#CFA46A] shadow-[0_0_20px_#CFA46A]" />
+                                    {/* Glowing Aura */}
+                                    <circle r="20" cy="50%" className="fill-[#CFA46A]/10 animate-service-pulse" />
                                     
+                                    {/* Icon Container */}
+                                    <foreignObject x="-12" y="-12" width="24" height="24">
+                                        <div className="flex items-center justify-center w-full h-full bg-[#1F1F1F] rounded-full border border-[#CFA46A]/30 shadow-[0_0_15px_#CFA46A]">
+                                            <User className="w-3 h-3 text-[#CFA46A]" />
+                                        </div>
+                                    </foreignObject>
+
                                     {/* Orbital Ring */}
-                                    <circle r="16" cy="50%" className="fill-none stroke-[#CFA46A]/10 stroke-[1px] animate-orbital-glow" />
+                                    <circle r="18" cy="50%" className="fill-none stroke-[#CFA46A]/20 stroke-[1px] animate-orbital-glow" />
                                 </motion.g>
                             </svg>
 

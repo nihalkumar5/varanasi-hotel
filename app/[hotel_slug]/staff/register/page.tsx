@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, Mail, Lock, User, Loader2, Check, ArrowRight, Hotel, Shield } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
@@ -10,6 +10,7 @@ import { useHotelBranding } from "@/utils/store";
 export default function StaffRegisterPage() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
     const hotelSlug = params?.hotel_slug as string;
     const { branding, loading: brandingLoading } = useHotelBranding(hotelSlug);
 
@@ -22,6 +23,15 @@ export default function StaffRegisterPage() {
         email: "",
         password: "",
     });
+
+    const [assignedRole, setAssignedRole] = useState("staff");
+
+    useEffect(() => {
+        const name = searchParams.get("name");
+        const role = searchParams.get("role");
+        if (name) setFormData(prev => ({ ...prev, full_name: name }));
+        if (role) setAssignedRole(role);
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,7 +55,7 @@ export default function StaffRegisterPage() {
             if (authError) throw authError;
             if (!authData.user) throw new Error("Failed to create user account.");
 
-            // 2. Create the Profile link with 'staff' role
+            // 2. Create the Profile link with the designated role
             const { error: profileError } = await supabase
                 .from('profiles')
                 .insert([
@@ -53,7 +63,7 @@ export default function StaffRegisterPage() {
                         user_id: authData.user.id,
                         hotel_id: branding.id,
                         full_name: formData.full_name,
-                        role: 'staff' // Default role
+                        role: assignedRole // Use the role assigned by the admin
                     }
                 ]);
 
