@@ -21,7 +21,7 @@ export function BottomNav() {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-1/2 z-50 flex h-[68px] w-[96%] max-w-[520px] -translate-x-1/2 items-center justify-around rounded-t-[28px] border border-white/70 bg-white/85 font-sans shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-[20px] pb-[env(safe-area-inset-bottom)]">
+        <nav className="fixed bottom-0 left-1/2 z-50 flex h-[68px] w-full max-w-[480px] -translate-x-1/2 items-center justify-around rounded-t-[28px] bg-[#2D2A26]/95 backdrop-blur-[20px] shadow-[0_-2px_20px_rgba(0,0,0,0.12)] pb-[env(safe-area-inset-bottom)]">
             {items.map((item) => {
                 const active = isActive(item.key);
                 return (
