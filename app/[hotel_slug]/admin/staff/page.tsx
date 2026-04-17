@@ -61,11 +61,14 @@ export default function StaffManagement() {
         }
     };
 
-    const filteredStaff = staff.filter(s =>
-        (s.full_name?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (s.email?.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (s.role.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredStaff = staff.filter(s => {
+        const search = searchQuery.toLowerCase();
+        const fullName = (s.full_name || "").toLowerCase();
+        const email = (s.email || "").toLowerCase();
+        const role = (s.role || "").toLowerCase();
+        
+        return fullName.includes(search) || email.includes(search) || role.includes(search);
+    });
 
     if (brandingLoading || loading) return (
         <div className="min-h-screen flex items-center justify-center bg-[#FDFBF9]">
