@@ -393,7 +393,83 @@ export default function GuestDashboard() {
                 </section>
             )}
 
-            {/* 5. Quick Services (dark card) */}
+            {/* 5. Explore Varanasi - Experiential Cards */}
+            <section className="mt-8 px-4">
+                <div className="flex items-center justify-between mb-5 px-1">
+                    <div>
+                        <p className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.35em] mb-1">Local Focus</p>
+                        <h3 className="text-xl font-serif font-black text-[#1F1F1F]">Explore Varanasi</h3>
+                    </div>
+                    <motion.button 
+                        whileTap={{ scale: 0.95 }}
+                        className="text-[9px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-200"
+                    >
+                        View Guide
+                    </motion.button>
+                </div>
+                
+                <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar -mx-4 px-4 snap-x">
+                    {[
+                        {
+                            title: "City on Wheels",
+                            subtitle: "Premium Scooty Rent",
+                            details: "Explore at your own pace",
+                            price: "Starting ₹800/day",
+                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/scooty_rent_varanasi_1776454889916_1776457760695.png"
+                        },
+                        {
+                            title: "Spiritual Twilight",
+                            subtitle: "Private Ganga Aarti",
+                            details: "Exclusive boat boarding",
+                            price: "Guided Experience",
+                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/ganga_aarti_varanasi_1776454872875_1776457745174.png"
+                        },
+                        {
+                            title: "Ancient Pathways",
+                            subtitle: "Heritage Alley Tour",
+                            details: "Discover hidden temples",
+                            price: "Walking Tour",
+                            image: "/Users/nihalkumar/.gemini/antigravity/brain/0d387b43-7f66-4a0f-8b83-4e212ac4b07b/heritage_tour_varanasi_1776454955778_1776457814214.png"
+                        }
+                    ].map((exp, i) => (
+                        <motion.div
+                            key={i}
+                            whileTap={{ scale: 0.98 }}
+                            className="min-w-[280px] h-[340px] rounded-[32px] overflow-hidden relative shadow-2xl shadow-black/10 snap-center border border-white/40"
+                        >
+                            <img src={exp.image} className="absolute inset-0 w-full h-full object-cover" alt={exp.title} />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                            
+                            <div className="absolute inset-x-6 bottom-6 flex flex-col items-start">
+                                <span className="px-2.5 py-1 bg-[#CFA46A] text-white text-[8px] font-black uppercase tracking-widest rounded-lg mb-3">
+                                    Recommended
+                                </span>
+                                <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em] mb-1">{exp.subtitle}</p>
+                                <h4 className="text-xl font-serif font-black text-white leading-tight mb-4">{exp.title}</h4>
+                                
+                                <div className="flex items-center justify-between w-full pt-4 border-t border-white/10">
+                                    <div>
+                                        <p className="text-[10px] text-white font-bold">{exp.price}</p>
+                                        <p className="text-[8px] text-white/40 font-medium">{exp.details}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            if (branding?.conciergeWhatsapp) {
+                                                window.open(`https://wa.me/${branding.conciergeWhatsapp}?text=I am interested in ${exp.title}`, '_blank');
+                                            }
+                                        }}
+                                        className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-black/20 hover:bg-[#CFA46A] transition-colors"
+                                    >
+                                        <ArrowRight className="w-4 h-4 text-[#1F1F1F]" />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </section>
+
+            {/* 6. Quick Services (dark card) */}
             <section className="mt-6 px-4">
                 <div className="bg-[#2D2A26] rounded-[20px] p-5 shadow-lg">
                     <h3 className="text-base font-serif font-black text-white mb-0.5">Quick Services</h3>
