@@ -152,14 +152,14 @@ export const createStaffProfile = async (
         return { data: demoProfile, error: null };
     }
 
-    try {
+        const normalizedEmail = email.toLowerCase();
         const { data, error } = await supabase
             .from("profiles")
             .insert([
                 {
                     hotel_id: hotelId,
                     full_name: fullName,
-                    email: email,
+                    email: normalizedEmail,
                     role: role,
                 }
             ])

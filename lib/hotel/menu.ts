@@ -9,6 +9,69 @@ import { convertGDriveLink, generateLocalId, isDemoMode, isStorageOrHotelEvent }
 import type { MenuItem } from "@/lib/hotel/types";
 import { supabase } from "@/lib/supabaseClient";
 
+const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
+    {
+        id: "default-thali",
+        hotel_id: hotelId,
+        category: "Main Course",
+        title: "Royal Indian Thali",
+        description: "A curated curation of seasonal delicacies served with fragrant saffron rice and handmade artisanal breads.",
+        price: 1450,
+        image_url: "/images/food/thali.png",
+        is_available: true
+    },
+    {
+        id: "default-biryani",
+        hotel_id: hotelId,
+        category: "Main Course",
+        title: "Deluxe Clay-Pot Biryani",
+        description: "Slow-cooked aromatic basmati rice with heritage spices and tender proteins, served in a traditional clay pot.",
+        price: 850,
+        image_url: "/images/food/biryani.png",
+        is_available: true
+    },
+    {
+        id: "default-chaat",
+        hotel_id: hotelId,
+        category: "Varanasi Special",
+        title: "Gourmet Tamatar Chaat",
+        description: "An elevated interpretation of the iconic local favorite, garnished with crispy pearls and vibrant chutneys.",
+        price: 450,
+        image_url: "/images/food/chaat.png",
+        is_available: true
+    },
+    {
+        id: "default-samosa",
+        hotel_id: hotelId,
+        category: "Starters",
+        title: "Artisanal Samosa Platter",
+        description: "Crispy hand-folded pastries filled with spiced heritage potatoes, served with house-made mint and tamarind dips.",
+        price: 350,
+        image_url: "https://images.unsplash.com/photo-1601050690597-df056fb4ce70?auto=format&fit=crop&q=80",
+        is_available: true
+    },
+    {
+        id: "default-dessert",
+        hotel_id: hotelId,
+        category: "Desserts",
+        title: "Heritage Gulab Jamun",
+        description: "Delicate syrup-soaked traditional confections served in a crystal bowl with silver leaf and crushed pistachios.",
+        price: 350,
+        image_url: "/images/food/dessert.png",
+        is_available: true
+    },
+    {
+        id: "default-chai",
+        hotel_id: hotelId,
+        category: "Drinks",
+        title: "Signature Masala Chai",
+        description: "Brewed with premium tea leaves and a secret blend of five aromatic spices. Served in fine bone china.",
+        price: 150,
+        image_url: "/images/food/tea.png",
+        is_available: true
+    }
+];
+
 export function useSupabaseMenuItems(hotelId?: string) {
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -26,7 +89,8 @@ export function useSupabaseMenuItems(hotelId?: string) {
 
             if (isDemoMode()) {
                 if (isActive) {
-                    setMenuItems(getDemoMenu(hotelId));
+                    const items = getDemoMenu(hotelId);
+                    setMenuItems(items.length > 0 ? items : DEFAULT_MENU_ITEMS(hotelId));
                     setLoading(false);
                 }
                 return;
@@ -39,7 +103,8 @@ export function useSupabaseMenuItems(hotelId?: string) {
                 .order("category", { ascending: true });
 
             if (isActive) {
-                setMenuItems((data as MenuItem[]) ?? []);
+                const results = (data as MenuItem[]) ?? [];
+                setMenuItems(results.length > 0 ? results : DEFAULT_MENU_ITEMS(hotelId));
                 setLoading(false);
             }
         };

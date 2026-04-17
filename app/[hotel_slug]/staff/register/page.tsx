@@ -57,10 +57,11 @@ export default function StaffRegisterPage() {
 
             // 2. Profile Claiming Logic
             // Check if a profile already exists for this email (Direct Add case)
+            const searchEmail = formData.email.toLowerCase();
             const { data: existingProfile } = await supabase
                 .from('profiles')
                 .select('id')
-                .eq('email', formData.email)
+                .eq('email', searchEmail)
                 .is('user_id', null)
                 .maybeSingle();
 
@@ -70,7 +71,8 @@ export default function StaffRegisterPage() {
                     .from('profiles')
                     .update({ 
                         user_id: authData.user.id,
-                        full_name: formData.full_name // Update name if they changed it during registration
+                        full_name: formData.full_name,
+                        email: searchEmail // Ensure it's saved as lowercase
                     })
                     .eq('id', existingProfile.id);
                 
@@ -84,7 +86,7 @@ export default function StaffRegisterPage() {
                             user_id: authData.user.id,
                             hotel_id: branding.id,
                             full_name: formData.full_name,
-                            email: formData.email,
+                            email: searchEmail,
                             role: assignedRole
                         }
                     ]);

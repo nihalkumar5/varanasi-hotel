@@ -10,6 +10,25 @@ import { convertGDriveLink, generateLocalId, isDemoMode, isStorageOrHotelEvent }
 import type { SpecialOffer } from "@/lib/hotel/types";
 import { supabase } from "@/lib/supabaseClient";
 
+const DEFAULT_OFFERS: (hotelId: string) => SpecialOffer[] = (hotelId) => [
+    {
+        id: "default-offer-spa",
+        hotel_id: hotelId,
+        title: "Royal Wellness Spa",
+        description: "Experience the pinnacle of serenity with our signature Ayurvedic treatments and lotus-infused therapy rooms.",
+        image_url: "/images/offers/spa.png",
+        is_active: true
+    },
+    {
+        id: "default-offer-dining",
+        hotel_id: hotelId,
+        title: "Private Sunset Dining",
+        description: "A candle-lit gourmet experience overlooking the sacred Ganges. Private boat boarding and curated multi-course menu included.",
+        image_url: "/images/offers/dining.png",
+        is_active: true
+    }
+];
+
 export function useSpecialOffers(hotelId?: string) {
     const [offers, setOffers] = useState<SpecialOffer[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +46,8 @@ export function useSpecialOffers(hotelId?: string) {
 
             if (isDemoMode()) {
                 if (isActive) {
-                    setOffers(getDemoOffers(hotelId));
+                    const items = getDemoOffers(hotelId);
+                    setOffers(items.length > 0 ? items : DEFAULT_OFFERS(hotelId));
                     setLoading(false);
                 }
                 return;
@@ -40,7 +60,8 @@ export function useSpecialOffers(hotelId?: string) {
                 .order("created_at", { ascending: false });
 
             if (isActive) {
-                setOffers((data as SpecialOffer[]) ?? []);
+                const results = (data as SpecialOffer[]) ?? [];
+                setOffers(results.length > 0 ? results : DEFAULT_OFFERS(hotelId));
                 setLoading(false);
             }
         };

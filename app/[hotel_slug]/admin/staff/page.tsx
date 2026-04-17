@@ -77,7 +77,8 @@ export default function StaffManagement() {
         if (!branding?.id || !newStaffName.trim() || !newStaffEmail.trim()) return;
         
         setLoading(true);
-        const { error } = await createStaffProfile(branding.id, newStaffName, newStaffEmail, newStaffRole);
+        const normalizedEmail = newStaffEmail.trim().toLowerCase();
+        const { error } = await createStaffProfile(branding.id, newStaffName, normalizedEmail, newStaffRole);
         
         if (error) {
             console.error("Direct Add Error:", error);
