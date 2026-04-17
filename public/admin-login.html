@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Protected sign-in page for the Vnexora admin portal."
+    />
+    <meta name="theme-color" content="#0c1118" />
+    <title>Vnexora Admin Sign In</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-login-page">
+    <a class="skip-link" href="#loginForm">Skip to sign in</a>
+    <div class="page-shell login-shell">
+      <main class="login-layout">
+        <section class="panel login-panel">
+          <p class="eyebrow">Protected access</p>
+          <h1>Sign in to the admin portal.</h1>
+          <p class="hero-text">
+            Enter the admin password to view incoming hotel leads, review scores, and manage follow-up actions.
+          </p>
+
+          <form id="loginForm" class="login-form" novalidate>
+            <label class="input-block">
+              <span>Admin username</span>
+              <input
+                id="usernameInput"
+                name="username"
+                type="text"
+                autocomplete="username"
+                placeholder="Enter admin username"
+                value="admin"
+                required
+              />
+            </label>
+
+            <label class="input-block">
+              <span>Admin password</span>
+              <input
+                id="passwordInput"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter admin password"
+                required
+              />
+            </label>
+
+            <div class="login-actions">
+              <button type="submit" id="loginButton" class="primary-button">
+                Sign in
+              </button>
+              <a class="secondary-button" href="/index.html">Back to site</a>
+            </div>
+
+            <p id="loginMessage" class="helper-text" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <aside class="panel login-note">
+          <div class="section-heading compact">
+            <p class="section-tag">Access rules</p>
+            <h2>Admin only</h2>
+            <p>
+              This workspace uses an HttpOnly session cookie. The portal stays hidden until the correct credentials are entered.
+            </p>
+          </div>
+
+          <dl class="detail-grid login-grid">
+            <div class="detail-row">
+              <dt>Username</dt>
+              <dd>Configured on the server</dd>
+            </div>
+            <div class="detail-row">
+              <dt>Password</dt>
+              <dd>Set with <code>ADMIN_PASSWORD</code></dd>
+            </div>
+            <div class="detail-row">
+              <dt>Session</dt>
+              <dd>Expires automatically after 8 hours</dd>
+            </div>
+            <div class="detail-row">
+              <dt>Logout</dt>
+              <dd>Available inside the portal header</dd>
+            </div>
+          </dl>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/admin-login.js"></script>
+  </body>
+</html>

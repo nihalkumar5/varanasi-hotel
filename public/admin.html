@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Admin portal for reviewing Vnexora hotel audit leads, scores, and contact actions."
+    />
+    <meta name="theme-color" content="#0c1118" />
+    <title>Vnexora Admin Portal</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-page">
+    <a class="skip-link" href="#leadTable">Skip to lead table</a>
+    <div class="page-shell admin-shell">
+      <header class="portal-header">
+        <div class="portal-header-copy">
+          <p class="eyebrow">Admin portal</p>
+          <h1>Review incoming hotel leads.</h1>
+          <p class="hero-text">
+            Search the latest submissions, inspect score bands, and open the contact links the team needs to follow up manually.
+          </p>
+        </div>
+
+        <div class="portal-header-actions">
+          <button type="button" id="refreshButton" class="primary-button">Refresh leads</button>
+          <button type="button" id="exportButton" class="secondary-button">Export CSV</button>
+          <button type="button" id="logoutButton" class="ghost-button">Logout</button>
+          <a class="ghost-button" href="/thank-you.html">Latest confirmation</a>
+        </div>
+      </header>
+
+      <section class="portal-banner">
+        <div class="metric-strip">
+          <article class="metric-tile">
+            <span class="metric-label">Total leads</span>
+            <strong id="totalLeadsValue">0</strong>
+            <span class="metric-note">All rows in the current feed</span>
+          </article>
+          <article class="metric-tile">
+            <span class="metric-label">Average score</span>
+            <strong id="averageScoreValue">0%</strong>
+            <span class="metric-note">Across the stored submissions</span>
+          </article>
+          <article class="metric-tile">
+            <span class="metric-label">Future ready</span>
+            <strong id="futureReadyValue">0</strong>
+            <span class="metric-note">Leads above 70 points</span>
+          </article>
+          <article class="metric-tile">
+            <span class="metric-label">Latest sync</span>
+            <strong id="latestLeadValue">-</strong>
+            <span class="metric-note">Refreshed from the Google Sheets feed</span>
+          </article>
+        </div>
+        <p id="syncMessage" class="helper-text" aria-live="polite">Loading leads...</p>
+      </section>
+
+      <main class="portal-grid">
+        <section class="portal-panel list-panel">
+          <div class="portal-panel-head">
+            <div>
+              <p class="section-tag">Lead feed</p>
+              <h2>All submissions</h2>
+            </div>
+            <p class="portal-count" id="leadCountLabel">0 shown</p>
+          </div>
+
+          <div class="portal-toolbar">
+            <label class="toolbar-field">
+              <span>Search</span>
+              <input
+                id="searchInput"
+                class="portal-input"
+                type="search"
+                placeholder="Hotel name, phone, email, or rating"
+              />
+            </label>
+
+            <label class="toolbar-field">
+              <span>Rating</span>
+              <select id="ratingFilter" class="portal-input">
+                <option value="all">All ratings</option>
+                <option value="future">Future Ready</option>
+                <option value="growing">Growing Hotel</option>
+                <option value="traditional">Traditional Hotel</option>
+              </select>
+            </label>
+
+            <button type="button" id="clearFiltersButton" class="ghost-button toolbar-button">
+              Clear filters
+            </button>
+          </div>
+
+          <div class="table-shell">
+            <table id="leadTable" class="lead-table" aria-label="Hotel audit leads">
+              <thead>
+                <tr>
+                  <th scope="col">Received</th>
+                  <th scope="col">Hotel</th>
+                  <th scope="col">Contact</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Rating</th>
+                  <th scope="col">Source</th>
+                </tr>
+              </thead>
+              <tbody id="leadTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="tableEmptyState" class="empty-state hidden" aria-live="polite">
+            No leads match the current filters.
+          </div>
+        </section>
+
+        <aside class="portal-panel detail-panel">
+          <div class="portal-panel-head">
+            <div>
+              <p class="section-tag">Selected lead</p>
+              <h2 id="detailTitle">No lead selected</h2>
+            </div>
+            <span id="detailRating" class="status-chip">Waiting</span>
+          </div>
+
+          <p id="detailSubtitle" class="portal-subtitle">
+            Choose a row from the table to inspect the hotel, score band, and contact actions.
+          </p>
+
+          <div class="detail-score" id="detailScore">
+            <div>
+              <span class="metric-label">Score</span>
+              <strong id="detailPercent">0%</strong>
+            </div>
+            <span id="detailScoreValue" class="detail-score-value">0/80</span>
+          </div>
+
+          <div id="detailEmptyState" class="detail-empty">
+            Select a lead to inspect the score, contact details, and follow-up actions.
+          </div>
+
+          <div id="detailContent" class="detail-content hidden">
+            <dl class="detail-grid">
+              <div class="detail-row">
+                <dt>Received</dt>
+                <dd id="detailReceivedAt">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Submitted</dt>
+                <dd id="detailSubmittedAt">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Phone</dt>
+                <dd id="detailPhone">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Email</dt>
+                <dd id="detailEmail">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Demo link</dt>
+                <dd id="detailDemoLink">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Source</dt>
+                <dd id="detailSource">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Support email</dt>
+                <dd id="detailContactEmail">-</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Support phone</dt>
+                <dd id="detailContactPhone">-</dd>
+              </div>
+            </dl>
+
+            <label class="summary-field">
+              <span>Copyable summary</span>
+              <textarea id="detailSummary" class="summary-box" readonly></textarea>
+            </label>
+
+            <div class="detail-actions">
+              <button type="button" id="copySummaryButton" class="secondary-button">
+                Copy summary
+              </button>
+              <a id="openDemoButton" class="ghost-button" href="#" target="_blank" rel="noopener noreferrer">
+                Open demo
+              </a>
+              <a id="openWhatsAppButton" class="ghost-button" href="#" target="_blank" rel="noopener noreferrer">
+                WhatsApp lead
+              </a>
+              <a id="openEmailButton" class="ghost-button" href="#">Open email</a>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>

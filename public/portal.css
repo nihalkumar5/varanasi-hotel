@@ -1,0 +1,598 @@
+/* ─── Portal Design System ─── */
+/* Mobile-first Guest Portal inspired by MangoH Quiet Luxury */
+
+:root {
+  --bg: #f5f0eb;
+  --bg-card: #ffffff;
+  --bg-strip: #f8f5f1;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b6b6b;
+  --text-muted: #999999;
+  --accent: #8b7355;
+  --accent-dark: #6b5a42;
+  --accent-light: #c4a67a;
+  --accent-soft: rgba(139, 115, 85, 0.08);
+  --red: #c0392b;
+  --red-soft: rgba(192, 57, 43, 0.08);
+  --green: #27ae60;
+  --green-soft: rgba(39, 174, 96, 0.1);
+  --gold-star: #d4a547;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --max-width: 480px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ─── Portal App Container ─── */
+.portal-app {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  background: var(--bg);
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+}
+
+/* ─── Hero Banner ─── */
+.portal-hero {
+  position: relative;
+  width: 100%;
+  padding: 0;
+}
+
+.portal-hero-img {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+}
+
+.portal-hero-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.portal-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+.portal-hero-badge {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 32px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ─── Hotel Info Card ─── */
+.hotel-card {
+  padding: 0 16px;
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+}
+
+.hotel-card-inner {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+}
+
+.hotel-name {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.hotel-stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.hotel-stars .star {
+  color: var(--gold-star);
+  font-size: 0.9rem;
+}
+
+.hotel-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.hotel-location svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Checkout Strip */
+.checkout-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.checkout-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.checkout-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkout-date {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.checkout-dot {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.checkout-time {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: var(--green-soft);
+  border: 1px solid rgba(39, 174, 96, 0.2);
+  border-radius: 999px;
+  color: var(--green);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.verified-badge svg {
+  flex-shrink: 0;
+}
+
+/* ─── Room Info Strip ─── */
+.room-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 16px;
+  margin-top: 12px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.room-item:first-child {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  border-right: none;
+}
+
+.room-item svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.room-item-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.room-item-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.room-item-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.room-divider {
+  width: 1px;
+  height: 44px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.late-checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--red) 0%, #e74c3c 100%);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  white-space: nowrap;
+  min-width: 95px;
+}
+
+.late-checkout-btn:active {
+  transform: scale(0.97);
+}
+
+/* ─── Quick Services Grid ─── */
+.services-section {
+  padding: 16px 16px 0;
+  margin-top: 8px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.service-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.service-tile:active {
+  transform: scale(0.95);
+}
+
+.service-tile:hover {
+  border-color: var(--accent-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.service-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  transition: background 200ms ease;
+}
+
+.service-tile:hover .service-icon {
+  background: rgba(139, 115, 85, 0.14);
+}
+
+.service-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ─── CTA Section ─── */
+.cta-section {
+  padding: 16px 16px 0;
+}
+
+.cta-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cta-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cta-desc {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 4px 16px rgba(139, 115, 85, 0.25);
+}
+
+.cta-button:active {
+  transform: scale(0.97);
+}
+
+.cta-button svg {
+  transition: transform 200ms ease;
+}
+
+.cta-button:hover svg {
+  transform: translateX(3px);
+}
+
+/* ─── Bottom Spacer ─── */
+.bottom-spacer {
+  height: 90px;
+}
+
+/* ─── Bottom Navigation ─── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--max-width);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(45, 42, 38, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 100;
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.12);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.nav-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item.active {
+  color: var(--accent-light);
+}
+
+.nav-item.active svg {
+  color: var(--accent-light);
+}
+
+.nav-item span {
+  display: block;
+  line-height: 1;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hotel-card {
+  animation: fadeInUp 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms both;
+}
+
+.room-strip {
+  animation: fadeInUp 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
+}
+
+.services-section {
+  animation: fadeInUp 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both;
+}
+
+.cta-section {
+  animation: fadeInUp 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 400ms both;
+}
+
+/* ─── Responsive ─── */
+
+/* Slightly larger phones */
+@media (min-width: 395px) {
+  .portal-hero-img {
+    height: 280px;
+  }
+
+  .hotel-name {
+    font-size: 1.8rem;
+  }
+}
+
+/* Desktop / Tablet - center the mobile frame */
+@media (min-width: 520px) {
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    background: #e8e2da;
+  }
+
+  .portal-app {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.12);
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .portal-hero-img {
+    height: 300px;
+  }
+
+  .bottom-nav {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Assessment Page Override ─── */
+/* When used on assessment/results pages, override body bg */
+body.assessment-page,
+body.results-page,
+body.thankyou-page {
+  background: var(--bg);
+}

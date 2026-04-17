@@ -1,0 +1,9 @@
+{
+  "name": "hotelforms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vnexora future-ready hotel assessment with scoring, report generation, and manual WhatsApp sharing",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

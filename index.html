@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="description"
+      content="Vnexora Future-Ready Hotel Audit – Guest Portal for luxury hotels in Varanasi, India."
+    />
+    <meta name="theme-color" content="#f5f0eb" />
+    <meta property="og:title" content="Vnexora Hotel Guest Portal" />
+    <meta
+      property="og:description"
+      content="Start the hotel assessment from the guest portal."
+    />
+    <title>Vnexora Hotel Guest Portal</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/portal.css" />
+  </head>
+  <body>
+    <div class="portal-app" id="portalApp">
+
+      <!-- Hero Banner -->
+      <section class="portal-hero">
+        <div class="portal-hero-img">
+          <img
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80"
+            alt="Hotel reception with warm lighting"
+          />
+          <div class="portal-hero-overlay"></div>
+          <div class="portal-hero-badge">GUEST PORTAL</div>
+        </div>
+      </section>
+
+      <!-- Hotel Info Card -->
+      <section class="hotel-card">
+        <div class="hotel-card-inner">
+          <h1 class="hotel-name">HOTEL PICASSO</h1>
+          <div class="hotel-stars">
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+            <span class="star">★</span>
+          </div>
+          <div class="hotel-location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Varanasi India</span>
+          </div>
+
+          <div class="checkout-strip">
+            <div class="checkout-info">
+              <span class="checkout-label">CHECKOUT</span>
+              <div class="checkout-value">
+                <span class="checkout-date">16 Apr</span>
+                <span class="checkout-dot">·</span>
+                <span class="checkout-time">11:00 AM</span>
+              </div>
+            </div>
+            <div class="verified-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>VERIFIED GUEST</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Room Info Strip -->
+      <section class="room-strip">
+        <div class="room-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"/>
+            <path d="M21 7H3l2-4h14l2 4z"/>
+          </svg>
+          <div class="room-item-detail">
+            <span class="room-item-label">ROOM</span>
+            <strong class="room-item-value">101</strong>
+          </div>
+        </div>
+        <div class="room-divider"></div>
+        <div class="room-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <div class="room-item-detail">
+            <span class="room-item-label">STAYING</span>
+            <strong class="room-item-value">1 Guest</strong>
+          </div>
+        </div>
+        <a class="late-checkout-btn" href="/assessment.html">
+          START<br/>AUDIT
+        </a>
+      </section>
+
+      <!-- Quick Services Grid -->
+      <section class="services-section">
+        <div class="services-grid">
+          <a href="/assessment.html" class="service-tile" id="serviceAudit">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+            <span class="service-label">Hotel Audit</span>
+          </a>
+
+          <a href="/assessment.html" class="service-tile" id="serviceAssessment">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <span class="service-label">Assessment</span>
+          </a>
+
+          <a href="/results.html" class="service-tile" id="serviceResults">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <span class="service-label">Results</span>
+          </a>
+
+          <div class="service-tile" id="serviceSupport">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <span class="service-label">Contact</span>
+          </div>
+
+          <div class="service-tile" id="serviceWifi">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                <line x1="12" y1="20" x2="12.01" y2="20"/>
+              </svg>
+            </div>
+            <span class="service-label">Wi-Fi Info</span>
+          </div>
+
+          <div class="service-tile" id="serviceRoomService">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/>
+                <line x1="10" y1="1" x2="10" y2="4"/>
+                <line x1="14" y1="1" x2="14" y2="4"/>
+              </svg>
+            </div>
+            <span class="service-label">Room Service</span>
+          </div>
+
+          <div class="service-tile" id="serviceTaxi">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 17h2m10 0h2M2 9l2 2.5L6 7h12l2 4.5L22 9"/>
+                <rect x="2" y="11.5" width="20" height="7" rx="2"/>
+                <path d="M7 17v2M17 17v2"/>
+              </svg>
+            </div>
+            <span class="service-label">Taxi</span>
+          </div>
+
+          <div class="service-tile" id="serviceMore">
+            <div class="service-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="19" cy="12" r="1"/>
+                <circle cx="5" cy="12" r="1"/>
+              </svg>
+            </div>
+            <span class="service-label">More</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="cta-card">
+          <p class="cta-label">FUTURE-READY AUDIT</p>
+          <h2 class="cta-title">Check if your hotel is future-ready</h2>
+          <p class="cta-desc">Run a 10-question assessment for service speed, automation, communication, bookings, and operational maturity.</p>
+          <a class="cta-button" href="/assessment.html">
+            Start Assessment
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Bottom Spacer for Nav -->
+      <div class="bottom-spacer"></div>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav" id="bottomNav">
+        <a href="/index.html" class="nav-item active" id="navHome">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Home</span>
+        </a>
+        <a href="/assessment.html" class="nav-item" id="navAudit">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>Audit</span>
+        </a>
+        <a href="/results.html" class="nav-item" id="navResults">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Score</span>
+        </a>
+        <a href="#" class="nav-item" id="navNotify">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span>Alerts</span>
+        </a>
+      </nav>
+
+    </div>
+  </body>
+</html>
