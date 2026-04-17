@@ -55,19 +55,42 @@ export default function StaffRegisterPage() {
             if (authError) throw authError;
             if (!authData.user) throw new Error("Failed to create user account.");
 
-            // 2. Create the Profile link with the designated role
-            const { error: profileError } = await supabase
+            // 2. Profile Claiming Logic
+            // Check if a profile already exists for this email (Direct Add case)
+            const { data: existingProfile } = await supabase
                 .from('profiles')
-                .insert([
-                    {
-                        user_id: authData.user.id,
-                        hotel_id: branding.id,
-                        full_name: formData.full_name,
-                        role: assignedRole // Use the role assigned by the admin
-                    }
-                ]);
+                .select('id')
+                .eq('email', formData.email)
+                .is('user_id', null)
+                .maybeSingle();
 
-            if (profileError) throw profileError;
+            if (existingProfile) {
+                // Claim the existing profile
+                const { error: claimError } = await supabase
+                    .from('profiles')
+                    .update({ 
+                        user_id: authData.user.id,
+                        full_name: formData.full_name // Update name if they changed it during registration
+                    })
+                    .eq('id', existingProfile.id);
+                
+                if (claimError) throw claimError;
+            } else {
+                // Create a new profile
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert([
+                        {
+                            user_id: authData.user.id,
+                            hotel_id: branding.id,
+                            full_name: formData.full_name,
+                            email: formData.email,
+                            role: assignedRole
+                        }
+                    ]);
+                
+                if (profileError) throw profileError;
+            }
 
             setSuccess(true);
             setTimeout(() => {

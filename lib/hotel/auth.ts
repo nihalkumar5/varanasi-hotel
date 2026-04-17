@@ -137,6 +137,7 @@ export const updateStaffRole = async (
 export const createStaffProfile = async (
     hotelId: string,
     fullName: string,
+    email: string,
     role: string
 ): Promise<{ data: UserProfile | null; error: unknown }> => {
     if (isDemoMode()) {
@@ -145,6 +146,7 @@ export const createStaffProfile = async (
             user_id: "demo-user-" + Math.random().toString(36).substr(2, 5),
             hotel_id: hotelId,
             full_name: fullName,
+            email: email,
             role: role as any
         };
         return { data: demoProfile, error: null };
@@ -157,9 +159,8 @@ export const createStaffProfile = async (
                 {
                     hotel_id: hotelId,
                     full_name: fullName,
+                    email: email,
                     role: role,
-                    // If user_id is required, this might fail unless we have a user.
-                    // But some setups allow profiles without auth until confirmed.
                 }
             ])
             .select()

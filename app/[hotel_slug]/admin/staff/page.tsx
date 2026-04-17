@@ -20,6 +20,7 @@ export default function StaffManagement() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [newStaffName, setNewStaffName] = useState("");
+    const [newStaffEmail, setNewStaffEmail] = useState("");
     const [newStaffRole, setNewStaffRole] = useState("staff");
     const [error, setError] = useState<string | null>(null);
 
@@ -73,16 +74,17 @@ export default function StaffManagement() {
     };
 
     const handleDirectAdd = async () => {
-        if (!branding?.id || !newStaffName.trim()) return;
+        if (!branding?.id || !newStaffName.trim() || !newStaffEmail.trim()) return;
         
         setLoading(true);
-        const { error } = await createStaffProfile(branding.id, newStaffName, newStaffRole);
+        const { error } = await createStaffProfile(branding.id, newStaffName, newStaffEmail, newStaffRole);
         
         if (error) {
             console.error("Direct Add Error:", error);
             setError("Failed to create profile. Ensure you've run the SQL migration script in Supabase.");
         } else {
             setNewStaffName("");
+            setNewStaffEmail("");
             setIsAddModalOpen(false);
             await loadStaff();
         }
@@ -328,6 +330,17 @@ export default function StaffManagement() {
                                 </div>
 
                                 <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em] ml-2">Email Address</label>
+                                    <input 
+                                        type="email"
+                                        placeholder="staff@hotel.com"
+                                        value={newStaffEmail}
+                                        onChange={(e) => setNewStaffEmail(e.target.value)}
+                                        className="w-full bg-white border border-black/[0.03] rounded-[24px] py-5 px-8 font-bold text-[#1F1F1F] outline-none focus:ring-2 focus:ring-[#CFA46A]/20 transition-all shadow-sm"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
                                     <label className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.4em] ml-2">Assigned Role</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         {['staff', 'reception', 'kitchen', 'housekeeping'].map((role) => (
@@ -354,7 +367,7 @@ export default function StaffManagement() {
                                 > Cancel </button>
                                 <button
                                     onClick={handleDirectAdd}
-                                    disabled={!newStaffName.trim() || loading}
+                                    disabled={!newStaffName.trim() || !newStaffEmail.trim() || loading}
                                     className="flex-[2] py-5 bg-[#1F1F1F] text-[#CFA46A] rounded-[24px] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl hover:bg-[#CFA46A] hover:text-[#1F1F1F] transition-all disabled:opacity-50"
                                 >
                                     {loading ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Complete Enrollment"}
