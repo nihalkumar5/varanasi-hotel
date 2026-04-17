@@ -56,15 +56,15 @@ export default function BillPage() {
         if (error) {
             setFolioState({
                 open: true,
-                title: "Transmission Failed",
-                message: "We encountered a resistance syncing your folio. Please contact the front desk.",
+                title: "Request Delayed",
+                message: "We encountered a small issue syncing your folio. Please try again or contact the front desk.",
             });
         } else {
             setFolioState({
                 open: true,
-                title: "Folio Finalized",
-                message: "Your checkout request has been received. Our team is preparing your documents.",
-                details: "VISIT_RECEPTION_SOON"
+                title: "Checkout Requested",
+                message: "We've received your request. Our team is preparing your documents and will notify you shortly.",
+                actionLabel: "Done"
             });
         }
     };

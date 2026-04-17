@@ -40,9 +40,8 @@ export default function BrandingPage() {
         if (error) {
             setFolioState({
                 open: true,
-                title: "Protocol Interrupted",
-                message: `The system encountered a resistance during the synchronization: ${error.message || "Unknown error"}.`,
-                details: "SCHEMA_MISMATCH_DETECTED"
+                title: "Update Interrupted",
+                message: `The system encountered an issue while saving your preferences: ${error.message || "Unknown error"}.`,
             });
             return;
         }
@@ -53,9 +52,9 @@ export default function BrandingPage() {
 
         setFolioState({
             open: true,
-            title: "Identity Synchronized",
-            message: "Brand DNA has been successfully propagated across all guest touchpoints and administrative nodes.",
-            details: "HASH_" + Math.random().toString(36).substring(7).toUpperCase()
+            title: "Settings Updated",
+            message: "Your hotel's branding and operational preferences have been successfully updated across all guest touchpoints.",
+            actionLabel: "Return to Console"
         });
     };
 

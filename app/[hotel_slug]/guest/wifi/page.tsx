@@ -47,8 +47,8 @@ export default function WifiPage() {
         navigator.clipboard.writeText(text);
         setFolioState({
             open: true,
-            title: "Registry Captured",
-            message: `The ${label} has been synchronized to your clipboard successfully.`
+            title: "Details Copied",
+            message: `The ${label} has been copied to your clipboard successfully.`
         });
     };
 

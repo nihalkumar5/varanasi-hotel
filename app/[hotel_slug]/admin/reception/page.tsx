@@ -7,61 +7,13 @@ import { ConciergeBell, Users, LayoutGrid, List, Plus, MapPin, User, Phone, Chec
 import { useHotelBranding, getHotelGuests, getHotelRooms, deleteGuest, Guest, Room, supabase, checkInRoom, checkOutRoom } from "@/utils/store";
 import { motion, AnimatePresence } from "framer-motion";
 import GuestEntryForm from "@/components/GuestEntryForm";
+import { SuccessFolio } from "@/components/SuccessFolio";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { QRPreviewModal } from "@/components/QRPreviewModal";
 import QRCode from "react-qr-code";
 import { buildGuestWelcomeMessage, buildWhatsAppUrl, formatWhatsAppPhone } from "@/lib/hotel/whatsapp";
 
-// Modern Success Modal to replace alerts
-const SuccessFolio = ({ isOpen, onClose, title, message, pin, roomNumber }: { isOpen: boolean, onClose: () => void, title: string, message: string, pin?: string, roomNumber?: string }) => (
-    <AnimatePresence>
-        {isOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={onClose}
-                    className="absolute inset-0 bg-[#1F1F1F]/60 backdrop-blur-sm"
-                />
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                    className="relative bg-[#FDFBF9] rounded-[48px] p-10 max-w-md w-full shadow-2xl border border-white/20 overflow-hidden"
-                >
-                    <div className="absolute top-0 right-0 p-8 opacity-10">
-                        <Sparkles className="w-24 h-24 text-[#CFA46A]" />
-                    </div>
-                    
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 bg-[#1F1F1F] rounded-[24px] flex items-center justify-center mb-8 shadow-xl">
-                            <Check className="w-10 h-10 text-[#CFA46A]" />
-                        </div>
-                        
-                        <h3 className="text-3xl font-serif font-black text-[#1F1F1F] mb-4">{title}</h3>
-                        <p className="text-sm text-slate-500 font-medium italic mb-8 leading-relaxed px-4">{message}</p>
-                        
-                        {pin && (
-                            <div className="w-full bg-white border border-black/[0.03] rounded-[32px] p-8 mb-8 shadow-sm">
-                                <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] block mb-3">Secure Booking PIN</span>
-                                <div className="text-5xl font-serif font-black text-[#1F1F1F] tracking-[0.2em]">{pin}</div>
-                                {roomNumber && <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Assigned to Unit {roomNumber}</div>}
-                            </div>
-                        )}
-                        
-                        <button
-                            onClick={onClose}
-                            className="w-full py-5 bg-[#1F1F1F] text-white rounded-[24px] font-black text-[12px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all"
-                        >
-                            Finalize Document
-                        </button>
-                    </div>
-                </motion.div>
-            </div>
-        )}
-    </AnimatePresence>
-);
+
 
 export default function ReceptionPage() {
     const params = useParams();
@@ -77,7 +29,7 @@ export default function ReceptionPage() {
     const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
     // Success Folio State
-    const [successFolio, setSuccessFolio] = useState<{ open: boolean, title: string, message: string, pin?: string, roomNumber?: string }>({
+    const [successFolio, setSuccessFolio] = useState<{ open: boolean, title: string, message: string, details?: string, subDetails?: string, actionLabel?: string }>({
         open: false, title: "", message: ""
     });
 
@@ -144,9 +96,9 @@ export default function ReceptionPage() {
 
                 setSuccessFolio({
                     open: true,
-                    title: "Departure Finalized",
+                    title: "Checkout Complete",
                     message: `Unit ${roomData.room_number} has been released and is now available for new arrivals.`,
-                    roomNumber: roomData.room_number
+                    actionLabel: "Acknowledge"
                 });
             }
         });
@@ -386,8 +338,9 @@ export default function ReceptionPage() {
                 }}
                 title={successFolio.title}
                 message={successFolio.message}
-                pin={successFolio.pin}
-                roomNumber={successFolio.roomNumber}
+                details={successFolio.details}
+                subDetails={successFolio.subDetails}
+                actionLabel={successFolio.actionLabel}
             />
 
             {branding && (
@@ -400,10 +353,11 @@ export default function ReceptionPage() {
                         if (data?.pin) {
                             setSuccessFolio({
                                 open: true,
-                                title: "Arrival Acknowledged",
-                                message: `Guest document initialized. Please provide the secure PIN below for unit access.`,
-                                pin: data.pin,
-                                roomNumber: data.room_number
+                                title: "Guest Checked In",
+                                message: `Room ${data.room_number} has been successfully assigned. Please provide the secure PIN below to the guest.`,
+                                details: data.pin,
+                                subDetails: `Assigned to Unit ${data.room_number}`,
+                                actionLabel: "Acknowledge"
                             });
                         }
                     }}

@@ -93,15 +93,15 @@ export default function GuestDashboard() {
         if (error) {
             setFolioState({
                 open: true,
-                title: "Service Interrupted",
-                message: `The system encountered a resistance: ${error.message}`,
+                title: "Request Pending",
+                message: `We encountered a small delay: ${error.message}. Please try again shortly.`,
             });
         } else {
             setFolioState({
                 open: true,
-                title: "Request Dispatched",
-                message: `Your request for ${type.toLowerCase()} has been prioritized by our team.`,
-                details: "TRACKING_ACTIVE"
+                title: "Request Received",
+                message: `We've received your request for ${type.toLowerCase()}. Our team is attending to it right away.`,
+                actionLabel: "Done"
             });
         }
     };

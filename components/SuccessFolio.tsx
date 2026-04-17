@@ -44,24 +44,24 @@ export const SuccessFolio = ({
                     </div>
                     
                     <div className="relative z-10 flex flex-col items-center text-center">
-                        <div className="w-20 h-20 bg-[#1F1F1F] rounded-[24px] flex items-center justify-center mb-8 shadow-xl">
+                        <div className="w-20 h-20 bg-[#1F1F1F] rounded-[32px] flex items-center justify-center mb-8 shadow-xl">
                             <Check className="w-10 h-10 text-[#CFA46A]" />
                         </div>
                         
-                        <h3 className="text-3xl font-serif font-black text-[#1F1F1F] mb-4">{title}</h3>
-                        <p className="text-sm text-slate-500 font-medium italic mb-8 leading-relaxed px-4">{message}</p>
+                        <h3 className="text-3xl font-serif font-bold text-[#1F1F1F] mb-4 tracking-tight">{title}</h3>
+                        <p className="text-sm text-slate-500 font-medium mb-8 leading-relaxed px-4">{message}</p>
                         
                         {details && (
-                            <div className="w-full bg-white border border-black/[0.03] rounded-[32px] p-8 mb-8 shadow-sm">
-                                <span className="text-[10px] font-black text-[#CFA46A] uppercase tracking-[0.3em] block mb-3">Confirmation Hash</span>
-                                <div className="text-4xl font-serif font-black text-[#1F1F1F] tracking-[0.1em]">{details}</div>
+                            <div className="w-full bg-[#FDFBF9] border border-black/[0.05] rounded-[32px] p-8 mb-8 shadow-sm">
+                                <span className="text-[10px] font-black text-[#CFA46A]/60 uppercase tracking-[0.3em] block mb-3">Registry Detail</span>
+                                <div className="text-3xl font-serif font-bold text-[#1F1F1F] tracking-[0.05em]">{details}</div>
                                 {subDetails && <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">{subDetails}</div>}
                             </div>
                         )}
                         
                         <button
                             onClick={onClose}
-                            className="w-full py-5 bg-[#1F1F1F] text-white rounded-[24px] font-black text-[12px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all hover:bg-[#CFA46A] hover:text-[#1F1F1F]"
+                            className="w-full py-5 bg-[#1F1F1F] text-[#CFA46A] rounded-[24px] font-black text-[12px] uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all hover:bg-[#CFA46A] hover:text-[#1F1F1F]"
                         >
                             {actionLabel}
                         </button>

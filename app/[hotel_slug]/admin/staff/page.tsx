@@ -210,10 +210,11 @@ export default function StaffManagement() {
             <SuccessFolio 
                 isOpen={showSuccess}
                 onClose={() => setShowSuccess(false)}
-                title="Protocol Dispatched"
-                message="Invitation access token has been securely transferred to your system clipboard."
-                details="RECRUIT_INVITE_TOKEN"
-                subDetails="Valid for next onboarding cycle"
+                title="Invite Generated"
+                message="The secure registration link has been copied to your clipboard. You can now share it with your new staff member."
+                details="MEMBER_INVITE_ACTIVE"
+                subDetails="Ready for staff onboarding"
+                actionLabel="Done"
             />
         </div>
     );
