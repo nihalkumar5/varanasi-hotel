@@ -81,7 +81,7 @@ export default function GuestDashboard() {
         
         const interval = setInterval(() => {
             setCurrentOfferIndex((prev) => (prev + 1) % activeOffers.length);
-        }, 6000); // 6 seconds for a premium, relaxed feel
+        }, 3500); // 3.5 seconds for snappier engagement
 
         return () => clearInterval(interval);
     }, [activeOffers.length]);
