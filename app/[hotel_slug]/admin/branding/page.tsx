@@ -151,7 +151,7 @@ export default function BrandingPage() {
                                         className="bg-transparent w-full font-bold text-[#1F1F1F] outline-none"
                                     />
                                 </div>
-                                <p className="mt-3 text-[10px] text-slate-400 font-medium italic">Synchronized with guest `Protocol Selection` chat.</p>
+                                <p className="mt-3 text-[10px] text-slate-400 font-medium italic">Synchronized with guest 'Protocol Selection' chat.</p>
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
