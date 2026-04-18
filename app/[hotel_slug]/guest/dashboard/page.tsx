@@ -7,7 +7,7 @@ import {
     Zap, Droplets, Wind, Sparkles, Coffee, Layout, ChefHat, Home, User, Users, Sun, Compass, AlertCircle, Check, Wine, Library,
     ChevronLeft, ChevronRight, ArrowRight, ExternalLink, Clock, MapPin, Music, Star, Shirt, WashingMachine,
     Wrench, Search, Bed, Bath, AirVent, Tv, MoreHorizontal, Waves, Car, Bell, Lamp, Sofa, Briefcase, RefreshCw,
-    ConciergeBell, Brush
+    ConciergeBell
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -266,7 +266,7 @@ export default function GuestDashboard() {
                     {[
                         { label: "Laundry", icon: <WashingMachine />, path: "services/laundry" },
                         { label: "Luggage", icon: <Briefcase />, path: "services/luggage" },
-                        { label: "Cleaning", icon: <Brush />, path: "services/cleaning" },
+                        { label: "Cleaning", icon: <Sparkles />, path: "services/cleaning" },
                     ].map((s, i) => (
                         <motion.button
                             key={`r2-${i}`}
