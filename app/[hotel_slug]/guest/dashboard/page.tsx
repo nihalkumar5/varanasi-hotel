@@ -72,7 +72,10 @@ export default function GuestDashboard() {
     const displayCheckoutDate = formatCheckoutDate(checkoutDate);
     const displayCheckoutTime = formatCheckoutTime(checkoutTime);
     const serviceIconColor = branding?.serviceIconColor || "#CFA46A";
-    const heroImage = branding?.heroImage || "/images/hotel_hero.png";
+    // Prioritize our premium cinematic AI image for the current 'Hotel Picasso' presentation
+    const heroImage = (branding?.name === "Hotel Picasso" || !branding?.heroImage) 
+        ? "/images/hotel_hero.png" 
+        : branding.heroImage;
     const activeOffers = offers.filter((offer) => offer.is_active);
 
     // Cinematic Auto-Slide for Special Offers
