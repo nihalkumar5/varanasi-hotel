@@ -26,18 +26,22 @@ export const sanitizePhoneForWA = (phone: string) => {
 };
 
 export const convertGDriveLink = (url: string) => {
-    if (!url) {
+    if (!url || typeof url !== 'string') {
         return url;
     }
 
+    // Handle /file/d/ID format
     const fileIdMatch = url.match(/\/file\/d\/([^/]+)/);
     if (fileIdMatch?.[1]) {
-        return `https://lh3.googleusercontent.com/u/0/d/${fileIdMatch[1]}`;
+        // Remove tracking params if any (like /view?usp=sharing)
+        const cleanId = fileIdMatch[1].split(/[?#\/]/)[0];
+        return `https://drive.google.com/uc?id=${cleanId}`;
     }
 
+    // Handle ?id=ID format
     const idMatch = url.match(/[?&]id=([^&]+)/);
     if (url.includes("drive.google.com") && idMatch?.[1]) {
-        return `https://lh3.googleusercontent.com/u/0/d/${idMatch[1]}`;
+        return `https://drive.google.com/uc?id=${idMatch[1]}`;
     }
 
     return url;
