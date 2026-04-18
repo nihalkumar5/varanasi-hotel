@@ -41,7 +41,19 @@ const DEMO_BRANDING: Record<string, Partial<HotelBranding>> = {
     "grand-royale": { id: "00000000-0000-0000-0000-000000000001", name: "The Grand Royale", primaryColor: "#1e293b", accentColor: "#2563eb" },
     "azure-bay": { id: "00000000-0000-0000-0000-000000000002", name: "Azure Bay Resort", primaryColor: "#0891b2", accentColor: "#0ea5e9" },
     "mountain-lodge": { id: "00000000-0000-0000-0000-000000000003", name: "Mountain Lodge", primaryColor: "#166534", accentColor: "#22c55e" },
-    babylon: { id: "00000000-0000-0000-0000-000000000004", name: "Babylon Raipur", primaryColor: "#1e3a8a", accentColor: "#3b82f6" },
+    "babylon": { id: "00000000-0000-0000-0000-000000000004", name: "Babylon Raipur", primaryColor: "#1e3a8a", accentColor: "#3b82f6" },
+    "varanasi-hotel": { 
+        id: "00000000-0000-0000-0000-000000000005", 
+        name: "Hotel Picasso", 
+        city: "Varanasi, India",
+        primaryColor: "#1F1F1F", 
+        accentColor: "#CFA46A",
+        heroImage: "/images/hotel_hero.png",
+        logo: "MangoH",
+        wifiName: "Hotel Picasso",
+        wifiPassword: "Welcome123",
+        receptionPhone: "+91 9109812321"
+    },
 };
 
 const mapHotelRowToBranding = (row: HotelRow): HotelBranding => ({

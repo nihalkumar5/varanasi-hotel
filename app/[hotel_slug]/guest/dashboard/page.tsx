@@ -72,7 +72,7 @@ export default function GuestDashboard() {
     const displayCheckoutDate = formatCheckoutDate(checkoutDate);
     const displayCheckoutTime = formatCheckoutTime(checkoutTime);
     const serviceIconColor = branding?.serviceIconColor || "#CFA46A";
-    const heroImage = branding?.heroImage || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80";
+    const heroImage = branding?.heroImage || "/images/hotel_hero.png";
     const activeOffers = offers.filter((offer) => offer.is_active);
 
     // Cinematic Auto-Slide for Special Offers
