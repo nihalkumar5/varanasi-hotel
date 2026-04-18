@@ -98,8 +98,28 @@ export default function BrandingPage() {
     return (
         <div className="flex-1 min-h-screen bg-[#FDFBF9] font-sans pb-32">
             {/* Header section with glassmorphism */}
-            <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div className="px-12 py-10 border-b border-black/[0.03] bg-white/40 backdrop-blur-3xl sticky top-0 z-50 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div>
+                    <h1 className="text-4xl font-serif font-black text-[#1F1F1F] uppercase tracking-tighter mb-2">System Config</h1>
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Branding & Operational Registry</p>
+                </div>
+                
+                <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="flex items-center justify-center px-10 py-5 bg-[#1F1F1F] text-white rounded-full font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-black/20 hover:bg-black transition-all disabled:opacity-50 min-w-[200px]"
+                >
+                    {isSaving ? (
+                        <Loader2 className="w-4 h-4 animate-spin mr-3" />
+                    ) : (
+                        <Save className="w-4 h-4 mr-3" />
+                    )}
+                    {isSaving ? "Synchronizing..." : "Save Configuration"}
+                </motion.button>
+            </div>
+
+            <div className="px-12 py-12 grid grid-cols-1 xl:grid-cols-2 gap-12">
                     <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
                         <div className="flex items-center mb-8">
                             <Phone className="w-5 h-5 text-[#CFA46A] mr-3" />
