@@ -181,6 +181,39 @@ export default function BrandingPage() {
 
                     <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
                         <div className="flex items-center mb-8">
+                            <ImageIcon className="w-5 h-5 text-[#CFA46A] mr-3" />
+                            <h2 className="text-xl font-serif font-black text-[#1F1F1F]">Property Hero Visual</h2>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="relative h-48 rounded-[32px] overflow-hidden border border-black/[0.05] group">
+                                <img 
+                                    src={config.heroImage || "/images/hotel_hero.png"} 
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                                    alt="Hero Preview" 
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70 italic">Live Dashboard Preview</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Hero Image URL</label>
+                                <div className="flex items-center bg-[#FDFBF9] border border-black/[0.03] rounded-2xl px-5 py-4 focus-within:ring-1 ring-[#CFA46A]/30 transition-all">
+                                    <Globe className="w-4 h-4 text-[#CFA46A]/50 mr-4" />
+                                    <input
+                                        type="text"
+                                        placeholder="/images/hotel_hero.png"
+                                        value={config.heroImage || ""}
+                                        onChange={(e) => setConfig({ ...config, heroImage: e.target.value })}
+                                        className="bg-transparent w-full font-bold text-[#1F1F1F] outline-none text-xs"
+                                    />
+                                </div>
+                                <p className="mt-3 text-[10px] text-slate-400 font-medium italic">High-impact 16:9 visual for the main guest entrance.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
+                        <div className="flex items-center mb-8">
                             <Palette className="w-5 h-5 text-[#CFA46A] mr-3" />
                             <h2 className="text-xl font-serif font-black text-[#1F1F1F]">Brand DNA Palette</h2>
                         </div>
