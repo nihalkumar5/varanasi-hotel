@@ -13,7 +13,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-thali",
         hotel_id: hotelId,
-        category: "Main Course",
+        category: "Lunch",
         title: "Royal Indian Thali",
         description: "A curated curation of seasonal delicacies served with fragrant saffron rice and handmade artisanal breads.",
         price: 1450,
@@ -23,7 +23,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-biryani",
         hotel_id: hotelId,
-        category: "Main Course",
+        category: "Dinner",
         title: "Deluxe Clay-Pot Biryani",
         description: "Slow-cooked aromatic basmati rice with heritage spices and tender proteins, served in a traditional clay pot.",
         price: 850,
@@ -33,7 +33,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-chaat",
         hotel_id: hotelId,
-        category: "Varanasi Special",
+        category: "All Day Snacks",
         title: "Gourmet Tamatar Chaat",
         description: "An elevated interpretation of the iconic local favorite, garnished with crispy pearls and vibrant chutneys.",
         price: 450,
@@ -43,7 +43,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-samosa",
         hotel_id: hotelId,
-        category: "Starters",
+        category: "All Day Snacks",
         title: "Artisanal Samosa Platter",
         description: "Crispy hand-folded pastries filled with spiced heritage potatoes, served with house-made mint and tamarind dips.",
         price: 350,
@@ -53,7 +53,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-dessert",
         hotel_id: hotelId,
-        category: "Desserts",
+        category: "Dinner",
         title: "Heritage Gulab Jamun",
         description: "Delicate syrup-soaked traditional confections served in a crystal bowl with silver leaf and crushed pistachios.",
         price: 350,
@@ -63,7 +63,7 @@ const DEFAULT_MENU_ITEMS: (hotelId: string) => MenuItem[] = (hotelId) => [
     {
         id: "default-chai",
         hotel_id: hotelId,
-        category: "Drinks",
+        category: "Breakfast",
         title: "Signature Masala Chai",
         description: "Brewed with premium tea leaves and a secret blend of five aromatic spices. Served in fine bone china.",
         price: 150,
