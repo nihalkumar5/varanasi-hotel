@@ -120,6 +120,7 @@ export default function BrandingPage() {
             </div>
 
             <div className="px-12 py-12 grid grid-cols-1 xl:grid-cols-2 gap-12">
+                <div className="space-y-12">
                     <section className="bg-white p-10 rounded-[48px] border border-black/[0.02] shadow-[0_30px_80px_rgba(0,0,0,0.03)]">
                         <div className="flex items-center mb-8">
                             <Phone className="w-5 h-5 text-[#CFA46A] mr-3" />
