@@ -75,6 +75,17 @@ export default function GuestDashboard() {
     const heroImage = branding?.heroImage || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80";
     const activeOffers = offers.filter((offer) => offer.is_active);
 
+    // Cinematic Auto-Slide for Special Offers
+    React.useEffect(() => {
+        if (activeOffers.length <= 1) return;
+        
+        const interval = setInterval(() => {
+            setCurrentOfferIndex((prev) => (prev + 1) % activeOffers.length);
+        }, 6000); // 6 seconds for a premium, relaxed feel
+
+        return () => clearInterval(interval);
+    }, [activeOffers.length]);
+
     const handleQuickRequest = async (type: string, notes: string) => {
         if (!branding?.id || submittingType) return;
 
@@ -344,7 +355,12 @@ export default function GuestDashboard() {
                                     className="absolute inset-0"
                                 >
                                     <img 
-                                        src={activeOffers[currentOfferIndex].image_url || "https://images.unsplash.com/photo-1544124499-58ed692cc351?auto=format&fit=crop&q=80"} 
+                                        src={
+                                            activeOffers[currentOfferIndex].image_url || 
+                                            (activeOffers[currentOfferIndex].title.includes("40%") || activeOffers[currentOfferIndex].title.includes("Dine")) 
+                                                ? "/images/offers/dining.png" 
+                                                : "https://images.unsplash.com/photo-1544124499-58ed692cc351?auto=format&fit=crop&q=80"
+                                        } 
                                         className="w-full h-full object-cover" 
                                         alt={activeOffers[currentOfferIndex].title}
                                     />
